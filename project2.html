@@ -18,689 +18,216 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
   <style>
-    /* ของกราฟวงกลม */
+    /* =======================
+       ★ กราฟวงกลม (gauge) ของเดิม
+       - ใช้ grid + conic-gradient ทำ progress
+       ======================= */
     .gauges {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 12px;
       padding: 12px;
     }
-
-    .gauge {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .gauge .ring {
-      /* ขนาดวง */
-      --size: 125px;
-      /* สีวงความคืบหน้า */
-      --track: #e5e7eb;
-      --progress: #6ee7b7;
-      width: var(--size);
-      height: var(--size);
-      border-radius: 999px;
-      position: relative;
-      display: grid;
-      place-items: center;
-      /* NOTE: ปรับความหนาแถบเป็น ~10px และยึดแกน 50% ให้วงไม่เพี้ยน */
+    .gauge { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .gauge .ring{
+      --size: 125px; --track: #e5e7eb; --progress: #6ee7b7;
+      width: var(--size); height: var(--size); border-radius: 999px;
+      position: relative; display: grid; place-items: center;
       background:
         radial-gradient(#fff calc(50% - 10px), transparent calc(50% - 9px)),
         conic-gradient(var(--progress) calc(var(--p)*1%), var(--track) 0);
       box-shadow: 0 6px 16px rgba(0, 0, 0, .08), inset 0 0 0 1px #f1f5f9;
     }
+    .gauge .ring img{ width:54px; height:54px; object-fit:contain; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,.12); background:#fff; padding:6px; }
+    .gauge .value{ position:absolute; bottom:12px; left:0; right:0; text-align:center; font-weight:700; font-size:18px; }
+    .gauge .unit{ font-size:12px; opacity:.8; margin-left:2px }
+    .gauge .label{ font-size:12px; font-weight:600; color:#0f172a; background:#eeffcf; border:1px solid #cce68f; padding:4px 12px; border-radius:999px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+    /* สีเฉพาะ gauge เดิม */
+    #gAir .ring{ --progress:#f87171 } /* Temp */
+    #gRH  .ring{ --progress:#34d399 } /* RH */
+    #gCO2 .ring{ --progress:#fb923c } /* CO2 */
 
-    .gauge .ring img {
-      /* รูปไอคอนกลางวง (ผู้ใช้จะเปลี่ยน src เอง) */
-      width: 54px;
-      height: 54px;
-      object-fit: contain;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
-      background: #fff;
-      padding: 6px;
+    /* =======================
+       ★ ตัวแปรธีม + โครงสร้างหลัก (ของเดิม)
+       ======================= */
+    :root{
+      --bg:#f0f2f5; --panel:#ffffff; --ink:#121619; --muted:#6b7280;
+      --brand:#b7f36a; --accent:#9ad83f; --accent-dark:#94c93e;
+      --sidebar:#ffffff; --sidebar-border:#cde88b; --tab-height:40px; --sidebar-width:220px;
     }
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{ margin:0; font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif; color:var(--ink); background:var(--bg); }
+    .app{ display:grid; grid-template-columns: var(--sidebar-width) 1fr; grid-template-rows: auto 1fr; height:100vh; }
 
-    .gauge .value {
-      position: absolute;
-      bottom: 12px;
-      left: 0;
-      right: 0;
-      text-align: center;
-      font-weight: 700;
-      font-size: 18px;
+    /* Topbar (ของเดิม) */
+    .topbar{ grid-column:1/-1; background:var(--panel); border-bottom:1px solid #e5e7eb; position:relative; }
+    .topbar-inner{ display:flex; align-items:center; gap:16px; padding:10px 16px; }
+    .brand-badge{ display:flex; align-items:center; gap:10px; font-weight:700; }
+    .brand-logo{ height:34px; }
+    .brand-text{ font-weight:700; letter-spacing:.5px; }
+    .title{ background:var(--panel); border:1px solid var(--sidebar-border); padding:0 12px; border-radius:6px; font-weight:700; margin-right:10px; font-size:22px; color:#0f172a; letter-spacing:.5px; box-shadow:0 2px 6px rgba(0,0,0,.08); }
+    .tabs{ flex:1; display:flex; align-items:flex-end; height:var(--tab-height); background:var(--brand); border-left:1px solid var(--sidebar-border); border-right:1px solid var(--sidebar-border); border-top-left-radius:6px; border-top-right-radius:6px; overflow-x:auto; scrollbar-width:none; }
+    .tabs::-webkit-scrollbar{ display:none }
+    .tab{ position:relative; height:var(--tab-height); line-height:var(--tab-height); padding:0 18px; font-size:13px; color:#1f2937; cursor:pointer; user-select:none; }
+    .tab.active{ font-weight:600; border-bottom:3px solid #3a3a3a; }
+    .tab:hover{ background:rgba(0,0,0,.04); }
+
+    /* NOTE: แก้ clock ให้จัดขวาด้วย .topbar-right (ของเดิม) */
+    .clock{ position:absolute; right:14px; top:8px; text-align:right; font-size:13px; }
+    .clock .date,.clock .time{ font-weight:700; }
+    .topbar-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
+    .topbar-right .clock{ position:static; }
+
+    /* Sidebar (ของเดิม) */
+    .sidebar{ grid-row:2/-1; background:var(--sidebar); border-right:2px solid var(--sidebar-border); display:flex; flex-direction:column; min-width:0; }
+    .side-header{ display:flex; align-items:center; gap:10px; padding:12px 14px; border-bottom:1px solid var(--sidebar-border); font-weight:600; }
+    .side-logo{ display:flex; align-items:center; gap:8px; font-weight:700; }
+    .side-logo img{ height:38px; }
+    .side-section{ padding:10px 14px; font-size:13px; color:#111; }
+    .menu{ padding:8px 8px 18px; display:flex; flex-direction:column; gap:8px; }
+    .menu-btn{ display:grid; grid-template-columns:44px 1fr; align-items:center; gap:10px; padding:10px 8px; border-radius:8px; border:1px solid transparent; cursor:pointer; text-align:left; background:#fff; transition:.2s ease; color:#111; }
+    .menu-btn:hover{ border-color:var(--accent); background:#fafff1; }
+    .menu-btn.active{ background:#eaffc8; border-color:var(--accent); font-weight:600; }
+    .ico img{ width:40px; height:40px; display:block; }
+
+    /* Content shell (ของเดิม) */
+    .content{ grid-column:2/-1; grid-row:2/-1; background:var(--panel); margin:12px; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,.05); border:1px solid #e5e7eb; }
+    .muted{ color:var(--muted); }
+
+    /* =======================
+       ★ Room summary (ของเดิม) – ซ้าย:กราฟ ขวา:การ์ด 4 ใบ
+       ======================= */
+    .room-summary{ display:grid; grid-template-columns: 1fr 2fr; gap:8px; padding:8px; }
+    .room-left{ background:#fff; border:1px solid #e5e7eb; border-radius:6px; padding:8px 8px 2px 8px; }
+    .room-title{ display:inline-block; background:#d9f2b6; color:#274a0b; font-weight:700; font-size:12px; padding:4px 10px; border-radius:6px; margin-bottom:6px; }
+    .spark{ width:100%; height:100px; }
+    .spark .grid line{ stroke:#e5e7eb; stroke-width:1; }
+    .spark path{ fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-width:3; }
+    .spark path.s1{ stroke:#ef4444; } .spark path.s2{ stroke:#10b981; } .spark path.s3{ stroke:#f59e0b; }
+    .spark .dots circle.s1{ fill:#ef4444 } .spark .dots circle.s2{ fill:#10b981 } .spark .dots circle.s3{ fill:#f59e0b }
+    .room-cards{ display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; }
+    .mini-card{ background:#fff; border:1px solid #e5e7eb; border-radius:6px; overflow:hidden; }
+    .mini-card header{ padding:6px 10px; font-weight:700; font-size:12px; color:#111; }
+    .mini-card.nursery header{ background:#ffe0c7; }
+    .mini-card.climate header{ background:#cfe2ff; }
+    .mini-card.mv1 header,.mini-card.mv2 header{ background:#e8f7d4; }
+    .mini-card .body{ padding:6px 10px; font-size:12px; color:#222; }
+    .mini-card .row{ display:grid; grid-template-columns: 1fr auto; align-items:center; gap:8px; padding:2px 0; }
+    .mini-card .row .label{ opacity:.9; } .mini-card .row .value{ font-weight:700; white-space:nowrap; }
+    .mini-card .row .unit{ margin-left:4px; opacity:.8 }
+
+    /* =======================
+       ★ Responsive (ของเดิม)
+       ======================= */
+    @media (max-width:1100px){
+      .room-summary{ grid-template-columns:1fr; }
+      .room-cards{ grid-template-columns: repeat(2, 1fr); }
     }
-
-    .gauge .unit {
-      font-size: 12px;
-      opacity: .8;
-      margin-left: 2px
-    }
-
-    .gauge .label {
-      font-size: 12px;
-      font-weight: 600;
-      color: #0f172a;
-      background: #eeffcf;
-      border: 1px solid #cce68f;
-      padding: 4px 12px;
-      border-radius: 999px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
-    }
-
-    /* สีเฉพาะ gauge */
-    #gAir .ring {
-      --progress: #f87171
-    }
-
-    /* แดงนิดๆสำหรับอุณหภูมิ */
-    #gRH .ring {
-      --progress: #34d399
-    }
-
-    /* เขียวสำหรับ RH */
-    #gCO2 .ring {
-      --progress: #fb923c
-    }
-
-    /* ส้มสำหรับ CO2 */
-
-    /* ตัวแปรธีม */
-    :root {
-      --bg: #f0f2f5;
-      --panel: #ffffff;
-      --ink: #121619;
-      --muted: #6b7280;
-      --brand: #b7f36a;
-      --accent: #9ad83f;
-      --accent-dark: #94c93e;
-      --sidebar: #ffffff;
-      --sidebar-border: #cde88b;
-      --tab-height: 40px;
-      --sidebar-width: 220px;
-    }
-
-    * {
-      box-sizing: border-box
-    }
-
-    html,
-    body {
-      height: 100%
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
-      color: var(--ink);
-      background: var(--bg);
-    }
-
-    .app {
-      display: grid;
-      grid-template-columns: var(--sidebar-width) 1fr;
-      grid-template-rows: auto 1fr;
-      height: 100vh;
-    }
-
-    /* Topbar */
-    .topbar {
-      grid-column: 1/-1;
-      background: var(--panel);
-      border-bottom: 1px solid #e5e7eb;
-      position: relative;
-    }
-
-    .topbar-inner {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 10px 16px;
-    }
-
-    .brand-badge {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-    }
-
-    .brand-logo {
-      height: 34px;
-    }
-
-    .brand-text {
-      font-weight: 700;
-      letter-spacing: .5px;
-    }
-
-    .title {
-      background: var(--panel);
-      border: 1px solid var(--sidebar-border);
-      padding: 0 12px;
-      /* ✅ fixed */
-      border-radius: 6px;
-      font-weight: 700;
-      margin-right: 10px;
-      font-size: 22px;
-      color: #0f172a;
-      letter-spacing: .5px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
-    }
-
-    .tabs {
-      flex: 1;
-      display: flex;
-      align-items: flex-end;
-      height: var(--tab-height);
-      background: var(--brand);
-      border-left: 1px solid var(--sidebar-border);
-      border-right: 1px solid var(--sidebar-border);
-      border-top-left-radius: 6px;
-      border-top-right-radius: 6px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .tabs::-webkit-scrollbar {
-      display: none
-    }
-
-    .tab {
-      position: relative;
-      height: var(--tab-height);
-      line-height: var(--tab-height);
-      padding: 0 18px;
-      font-size: 13px;
-      color: #1f2937;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .tab.active {
-      font-weight: 600;
-      border-bottom: 3px solid #3a3a3a;
-    }
-
-    .tab:hover {
-      background: rgba(0, 0, 0, .04);
-    }
-
-    /* NOTE: ในไฟล์เดิม .clock เป็น absolute ทำให้ “ทับปุ่ม”
-       => ใช้กล่อง .topbar-right แบบ flex จัดทั้งกลุ่มไปขวา แล้ว override ให้ .clock เป็น static */
-    .clock {
-      position: absolute;
-      right: 14px;
-      top: 8px;
-      /* (เดิม) คงไว้เพื่อความเข้ากันย้อนหลัง */
-      text-align: right;
-      font-size: 13px;
-    }
-
-    .clock .date,
-    .clock .time {
-      font-weight: 700;
-    }
-
-    /* ✅ ส่วน override (ต้องอยู่ “หลัง” กฎ .clock ด้านบน เพื่อให้ชนะ) */
-    .topbar-right {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      /* ดันทั้งกลุ่มไปขวา + ระยะห่าง */
-    }
-
-    .topbar-right .clock {
-      position: static;
-      /* ✅ แทนที่ absolute → ไม่ทับปุ่มแล้ว */
-    }
-
-    /* Sidebar */
-    .sidebar {
-      grid-row: 2/-1;
-      background: var(--sidebar);
-      border-right: 2px solid var(--sidebar-border);
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    .side-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--sidebar-border);
-      font-weight: 600;
-    }
-
-    .side-logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 700;
-    }
-
-    .side-logo img {
-      height: 38px;
-    }
-
-    .side-section {
-      padding: 10px 14px;
-      font-size: 13px;
-      color: #111;
-    }
-
-    .menu {
-      padding: 8px 8px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .menu-btn {
-      display: grid;
-      grid-template-columns: 44px 1fr;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 8px;
-      border-radius: 8px;
-      border: 1px solid transparent;
-      cursor: pointer;
-      text-align: left;
-      background: #fff;
-      transition: .2s ease;
-      color: #111;
-    }
-
-    .menu-btn:hover {
-      border-color: var(--accent);
-      background: #fafff1;
-    }
-
-    .menu-btn.active {
-      background: #eaffc8;
-      border-color: var(--accent);
-      font-weight: 600;
-    }
-
-    .ico img {
-      width: 40px;
-      height: 40px;
-      display: block;
-    }
-
-    .content {
-      grid-column: 2/-1;
-      grid-row: 2/-1;
-      background: var(--panel);
-      margin: 12px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
-      border: 1px solid #e5e7eb;
-    }
-
-    .content-inner {
-      height: 100%;
-      border-left: 3px solid var(--accent);
-    }
-
-    .muted {
-      color: var(--muted);
+    @media (max-width:640px){
+      .room-cards{ grid-template-columns:1fr; }
     }
 
     /* =======================
-       🔽 SWITCH DROPDOWN LAB BOX 
-       Fancy Bootstrap Dropdown Style
+       ★ Dropdown style (ของเดิม)
        ======================= */
-    .sidebar .dropdown .btn {
-      background: #ffffff;
-      border-radius: 12px;
-      font-weight: 600;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-      transition: all .3s ease;
-      width: 100%;
-      text-align: left;
+    .sidebar .dropdown .btn{ background:#ffffff; border-radius:12px; font-weight:600; box-shadow:0 4px 10px rgba(0,0,0,0.15); transition:all .3s ease; width:100%; text-align:left; }
+    .sidebar .dropdown .btn:hover{ background:#f1f1f1; transform: translateY(-2px); }
+    .sidebar .dropdown-menu{ border-radius:12px; border:none; box-shadow:0 6px 20px rgba(0,0,0,0.15); animation: fadeIn .3s ease; width:100%; z-index:1000; }
+    .sidebar .dropdown-item{ font-weight:500; padding:10px 20px; transition:all .2s ease; }
+    .sidebar .dropdown-item:hover{ background-color:#fda085; color:#fff; border-radius:8px; }
+    @keyframes fadeIn{ from{opacity:0; transform: translateY(10px);} to{opacity:1; transform: translateY(0);} }
+
+    /* =======================
+       ★ ปุ่มสลับธีม (ของเดิม)
+       ======================= */
+    .darklight{ margin-left:auto; padding:6px 12px; border-radius:20px; background:#f1f5f9; color:#0f172a; font-weight:600; font-size:14px; cursor:pointer; user-select:none; transition:.2s; border:1px solid #e2e8f0; }
+    .darklight:hover{ background:#e2e8f0 }
+    .theme-dark{
+      --bg:#0b1220; --panel:#0f172a; --ink:#e5e7eb; --muted:#94a3b8;
+      --brand:#3f6212; --accent:#84cc16; --accent-dark:#65a30d; --sidebar:#0f172a; --sidebar-border:#334155;
     }
+    .theme-dark .content,.theme-dark .sidebar,.theme-dark .topbar{ border-color:var(--sidebar-border); box-shadow:0 2px 10px rgba(0,0,0,.4); }
+    .theme-dark #gAir .ring{ --progress:#f87171 } .theme-dark #gRH .ring{ --progress:#34d399 } .theme-dark #gCO2 .ring{ --progress:#fb923c }
 
-    .sidebar .dropdown .btn:hover {
-      background: #f1f1f1;
-      transform: translateY(-2px);
+    /* =========================================================
+       ✅ เพิ่ม “Layout หลักของ .content-inner” ให้จัดแบบภาพตัวอย่าง
+       - วาง Tabs > Room summary > Gauges (4 วง) > 3 Panels
+       ========================================================= */
+    .content-inner{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);   /* 12 คอลัมน์พื้นฐาน */
+      grid-auto-rows: min-content;
+      gap:12px;
+      padding:12px;
+      border-left:3px solid var(--accent);
     }
-
-    .sidebar .dropdown-menu {
-      border-radius: 12px;
-      border: none;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-      animation: fadeIn .3s ease;
-      width: 100%;
-      z-index: 1000;
+    .content-inner > .tabs,
+    .content-inner > .room-summary{ grid-column:1 / -1; } /* กินเต็มแถว */
+    .content-inner > .gauges{
+      grid-column:1 / -1;                         /* กินเต็มแถว */
+      display:grid; grid-template-columns: repeat(4, 1fr); gap:16px;
     }
-
-    .sidebar .dropdown-item {
-      font-weight: 500;
-      padding: 10px 20px;
-      transition: all .2s ease;
+    .res-panels{
+      grid-column:1 / -1; display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;
     }
+    .panel{ background:#fff; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; }
+    .panel header{ background:#f4f6f0; font-weight:700; padding:8px 12px; }
+    .panel .panel-body{ padding:12px; }
+    .panel .triple{ display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; }
+    .mini-gauge{ display:grid; place-items:center; gap:6px; padding:10px; border:1px solid #e5e7eb; border-radius:10px; }
+    .mini-gauge .v{ font-weight:700; font-size:14px; }
+    .mini-gauge .t{ font-size:12px; opacity:.8 }
+    .panel .status{ margin-top:12px; display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:12px; }
+    .status .row{ display:flex; align-items:center; justify-content:space-between; background:#f8fafc; border:1px solid #e5e7eb; border-radius:8px; padding:6px 8px; }
 
-    .sidebar .dropdown-item:hover {
-      background-color: #fda085;
-      color: #fff;
-      border-radius: 8px;
+    /* Responsive ของส่วนเพิ่ม */
+    @media (max-width:1100px){
+      .content-inner > .gauges{ grid-template-columns: repeat(2, 1fr); }
+      .res-panels{ grid-template-columns: 1fr; }
     }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @media (max-width: 960px) {
-      :root {
-        --sidebar-width: 180px;
-      }
-
-      .tabs {
-        border-radius: 6px;
-      }
-
-      /* มือถือ: clock ยังคง static และขยับไปขวาด้วย auto margin */
-      .topbar-right .clock {
-        position: static;
-        margin-left: auto;
-      }
-
-      .topbar-inner {
-        flex-wrap: wrap;
-      }
-    }
-
-    /* ปุ่มสลับธีม */
-    .darklight {
-      margin-left: auto;
-      padding: 6px 12px;
-      border-radius: 20px;
-      background: #f1f5f9;
-      color: #0f172a;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      user-select: none;
-      transition: .2s;
-      border: 1px solid #e2e8f0;
-    }
-
-    .darklight:hover {
-      background: #e2e8f0
-    }
-
-    /* ธีมมืด */
-    .theme-dark {
-      --bg: #0b1220;
-      --panel: #0f172a;
-      --ink: #e5e7eb;
-      --muted: #94a3b8;
-      --brand: #3f6212;
-      --accent: #84cc16;
-      --accent-dark: #65a30d;
-      --sidebar: #0f172a;
-      --sidebar-border: #334155;
-    }
-
-    .theme-dark .content,
-    .theme-dark .sidebar,
-    .theme-dark .topbar {
-      border-color: var(--sidebar-border);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, .4);
-    }
-
-    .theme-dark #gAir .ring {
-      --progress: #f87171
-    }
-
-    .theme-dark #gRH .ring {
-      --progress: #34d399
-    }
-
-    .theme-dark #gCO2 .ring {
-      --progress: #fb923c
-    }
-
-    /* ===== Room summary (compact) ===== */
-    .room-summary {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      /* ซ้าย:กราฟ / ขวา:การ์ด */
-      gap: 8px;
-      /* เดิม 16px */
-      padding: 8px;
-      /* เดิม 12px */
-    }
-
-    .room-left {
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 6px;
-      /* เดิม 8px */
-      padding: 8px 8px 2px 8px;
-    }
-
-    .room-title {
-      display: inline-block;
-      background: #d9f2b6;
-      color: #274a0b;
-      font-weight: 700;
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 6px;
-      margin-bottom: 6px;
-    }
-
-    /* กราฟเล็ก */
-    .spark {
-      width: 100%;
-      height: 100px;
-    }
-
-    /* เดิม 140px */
-    .spark .grid line {
-      stroke: #e5e7eb;
-      stroke-width: 1;
-    }
-
-    .spark path {
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-width: 3;
-    }
-
-    .spark path.s1 {
-      stroke: #ef4444;
-    }
-
-    .spark path.s2 {
-      stroke: #10b981;
-    }
-
-    .spark path.s3 {
-      stroke: #f59e0b;
-    }
-
-    .spark .dots circle.s1 {
-      fill: #ef4444
-    }
-
-    .spark .dots circle.s2 {
-      fill: #10b981
-    }
-
-    .spark .dots circle.s3 {
-      fill: #f59e0b
-    }
-
-    .room-cards {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      /* เดิม 12px */
-    }
-
-    .mini-card {
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 6px;
-      /* เดิม 8px */
-      overflow: hidden;
-    }
-
-    .mini-card header {
-      padding: 6px 10px;
-      /* เดิม 8px 12px */
-      font-weight: 700;
-      font-size: 12px;
-      /* เดิม 13px */
-      color: #111;
-    }
-
-    .mini-card.nursery header {
-      background: #ffe0c7;
-    }
-
-    .mini-card.climate header {
-      background: #cfe2ff;
-    }
-
-    .mini-card.mv1 header {
-      background: #e8f7d4;
-    }
-
-    .mini-card.mv2 header {
-      background: #e8f7d4;
-    }
-
-    .mini-card .body {
-      padding: 6px 10px;
-      /* เดิม 10px 12px */
-      font-size: 12px;
-      /* เดิม 13px */
-      color: #222;
-    }
-
-
-    /* ✅ ปรับโครงสร้าง row เป็น 2 คอลัมน์ (label | value) */
-    .mini-card .row {
-      display: grid;
-      /* ใช้ grid layout แทน flex */
-      grid-template-columns: 1fr auto;
-      /* ซ้าย label, ขวา value */
-      align-items: center;
-      /* จัดให้อยู่กึ่งกลางแนวตั้ง */
-      gap: 8px;
-      /* ระยะห่าง label-value */
-      padding: 2px 0;
-    }
-
-    .mini-card .row .label {
-      opacity: .9;
-    }
-
-    /* label ด้านซ้าย */
-    .mini-card .row .value {
-      font-weight: 700;
-      /* ค่าด้านขวาเป็นตัวหนา */
-      white-space: nowrap;
-      /* กันตัดบรรทัด */
-    }
-
-    .mini-card .row .unit {
-      margin-left: 4px;
-      opacity: .8;
-    }
-
-    /* หน่วย เช่น °C, %, ppm */
-
-
-    .mini-card .sep {
-      margin: 0 6px;
-      opacity: .7;
-    }
-
-    .mini-card .u {
-      margin-left: 4px;
-      opacity: .8;
-    }
-
-
-
-    /* Responsive */
-    @media (max-width:1100px) {
-      .room-summary {
-        grid-template-columns: 1fr;
-      }
-
-      .room-cards {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width:640px) {
-      .room-cards {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width:640px){
+      .content-inner{ gap:8px; padding:8px; }
     }
   </style>
 </head>
 
 <body>
   <div class="app">
-    <!-- Topbar -->
+    <!-- =======================
+         Topbar
+         ======================= -->
     <header class="topbar">
       <div class="topbar-inner">
         <div class="brand-badge">
-          <img
-            src="https://github.com/reungwitk-cyber/ssb-box/raw/c958231f7e20c74bff3076384c1e46bbee9eec24/Logosbb-box.png"
-            alt="SABIENG BOX Logo" class="brand-logo">
+          <img src="https://github.com/reungwitk-cyber/ssb-box/raw/c958231f7e20c74bff3076384c1e46bbee9eec24/Logosbb-box.png" alt="SABIENG BOX Logo" class="brand-logo">
           <div class="brand-text"></div>
         </div>
         <div class="title">LAB BOX</div>
 
-        <!-- NOTE: ครอบปุ่ม + นาฬิกาฝั่งขวา เพื่อไม่ให้ทับกัน -->
+        <!-- ปุ่ม + นาฬิกาอยู่ขวา -->
         <div class="topbar-right">
-          <!-- vit กำหนด -->
           <button class="darklight">darklight</button>
           <div class="clock">
             <div class="date" id="dateText">Mon. 12 - 09 - 25</div>
             <div class="time" id="timeText">Time - 17:12:35</div>
           </div>
         </div>
-      </div> <!-- ✅ NOTE: ปิด .topbar-inner ให้ครบ -->
+      </div>
     </header>
 
-    <!-- Sidebar -->
+    <!-- =======================
+         Sidebar
+         ======================= -->
     <aside class="sidebar">
       <div class="menu" style="padding-top:10px">
         <button class="menu-btn active">
-          <span class="ico"><img
-              src="https://github.com/reungwitk-cyber/ssb-box/raw/c958231f7e20c74bff3076384c1e46bbee9eec24/homesw1.png"
-              alt="Home"></span>
+          <span class="ico"><img src="https://github.com/reungwitk-cyber/ssb-box/raw/c958231f7e20c74bff3076384c1e46bbee9eec24/homesw1.png" alt="Home"></span>
           <span>Sabieng HQ</span>
         </button>
       </div>
 
-      <!-- =======================
-           🔽 SWITCH DROPDOWN LAB BOX 
-           Bootstrap Dropdown Component
-           ======================= -->
+      <!-- Dropdown สลับหน้า -->
       <div class="side-section">
         <div class="dropdown">
           <button class="btn dropdown-toggle px-4 py-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -713,34 +240,23 @@
           </ul>
         </div>
       </div>
-      <!-- ======================= -->
 
       <div class="menu">
-        <button class="menu-btn"><span class="ico"><img
-              src="https://github.com/reungwitk-cyber/ssb-box/raw/695cd88b6d596bfbd2b4bb6e83b47e81ab779a1f/RecipeSw.png"
-              alt="Recipes"></span><span>Recipes</span></button>
-        <button class="menu-btn"><span class="ico"><img
-              src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Crop%20yield.png"
-              alt="Crop scheduling"></span><span>Crop scheduling</span></button>
-        <button class="menu-btn"><span class="ico"><img
-              src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Crop%20scheduling.png"
-              alt="Crop yield"></span><span>Crop yield</span></button>
-        <button class="menu-btn"><span class="ico"><img
-              src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Energy%20Management.png"
-              alt="Energy"></span><span>Energy Management</span></button>
-        <button class="menu-btn"><span class="ico"><img
-              src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/SettingSw1.png"
-              alt="Settings"></span><span>Setting</span></button>
-        <button class="menu-btn"><span class="ico"><img
-              src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Help.png"
-              alt="Help"></span><span>Help</span></button>
+        <button class="menu-btn"><span class="ico"><img src="https://github.com/reungwitk-cyber/ssb-box/raw/695cd88b6d596bfbd2b4bb6e83b47e81ab779a1f/RecipeSw.png" alt="Recipes"></span><span>Recipes</span></button>
+        <button class="menu-btn"><span class="ico"><img src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Crop%20yield.png" alt="Crop scheduling"></span><span>Crop scheduling</span></button>
+        <button class="menu-btn"><span class="ico"><img src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Crop%20scheduling.png" alt="Crop yield"></span><span>Crop yield</span></button>
+        <button class="menu-btn"><span class="ico"><img src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Energy%20Management.png" alt="Energy"></span><span>Energy Management</span></button>
+        <button class="menu-btn"><span class="ico"><img src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/SettingSw1.png" alt="Settings"></span><span>Setting</span></button>
+        <button class="menu-btn"><span class="ico"><img src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Help.png" alt="Help"></span><span>Help</span></button>
       </div>
     </aside>
 
-    <!-- Content -->
+    <!-- =======================
+         Content
+         ======================= -->
     <main class="content">
       <div class="content-inner">
-
+        <!-- Tabs -->
         <nav class="tabs">
           <div class="tab active">Dashboard</div>
           <div class="tab">Control Climate</div>
@@ -750,25 +266,20 @@
           <div class="tab">Analysis</div>
         </nav>
 
-        <!-- ===== Room summary (วางไว้ใน .content-inner ใต้แท็บ) ===== -->
+        <!-- Room summary (ซ้ายกราฟ ขวาการ์ด 4 ใบ) -->
         <section class="room-summary">
           <div class="room-left">
             <div class="room-title">Room</div>
-
-            <!-- กราฟเล็ก (sparkline) -->
             <svg class="spark" viewBox="0 0 300 140" preserveAspectRatio="none">
-              <!-- เส้นกริดจางๆ -->
               <g class="grid">
                 <line x1="0" y1="120" x2="300" y2="120" />
                 <line x1="0" y1="90" x2="300" y2="90" />
                 <line x1="0" y1="60" x2="300" y2="60" />
                 <line x1="0" y1="30" x2="300" y2="30" />
               </g>
-              <!-- เส้นข้อมูล 3 ชุด (เปลี่ยน d ด้วย JS) -->
               <path class="s1" d="M10,120 70,90 130,70 190,40 250,55" />
               <path class="s2" d="M10,120 70,110 130,95 190,75 250,75" />
               <path class="s3" d="M10,120 70,95 130,105 190,90 250,65" />
-              <!-- จุด -->
               <g class="dots">
                 <circle class="s1" cx="250" cy="55" r="4" />
                 <circle class="s2" cx="250" cy="75" r="4" />
@@ -778,157 +289,168 @@
           </div>
 
           <div class="room-cards">
-            <!-- Farm Climate -->
             <article class="mini-card climate">
               <header><span>Farm Climate</span></header>
               <div class="body">
-                <!-- ✅ restructure: label | value (no dot ok) -->
-                <div class="row">
-                  <span class="label">Climate</span>
-                  <span class="value"><b id="clm-name">xxxxxxx</b></span>
-                </div>
-                <div class="row">
-                  <span class="label">Air temp</span>
-                  <span class="value"><b id="clm-air">25</b><span class="unit">C</span></span>
-                </div>
-                <div class="row">
-                  <span class="label">RH%</span>
-                  <span class="value"><b id="clm-rh">70</b><span class="unit">%</span></span>
-                </div>
-                <div class="row">
-                  <span class="label">CO₂</span>
-                  <span class="value"><b id="clm-co2">1000</b><span class="unit">ppm</span></span>
-                </div>
-                <div class="row">
-                  <span class="label">Light (hrs)</span>
-                  <span class="value"><b id="clm-light">12</b><span class="unit">Hrs</span></span>
-                </div>
+                <div class="row"><span class="label">Climate</span><span class="value"><b id="clm-name">CL-01</b></span></div>
+                <div class="row"><span class="label">Air temp</span><span class="value"><b id="clm-air">25</b><span class="unit">C</span></span></div>
+                <div class="row"><span class="label">RH%</span><span class="value"><b id="clm-rh">70</b><span class="unit">%</span></span></div>
+                <div class="row"><span class="label">CO₂</span><span class="value"><b id="clm-co2">1000</b><span class="unit">ppm</span></span></div>
+                <div class="row"><span class="label">Light (hrs)</span><span class="value"><b id="clm-light">12</b><span class="unit">Hrs</span></span></div>
               </div>
             </article>
-            <!-- Nursery -->
+
             <article class="mini-card nursery">
               <header><span>Nursery</span></header>
               <div class="body">
-                <!-- ✅ restructure: label | value (no dot ok) -->
-                <div class="row">
-                  <span class="label">Recipe</span>
-                  <span class="value"><b id="nur-recipe">xxxxxxx</b></span>
-                </div>
-                <div class="row">
-                  <span class="label">Nutrient Temp</span>
-                  <span class="value"><b id="nur-nt">25</b><span class="unit">C</span></span>
-                </div>
-                <div class="row">
-                  <span class="label">EC</span>
-                  <span class="value"><b id="nur-ec">1.2</b></span>
-                </div>
-                <div class="row">
-                  <span class="label">pH</span>
-                  <span class="value"><b id="nur-ph">6</b></span>
-                </div>
+                <div class="row"><span class="label">Recipe</span><span class="value"><b id="nur-recipe">RX-01</b></span></div>
+                <div class="row"><span class="label">Nutrient Temp</span><span class="value"><b id="nur-nt">25</b><span class="unit">C</span></span></div>
+                <div class="row"><span class="label">EC</span><span class="value"><b id="nur-ec">1.2</b></span></div>
+                <div class="row"><span class="label">pH</span><span class="value"><b id="nur-ph">6</b></span></div>
               </div>
-
-
             </article>
 
-            <!-- Main Reservoir 1 -->
             <article class="mini-card mv1">
               <header><span>Main Reservoir 1</span></header>
               <div class="body">
-                <!-- ✅ restructure: label | value (no dot ok) -->
-                <div class="row">
-                  <span class="label">Reservoir 1</span>
-                  <span class="value"><b id="r1-recipe">xxxxxxx</b></span>
-                </div>
-                <div class="row">
-                  <span class="label">Nutrient Temp</span>
-                  <span class="value"><b id="r1-nt">25</b><span class="unit">C</span></span>
-                </div>
-                <div class="row">
-                  <span class="label">EC</span>
-                  <span class="value"><b id="r1-ec">1.2</b></span>
-                </div>
-                <div class="row">
-                  <span class="label">pH</span>
-                  <span class="value"><b id="r1-ph">6</b></span>
-                </div>
+                <div class="row"><span class="label">Reservoir 1</span><span class="value"><b id="r1-recipe">RX-11</b></span></div>
+                <div class="row"><span class="label">Nutrient Temp</span><span class="value"><b id="r1-nt">25</b><span class="unit">C</span></span></div>
+                <div class="row"><span class="label">EC</span><span class="value"><b id="r1-ec">1.2</b></span></div>
+                <div class="row"><span class="label">pH</span><span class="value"><b id="r1-ph">6</b></span></div>
               </div>
             </article>
 
-            <!-- Main Reservoir 2 -->
             <article class="mini-card mv2">
               <header><span>Main Reservoir 2</span></header>
               <div class="body">
-                <!-- ✅ restructure: label | value (no dot ok) -->
-                <div class="row">
-                  <span class="label">Reservoir 2</span>
-                  <span class="value"><b id="r2-recipe">xxxxxxx</b></span>
-                </div>
-                <div class="row">
-                  <span class="label">Nutrient Temp</span>
-                  <span class="value"><b id="r2-nt">25</b><span class="unit">C</span></span>
-                </div>
-                <div class="row">
-                  <span class="label">EC</span>
-                  <span class="value"><b id="r2-ec">1.2</b></span>
-                </div>
-                <div class="row">
-                  <span class="label">pH</span>
-                  <span class="value"><b id="r2-ph">6</b></span>
-                </div>
+                <div class="row"><span class="label">Reservoir 2</span><span class="value"><b id="r2-recipe">RX-12</b></span></div>
+                <div class="row"><span class="label">Nutrient Temp</span><span class="value"><b id="r2-nt">25</b><span class="unit">C</span></span></div>
+                <div class="row"><span class="label">EC</span><span class="value"><b id="r2-ec">1.2</b></span></div>
+                <div class="row"><span class="label">pH</span><span class="value"><b id="r2-ph">6</b></span></div>
               </div>
             </article>
           </div>
         </section>
 
-
+        <!-- Gauges: 4 วง (Air, RH, CO2, Light) -->
         <section class="gauges">
-          <!-- Gauge: อุณหภูมิ -->
+          <!-- Air temp -->
           <div class="gauge" id="gAir" data-min="0" data-max="50">
             <div class="ring" style="--p:0">
-              <!-- เปลี่ยน src เป็นรูปของคุณภายหลัง -->
-              <img
-                src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/icon%20temp.png"
-                alt="Air temp">
+              <img src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/icon%20temp.png" alt="Air temp">
               <div class="value"><span class="num">30</span><span class="unit">°C</span></div>
             </div>
             <div class="label">Air temp</div>
           </div>
 
-          <!-- Gauge: RH -->
+          <!-- RH -->
           <div class="gauge" id="gRH" data-min="0" data-max="100">
             <div class="ring" style="--p:0">
-              <img
-                src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/RH%20ICON.png"
-                alt="RH">
+              <img src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/RH%20ICON.png" alt="RH">
               <div class="value"><span class="num">55</span><span class="unit">%</span></div>
             </div>
             <div class="label">RH%</div>
           </div>
 
-          <!-- Gauge: CO2 -->
+          <!-- CO2 -->
           <div class="gauge" id="gCO2" data-min="0" data-max="3000">
             <div class="ring" style="--p:0">
-              <img src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/CO2.png"
-                alt="CO₂">
+              <img src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/CO2.png" alt="CO₂">
               <div class="value"><span class="num">1200</span><span class="unit">ppm</span></div>
             </div>
             <div class="label">CO₂</div>
           </div>
+
+          <!-- ✅ Light (ใหม่) -->
+          <div class="gauge" id="gLight" data-min="0" data-max="1">
+            <div class="ring" style="--p:0">
+              <img src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/Light.png" alt="Light">
+              <div class="value"><span class="num">ON</span></div>
+            </div>
+            <div class="label">Light</div>
+          </div>
+        </section>
+
+        <!-- ✅ แผง 3 ใบ: Nursery / Main 1 / Main 2 -->
+        <section class="res-panels">
+          <article class="panel">
+            <header>Nursery Reservoir</header>
+            <div class="panel-body">
+              <div class="triple">
+                <div class="mini-gauge"><div class="v" id="nur-nt2">30 °C</div><div class="t">Nutrient Temp</div></div>
+                <div class="mini-gauge"><div class="v" id="nur-ec2">0.6</div><div class="t">EC (mS/cm)</div></div>
+                <div class="mini-gauge"><div class="v" id="nur-ph2">6.5</div><div class="t">pH</div></div>
+              </div>
+              <div class="status">
+                <div class="row"><span>Irrigation</span><span id="nur-ir">ON</span></div>
+                <div class="row"><span>Nutrient A level</span><span>OK</span></div>
+                <div class="row"><span>UV lamp</span><span>ON</span></div>
+                <div class="row"><span>Nutrient B level</span><span>OK</span></div>
+                <div class="row"><span>Reservoir Level</span><span>Nearly Empty</span></div>
+                <div class="row"><span>pH up level</span><span>OK</span></div>
+                <div class="row"><span>Supplement level</span><span>Nearly Empty</span></div>
+                <div class="row"><span></span><span></span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <header>Main Reservoir 1</header>
+            <div class="panel-body">
+              <div class="triple">
+                <div class="mini-gauge"><div class="v" id="r1-nt2">30 °C</div><div class="t">Nutrient Temp</div></div>
+                <div class="mini-gauge"><div class="v" id="r1-ec2">0.6</div><div class="t">EC (mS/cm)</div></div>
+                <div class="mini-gauge"><div class="v" id="r1-ph2">6.5</div><div class="t">pH</div></div>
+              </div>
+              <div class="status">
+                <div class="row"><span>Irrigation</span><span>ON</span></div>
+                <div class="row"><span>Nutrient A level</span><span>OK</span></div>
+                <div class="row"><span>UV lamp</span><span>OFF</span></div>
+                <div class="row"><span>Nutrient B level</span><span>OK</span></div>
+                <div class="row"><span>Reservoir Level</span><span>OK</span></div>
+                <div class="row"><span>pH up level</span><span>OK</span></div>
+                <div class="row"><span>Supplement level</span><span>Nearly Empty</span></div>
+                <div class="row"><span></span><span></span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <header>Main Reservoir 2</header>
+            <div class="panel-body">
+              <div class="triple">
+                <div class="mini-gauge"><div class="v" id="r2-nt2">30 °C</div><div class="t">Nutrient Temp</div></div>
+                <div class="mini-gauge"><div class="v" id="r2-ec2">0.6</div><div class="t">EC (mS/cm)</div></div>
+                <div class="mini-gauge"><div class="v" id="r2-ph2">6.5</div><div class="t">pH</div></div>
+              </div>
+              <div class="status">
+                <div class="row"><span>Irrigation</span><span>OFF</span></div>
+                <div class="row"><span>Nutrient A level</span><span>OK</span></div>
+                <div class="row"><span>UV lamp</span><span>ON</span></div>
+                <div class="row"><span>Nutrient B level</span><span>OK</span></div>
+                <div class="row"><span>Reservoir Level</span><span>LOW</span></div>
+                <div class="row"><span>pH up level</span><span>OK</span></div>
+                <div class="row"><span>Supplement level</span><span>Nearly Empty</span></div>
+                <div class="row"><span></span><span></span></div>
+              </div>
+            </div>
+          </article>
         </section>
       </div>
     </main>
   </div>
 
+  <!-- =======================
+       Clock script (ของเดิม)
+       ======================= -->
   <script>
-    // clock
     const dateText = document.getElementById('dateText');
     const timeText = document.getElementById('timeText');
-    function pad(n) { return String(n).padStart(2, '0'); }
-    function fmt() {
+    function pad(n){ return String(n).padStart(2,'0'); }
+    function fmt(){
       const d = new Date();
-      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      const dd = pad(d.getDate()), mm = pad(d.getMonth() + 1), yy = String(d.getFullYear()).slice(-2);
+      const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      const dd = pad(d.getDate()), mm = pad(d.getMonth()+1), yy = String(d.getFullYear()).slice(-2);
       dateText.textContent = `${dayNames[d.getDay()]}. ${dd} - ${mm} - ${yy}`;
       timeText.textContent = `Time - ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
     }
@@ -936,139 +458,125 @@
   </script>
 
   <!-- =======================
-       🔽 SWITCH DROPDOWN LAB BOX 
-       Bootstrap JS (ทำให้ dropdown ใช้งานได้)
+       Bootstrap JS (dropdown)
        ======================= -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+  <!-- =======================
+       Gauge helper (แก้ให้รองรับ Light ON/OFF)
+       ======================= -->
   <script>
-    // ---------- ฟังก์ชันตั้งค่า % ของวง (คำนวณจาก min/max) ----------
-    function setGauge(gaugeEl, value) {
+    function setGauge(gaugeEl, value){
       const min = Number(gaugeEl.dataset.min || 0);
       const max = Number(gaugeEl.dataset.max || 100);
       const ring = gaugeEl.querySelector('.ring');
       const numEl = gaugeEl.querySelector('.num');
       const pct = Math.max(0, Math.min(1, (value - min) / (max - min))) * 100;
       ring.style.setProperty('--p', pct.toFixed(2));
-      numEl.textContent = value;
+      if(gaugeEl.id === 'gLight'){
+        // แสดงเป็น ON/OFF
+        numEl.textContent = (value >= 0.5) ? 'ON' : 'OFF';
+      }else{
+        numEl.textContent = value;
+      }
     }
   </script>
 
   <!-- =======================
-       NOTE: เดิมมีคอมเมนต์แบบ JS นอก <script> ทำให้โผล่เป็นตัวหนังสือ
-       ✅ แก้เป็นคอมเมนต์ HTML และถอด mqtt.min.js ที่ไม่ใช้งานแล้ว
+       WebSocket เชื่อม Node-RED
+       - เพิ่ม topic 'light' (0/1)
        ======================= -->
-  <!-- (removed) <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script> -->
-
-  <!-- 🔌 WebSocket แบบเดียวกับหน้า 3 switches -->
   <script>
-    // ★ แก้ให้ตรงกับ Node-RED ของคุณ
-    //
-    //const WS_URL = "ws://192.168.11.50:1880/mqtt";
-     const WS_URL = "wss://skin-trackback-tanks-chemical.trycloudflare.com/mqtt";
+    // ★ ตั้งให้ตรงกับ Node-RED ของคุณ
+    // const WS_URL = "ws://192.168.11.50:1880/mqtt";
+    const WS_URL = "wss://skin-trackback-tanks-chemical.trycloudflare.com/mqtt";
 
-    // ★ ตั้งชื่อ topic ให้ตรง flow ใน Node-RED
+    // ★ ชื่อ topic ให้ตรง flow
     const topics = {
-      air: "farmgo/sensor/air/temp",
-      rh: "farmgo/sensor/air/rh",
-      co2: "farmgo/sensor/air/co2"
+      air:   "farmgo/sensor/air/temp",
+      rh:    "farmgo/sensor/air/rh",
+      co2:   "farmgo/sensor/air/co2",
+      light: "farmgo/sensor/light/on" // 0/1
     };
 
-    // ---------- ตัวช่วยแปลง payload -> number ----------
-    function toNumber(payload) {
-      if (typeof payload === 'number' && !Number.isNaN(payload)) return payload;
-      if (typeof payload === 'string') {
-        const n = Number(payload.trim());
-        if (!Number.isNaN(n)) return n;
-        try { const o = JSON.parse(payload); return toNumber(o); } catch { }
+    function toNumber(payload){
+      if(typeof payload === 'number' && !Number.isNaN(payload)) return payload;
+      if(typeof payload === 'string'){
+        const n = Number(payload.trim()); if(!Number.isNaN(n)) return n;
+        try{ const o = JSON.parse(payload); return toNumber(o); }catch{}
         return null;
       }
-      if (payload && typeof payload === 'object') {
-        for (const k of ['v', 'value', 'a']) {
-          const n = Number(payload[k]);
-          if (!Number.isNaN(n)) return n;
+      if(payload && typeof payload === 'object'){
+        for(const k of ['v','value','a']){
+          const n = Number(payload[k]); if(!Number.isNaN(n)) return n;
         }
       }
       return null;
     }
 
-    // ---------- WebSocket ----------
     let ws, retry;
-    function connect() {
+    function connect(){
       clearTimeout(retry);
       ws = new WebSocket(WS_URL);
       console.log('Connecting WS:', WS_URL);
 
-      ws.onopen = () => console.log('✅ WS connected');
+      ws.onopen   = () => console.log('✅ WS connected');
+      ws.onerror  = () => console.warn('⚠️ WS error');
+      ws.onclose  = () => { console.warn('❌ WS disconnected'); retry = setTimeout(connect, 1500); };
 
       ws.onmessage = (evt) => {
-        // คาดหวังรูปแบบเดียวกับหน้า 3 switches: { "topic": "...", "payload": ... }
-        try {
+        // รูปแบบ: { "topic": "xxx", "payload": any }
+        try{
           const msg = JSON.parse(evt.data);
-          const t = String(msg.topic || '');
+          const t   = String(msg.topic || '');
           const val = toNumber(msg.payload);
-          if (val == null) return;
+          if(val == null) return;
 
-          if (t === topics.air) {
-            setGauge(document.getElementById('gAir'), val);   // °C
-          } else if (t === topics.rh) {
-            setGauge(document.getElementById('gRH'), val);    // %
-          } else if (t === topics.co2) {
-            setGauge(document.getElementById('gCO2'), val);   // ppm
-          }
-        } catch {
-          // ข้อความที่ไม่ใช่ JSON ข้ามไป
-        }
+          if(t === topics.air)   setGauge(document.getElementById('gAir'),   val);
+          else if(t === topics.rh)    setGauge(document.getElementById('gRH'),    val);
+          else if(t === topics.co2)   setGauge(document.getElementById('gCO2'),   val);
+          else if(t === topics.light) setGauge(document.getElementById('gLight'), val ? 1 : 0);
+        }catch{ /* not JSON → skip */ }
       };
-
-      ws.onclose = () => {
-        console.warn('❌ WS disconnected');
-        retry = setTimeout(connect, 1500);
-      };
-      ws.onerror = () => console.warn('⚠️ WS error');
     }
 
-    // ค่าเริ่มต้น เผื่อยังไม่ได้รับ WS
+    // ค่าเริ่มต้น (ก่อน WS มาถึง)
     setGauge(document.getElementById('gAir'), 30);
     setGauge(document.getElementById('gRH'), 55);
     setGauge(document.getElementById('gCO2'), 1200);
+    setGauge(document.getElementById('gLight'), 1);
 
     connect();
   </script>
 
+  <!-- =======================
+       Dark/Light toggle (ไอคอน)
+       ======================= -->
   <script>
-    (function () {
-      // ปุ่ม toggle ที่อยู่ใน .topbar-inner
+    (function(){
       const BTN = document.querySelector('.darklight');
-      // อ้างถึง <body> เพื่อใส่/เอา class .theme-dark
       const ROOT = document.body;
-
-      // ฟังก์ชันเปลี่ยนชื่อปุ่ม (🌙 Dark หรือ ☀️ Light)
-      function setBtnLabel() {
-        const saved = localStorage.getItem('themeIcon') || 'dark'; // 'dark' | 'light'
+      function setBtnLabel(){
+        const saved = localStorage.getItem('themeIcon') || 'dark';
         BTN.textContent = (saved === 'dark') ? '🌙 Dark' : '☀️ Light';
       }
-
-      // ไม่แตะพื้นหลัง ไม่เพิ่ม .theme-dark ใดๆ
-      BTN.addEventListener('click', () => {
+      BTN.addEventListener('click', ()=>{
         const cur = localStorage.getItem('themeIcon') || 'dark';
         const next = (cur === 'dark') ? 'light' : 'dark';
         localStorage.setItem('themeIcon', next);
         setBtnLabel();
+        // (ถ้าต้องการสลับธีมจริง ใส่/เอา class .theme-dark ที่ ROOT)
+        // ROOT.classList.toggle('theme-dark');
       });
-
-      // โหลดสถานะเดิม
       setBtnLabel();
-
-
-
     })();
   </script>
 
+  <!-- =======================
+       ใส่ค่าตัวอย่างในการ์ด (ของเดิม)
+       ======================= -->
   <script>
-    // (ออปชัน) ฟังก์ชันใส่ค่าให้การ์ดแบบสั้น ๆ
-    function setRoomData() {
-      // ใส่ค่าตัวอย่าง—ต่อกับ WebSocket ของคุณได้ตามต้องการ
+    function setRoomData(){
       document.getElementById('nur-recipe').textContent = 'RX-01';
       document.getElementById('nur-nt').textContent = 25;
       document.getElementById('nur-ec').textContent = 1.2;
@@ -1085,20 +593,15 @@
     }
     setRoomData();
 
-    // (ออปชัน) วาดเส้น sparkline แบบง่าย (รับ array 5 จุด 0..1)
-    function sparkPath(vals) {
-      // map 5 จุดไป width=300, height=140 (padding top=20, bottom=20)
-      const W = 300, H = 140, pt = [10, 70, 130, 190, 250], top = 20, bot = 120;
+    // วาดเส้น sparkline แบบง่าย (ของเดิม)
+    function sparkPath(vals){
+      const W=300,H=140, pt=[10,70,130,190,250], top=20, bot=120;
       const ys = vals.map(v => bot - (bot - top) * v);
       return `M${pt[0]},${ys[0]} ${pt[1]},${ys[1]} ${pt[2]},${ys[2]} ${pt[3]},${ys[3]} ${pt[4]},${ys[4]}`;
     }
-    // ตัวอย่างอัปเดตเส้น (สัดส่วน 0..1)
-    document.querySelector('.spark path.s1').setAttribute('d', sparkPath([0.1, 0.35, 0.55, 0.9, 0.75]));
-    document.querySelector('.spark path.s2').setAttribute('d', sparkPath([0.1, 0.25, 0.2, 0.45, 0.45]));
-    document.querySelector('.spark path.s3').setAttribute('d', sparkPath([0.1, 0.42, 0.35, 0.6, 0.5]));
+    document.querySelector('.spark path.s1').setAttribute('d', sparkPath([0.1,0.35,0.55,0.9,0.75]));
+    document.querySelector('.spark path.s2').setAttribute('d', sparkPath([0.1,0.25,0.2,0.45,0.45]));
+    document.querySelector('.spark path.s3').setAttribute('d', sparkPath([0.1,0.42,0.35,0.6,0.5]));
   </script>
-
-
 </body>
-
 </html>
