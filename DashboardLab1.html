@@ -1,0 +1,1968 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LAB BOX – Dashboard</title>
+
+  <!-- =======================
+       🔽 SWITCH DROPDOWN LAB BOX 
+       Bootstrap CSS
+       ======================= -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- ======================= -->
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* =======================
+       ★ กราฟวงกลม (gauge) ใหญ่ (เดิม)
+       - ใช้ grid + conic-gradient ทำ progress
+       ======================= */
+    .gauges {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .gauge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .gauge .ring {
+      --size: 132px;
+      --track: #e5e7eb;
+      --progress: #6ee7b7;
+      width: var(--size);
+      height: var(--size);
+      border-radius: 50%;
+      position: relative;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(#fff calc(50% - 10px), transparent calc(50% - 9px)),
+        conic-gradient(var(--progress) calc(var(--p)*1%), var(--track) 0);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, .08), inset 0 0 0 1px #f1f5f9;
+    }
+
+    .gauge .ring img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 15px;
+      box-shadow: 0 px 6px rgba(0, 0, 0, .12);
+      background: #fff;
+      padding: none;
+    }
+
+    .gauge .value {
+      position: absolute;
+      bottom: 12px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .gauge .unit {
+      font-size: 12px;
+      opacity: .8;
+      margin-left: 2px
+    }
+
+    .gauge .label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #0f172a;
+      background: #eeffcf;
+      border: 1px solid #cce68f;
+      padding: 4px 12px;
+      border-radius: 999px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+    }
+
+    /* สีเฉพาะ gauge ใหญ่ (เดิม) */
+    #gAir .ring {
+      --progress: #f87171
+    }
+
+    /* Temp */
+    #gRH .ring {
+      --progress: #34d399
+    }
+
+    /* RH */
+    #gCO2 .ring {
+      --progress: #fb923c
+    }
+
+    /* CO2 */
+
+    /* =======================
+       ★ ตัวแปรธีม + โครงสร้างหลัก (เดิม)
+       ======================= */
+    :root {
+      --bg: #f0f2f5;
+      --panel: #ffffff;
+      --ink: #121619;
+      --muted: #6b7280;
+      --brand: #b7f36a;
+      --accent: #9ad83f;
+      --accent-dark: #94c93e;
+      --sidebar: #ffffff;
+      --sidebar-border: #cde88b;
+      --tab-height: 40px;
+      --sidebar-width: 220px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      grid-template-rows: auto 1fr;
+      height: 100vh;
+    }
+
+    /* Topbar (เดิม) */
+    .topbar {
+      grid-column: 1/-1;
+      background: var(--panel);
+      border-bottom: 1px solid #e5e7eb;
+      position: relative;
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 16px;
+    }
+
+    .brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+
+    .brand-logo {
+      height: 34px;
+    }
+
+    .brand-text {
+      font-weight: 700;
+      letter-spacing: .5px;
+    }
+
+    .title {
+      background: var(--panel);
+      border: 1px solid var(--sidebar-border);
+      padding: 0 12px;
+      border-radius: 6px;
+      font-weight: 700;
+      margin-right: 10px;
+      font-size: 22px;
+      color: #0f172a;
+      letter-spacing: .5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
+    }
+
+    .tabs {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      height: var(--tab-height);
+      background: var(--brand);
+      border-left: 1px solid var(--sidebar-border);
+      border-right: 1px solid var(--sidebar-border);
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .tabs::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab {
+      position: relative;
+      height: var(--tab-height);
+      line-height: var(--tab-height);
+      padding: 0 18px;
+      font-size: 13px;
+      color: #1f2937;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .tab.active {
+      font-weight: 600;
+      border-bottom: 3px solid #3a3a3a;
+    }
+
+    .tab:hover {
+      background: rgba(0, 0, 0, .04);
+    }
+
+    /* NOTE: จัด clock ไปขวาด้วย .topbar-right (เดิม) */
+    .clock {
+      position: absolute;
+      right: 14px;
+      top: 8px;
+      text-align: right;
+      font-size: 13px;
+    }
+
+    .clock .date,
+    .clock .time {
+      font-weight: 700;
+    }
+
+    .topbar-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar-right .clock {
+      position: static;
+    }
+
+    /* Sidebar (เดิม) */
+    .sidebar {
+      grid-row: 2/-1;
+      background: var(--sidebar);
+      border-right: 2px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .side-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--sidebar-border);
+      font-weight: 600;
+    }
+
+    .side-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+    }
+
+    .side-logo img {
+      height: 38px;
+    }
+
+    .side-section {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #111;
+    }
+
+    .menu {
+      padding: 8px 8px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .menu-btn {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 8px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-align: left;
+      background: #fff;
+      transition: .2s ease;
+      color: #111;
+    }
+
+    .menu-btn:hover {
+      border-color: var(--accent);
+      background: #fafff1;
+    }
+
+    .menu-btn.active {
+      background: #eaffc8;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .ico img {
+      width: 40px;
+      height: 40px;
+      display: block;
+    }
+
+    /* Content shell (เดิม) */
+    .content {
+      grid-column: 2/-1;
+      grid-row: 2/-1;
+      background: var(--panel);
+      margin: 12px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+      border: 1px solid #e5e7eb;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    /* =======================
+       ★ Room summary (เดิม) – ซ้ายกราฟ / ขวาการ์ด 4 ใบ
+       ======================= */
+    .room-summary {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 8px;
+      padding: 8px;
+    }
+
+    .room-left {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 8px 8px 2px 8px;
+    }
+
+    .room-title {
+      display: inline-block;
+      background: #d9f2b6;
+      color: #274a0b;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+
+    .spark {
+      width: 100%;
+      height: 100px;
+    }
+
+    .spark .grid line {
+      stroke: #e5e7eb;
+      stroke-width: 1;
+    }
+
+    .spark path {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 3;
+    }
+
+    .spark path.s1 {
+      stroke: #ef4444;
+    }
+
+    .spark path.s2 {
+      stroke: #10b981;
+    }
+
+    .spark path.s3 {
+      stroke: #f59e0b;
+    }
+
+    .spark .dots circle.s1 {
+      fill: #ef4444
+    }
+
+    .spark .dots circle.s2 {
+      fill: #10b981
+    }
+
+    .spark .dots circle.s3 {
+      fill: #f59e0b
+    }
+
+    .room-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .mini-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .mini-card header {
+      padding: 6px 10px;
+      font-weight: 700;
+      font-size: 12px;
+      color: #111;
+    }
+
+    .mini-card.nursery header {
+      background: #ffe0c7;
+    }
+
+    .mini-card.climate header {
+      background: #cfe2ff;
+    }
+
+    .mini-card.mv1 header,
+    .mini-card.mv2 header {
+      background: #e8f7d4;
+    }
+
+    .mini-card .body {
+      padding: 6px 10px;
+      font-size: 12px;
+      color: #222;
+    }
+
+    .mini-card .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 8px;
+      padding: 2px 0;
+    }
+
+    .mini-card .row .label {
+      opacity: .9;
+    }
+
+    .mini-card .row .value {
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .mini-card .row .unit {
+      margin-left: 4px;
+      opacity: .8
+    }
+
+    /* =======================
+       ★ Responsive (เดิม)
+       ======================= */
+    @media (max-width:1100px) {
+      .room-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .room-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width:640px) {
+      .room-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* =======================
+       ★ Dropdown style (เดิม)
+       ======================= */
+    .sidebar .dropdown .btn {
+      background: #ffffff;
+      border-radius: 12px;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      transition: all .3s ease;
+      width: 100%;
+      text-align: left;
+    }
+
+    .sidebar .dropdown .btn:hover {
+      background: #f1f1f1;
+      transform: translateY(-2px);
+    }
+
+    .sidebar .dropdown-menu {
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      animation: fadeIn .3s ease;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .sidebar .dropdown-item {
+      font-weight: 500;
+      padding: 10px 20px;
+      transition: all .2s ease;
+    }
+
+    .sidebar .dropdown-item:hover {
+      background-color: #fda085;
+      color: #fff;
+      border-radius: 8px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* =======================
+       ★ ปุ่มสลับธีม (เดิม)
+       ======================= */
+    .darklight {
+      margin-left: auto;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: #f1f5f9;
+      color: #0f172a;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+      transition: .2s;
+      border: 1px solid #e2e8f0;
+    }
+
+    .darklight:hover {
+      background: #e2e8f0
+    }
+
+    .theme-dark {
+      --bg: #0b1220;
+      --panel: #0f172a;
+      --ink: #e5e7eb;
+      --muted: #94a3b8;
+      --brand: #3f6212;
+      --accent: #84cc16;
+      --accent-dark: #65a30d;
+      --sidebar: #0f172a;
+      --sidebar-border: #334155;
+    }
+
+    .theme-dark .content,
+    .theme-dark .sidebar,
+    .theme-dark .topbar {
+      border-color: var(--sidebar-border);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .4);
+    }
+
+    .theme-dark #gAir .ring {
+      --progress: #f87171
+    }
+
+    .theme-dark #gRH .ring {
+      --progress: #34d399
+    }
+
+    .theme-dark #gCO2 .ring {
+      --progress: #fb923c
+    }
+
+    /* =========================================================
+       ✅ Layout หลักของ .content-inner (คงโครงตามไฟล์เดิม)
+       - วาง Tabs > Room summary > Gauges (4 วง) > 3 Panels
+       ========================================================= */
+    .content-inner {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      /* 12 คอลัมน์พื้นฐาน */
+      grid-auto-rows: min-content;
+      gap: 12px;
+      padding: 12px;
+      border-left: 3px solid var(--accent);
+    }
+
+    .content-inner>.tabs,
+    .content-inner>.room-summary {
+      grid-column: 1 / -1;
+    }
+
+    /* กินเต็มแถว */
+    .content-inner>.gauges {
+      grid-column: 1 / -1;
+      /* กินเต็มแถว */
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .res-panels {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .panel header {
+      background: #f4f6f0;
+      font-weight: 700;
+      font-size: clamp(12px, 1.1vw, 14px);
+      padding: 5px 12px;
+    }
+
+    .panel2 .panel-body {
+      padding: 1px;
+    }
+
+    .panel .triple {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    /* =========================================================
+       ✅ UPDATED: Mini Circular Gauge (เพิ่มเป็นวงกลม + รูปกลางวง)
+       ========================================================= */
+    .mini-gauge {
+      display: grid;
+      gap: 6px;
+      padding: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      place-items: center;
+      text-align: center;
+    }
+
+    .mini-gauge .ring {
+      --size: 90px;
+      /* ขนาดวงกลมย่อ */
+      --thickness: 2px;
+      /* ความหนาแถบ progress */
+      --track: #e5e7eb;
+      /* สีพื้นหลังวง */
+      --progress: #10b981;
+      /* สี progress ค่า default */
+      --p: 0;
+      /* เปอร์เซ็นต์ progress (0..100) */
+
+      width: var(--size);
+      height: var(--size);
+      border-radius: 999px;
+      position: relative;
+      display: grid;
+      place-items: center;
+
+      /* วาด progress วงกลม */
+      background:
+        radial-gradient(#fff calc(58% - 10px), transparent calc(58% - 9px)),
+        conic-gradient(var(--progress) calc(var(--p)*1%), var(--track) 0);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, .08), inset 0 0 0 1px #f1f5f9;
+
+
+    }
+
+    /* ไอคอนตรงกลางวง */
+    .mini-gauge .ring img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      image-rendering: -webkit-optimize-contrast;
+      /* บราวเซอร์บางตัวช่วยคมเวลา downscale */
+      image-rendering: crisp-edges;
+      background: #fff;
+      border-radius: 15px;
+      padding: none;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
+      z-index: 1;
+    }
+
+    /* ตัวเลขค่าในวง (ตำแหน่งล่าง) */
+    .mini-gauge .v {
+      position: absolute;
+      bottom: 8px;
+      left: 0;
+      right: 0;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    /* ป้ายชื่อใต้กราฟ */
+    .mini-gauge .t {
+      font-size: 12px;
+      opacity: .8
+    }
+
+    /* สี progress แยกตามประเภท */
+    .mini-gauge.temp .ring {
+      --progress: #ef4444;
+    }
+
+    /* Temp */
+    .mini-gauge.ec .ring {
+      --progress: #22c55e;
+    }
+
+    /* EC   */
+    .mini-gauge.ph .ring {
+      --progress: #06b6d4;
+    }
+
+    /* pH   */
+
+    .panel .status {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .status .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 6px 8px;
+    }
+
+    /* Responsive ของส่วนหลัก */
+    @media (max-width:1100px) {
+      .content-inner>.gauges {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .res-panels {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width:640px) {
+      .content-inner {
+        gap: 8px;
+        padding: 8px;
+      }
+    }
+
+    /* รวม1 */
+    /* ===== LAYOUT พื้นฐาน ===== */
+    .status {
+      display: grid;
+      gap: 8px;
+      font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif;
+      color: #111827;
+    }
+
+    /* แถวหนึ่งรายการ + กล่องให้ดูเป็นการ์ดเล็กๆ */
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 6px 8px;
+    }
+
+    .row .left {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      /* <<< ตรงนี้คือช่องว่างระหว่างรูปกับข้อความ */
+    }
+
+    /* ชื่ออุปกรณ์ (ซ้าย) + สถานะ (ขวา) ให้ชิดขอบอย่างสวยงาม */
+    .row>span:first-of-type {
+      flex: 1;
+    }
+
+    /* ===== ไอคอน (ใช้ <img>) ===== */
+
+    .row .icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0
+    }
+
+    /* ===== ขนาดไอคอน “แยกแต่ละแถว” (ปรับได้ตามใจ) ===== */
+    .row.irrigation .icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ใหญ่ขึ้นนิด */
+    .row.uv .icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    .row.reservoir .icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .row.nutrient-a .icon,
+    .row.nutrient-b .icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .row.ph-up .icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .row.supplement .icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ===== ป้ายสถานะ ===== */
+    .state {
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+    }
+
+    /* สีตามสถานะ */
+    .state.on {
+      background: #e8fff2;
+      color: #058a41;
+      border-color: #bfeccd;
+    }
+
+    .state.off {
+      background: #f5f6f7;
+      color: #6b7280;
+      border-color: #e5e7eb;
+    }
+
+    .state.ok {
+      background: #eafff3;
+      color: #10b981;
+      border-color: #b7fbd6;
+    }
+
+    .state.low {
+      background: #fff7ed;
+      color: #ea580c;
+      border-color: #fed7aa;
+    }
+
+    .state.warn {
+      background: #fff1f2;
+      color: #ef4444;
+      border-color: #fecaca;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- =======================
+         Topbar
+         ======================= -->
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand-badge">
+          <img
+            src="https://github.com/reungwitk-cyber/ssb-box/raw/c958231f7e20c74bff3076384c1e46bbee9eec24/Logosbb-box.png"
+            alt="SABIENG BOX Logo" class="brand-logo">
+          <div class="brand-text"></div>
+        </div>
+        <div class="title">LAB BOX</div>
+
+        <!-- ปุ่ม + นาฬิกาอยู่ขวา -->
+        <div class="topbar-right">
+          <button class="darklight">darklight</button>
+          <div class="clock">
+            <div class="date" id="dateText">Mon. 12 - 09 - 25</div>
+            <div class="time" id="timeText">Time - 17:12:35</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- =======================
+         Sidebar
+         ======================= -->
+    <aside class="sidebar">
+      <div class="menu" style="padding-top:10px">
+        <button class="menu-btn active">
+          <span class="ico"><img
+              src="https://github.com/reungwitk-cyber/ssb-box/raw/c958231f7e20c74bff3076384c1e46bbee9eec24/homesw1.png"
+              alt="Home"></span>
+          <span>Sabieng HQ</span>
+        </button>
+      </div>
+
+      <!-- Dropdown สลับหน้า -->
+      <div class="side-section">
+        <div class="dropdown">
+          <button class="btn dropdown-toggle px-4 py-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            ⚙️ LAB BOX
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="lab.html">LAB BOX</a></li>
+            <li><a class="dropdown-item" href="single.html">SINGLE</a></li>
+            <li><a class="dropdown-item" href="double.html">DOUBLE</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="menu">
+        <button class="menu-btn"><span class="ico"><img
+              src="https://github.com/reungwitk-cyber/ssb-box/raw/695cd88b6d596bfbd2b4bb6e83b47e81ab779a1f/RecipeSw.png"
+              alt="Recipes"></span><span>Recipes</span></button>
+        <button class="menu-btn"><span class="ico"><img
+              src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Crop%20yield.png"
+              alt="Crop scheduling"></span><span>Crop scheduling</span></button>
+        <button class="menu-btn"><span class="ico"><img
+              src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Crop%20scheduling.png"
+              alt="Crop yield"></span><span>Crop yield</span></button>
+        <button class="menu-btn"><span class="ico"><img
+              src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Energy%20Management.png"
+              alt="Energy"></span><span>Energy Management</span></button>
+        <button class="menu-btn"><span class="ico"><img
+              src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/SettingSw1.png"
+              alt="Settings"></span><span>Setting</span></button>
+        <button class="menu-btn"><span class="ico"><img
+              src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Help.png"
+              alt="Help"></span><span>Help</span></button>
+      </div>
+    </aside>
+
+    <!-- =======================
+         Content
+         ======================= -->
+    <main class="content">
+      <div class="content-inner">
+        <!-- Tabs -->
+        <nav class="tabs">
+          <div class="tab active">Dashboard</div>
+          <div class="tab">Control Climate</div>
+          <div class="tab">Control Nutrients</div>
+          <div class="tab">Recipe</div>
+          <div class="tab">Notification</div>
+          <div class="tab">Analysis</div>
+        </nav>
+
+        <!-- Room summary -->
+        <section class="room-summary">
+          <div class="room-left">
+            <div class="room-title">Room</div>
+            <svg class="spark" viewBox="0 0 300 140" preserveAspectRatio="none">
+              <g class="grid">
+                <line x1="0" y1="120" x2="300" y2="120" />
+                <line x1="0" y1="90" x2="300" y2="90" />
+                <line x1="0" y1="60" x2="300" y2="60" />
+                <line x1="0" y1="30" x2="300" y2="30" />
+              </g>
+              <path class="s1" d="M10,120 70,90 130,70 190,40 250,55" />
+              <path class="s2" d="M10,120 70,110 130,95 190,75 250,75" />
+              <path class="s3" d="M10,120 70,95 130,105 190,90 250,65" />
+              <g class="dots">
+                <circle class="s1" cx="250" cy="55" r="4" />
+                <circle class="s2" cx="250" cy="75" r="4" />
+                <circle class="s3" cx="250" cy="65" r="4" />
+              </g>
+            </svg>
+          </div>
+
+          <div class="room-cards">
+            <article class="mini-card climate">
+              <header><span>Farm Climate</span></header>
+              <div class="body">
+                <div class="row"><span class="label">Climate</span><span class="value"><b id="clm-name">CL-01</b></span>
+                </div>
+                <div class="row"><span class="label">Air temp</span><span class="value"><b id="clm-air">25</b><span
+                      class="unit">C</span></span></div>
+                <div class="row"><span class="label">RH%</span><span class="value"><b id="clm-rh">70</b><span
+                      class="unit">%</span></span></div>
+                <div class="row"><span class="label">CO₂</span><span class="value"><b id="clm-co2">1000</b><span
+                      class="unit">ppm</span></span></div>
+                <div class="row"><span class="label">Light (hrs)</span><span class="value"><b id="clm-light">12</b><span
+                      class="unit">Hrs</span></span></div>
+              </div>
+            </article>
+
+            <article class="mini-card nursery">
+              <header><span>Nursery</span></header>
+              <div class="body">
+                <div class="row"><span class="label">Recipe</span><span class="value"><b
+                      id="nur-recipe">RX-01</b></span></div>
+                <div class="row"><span class="label">Nutrient Temp</span><span class="value"><b id="nur-nt">25</b><span
+                      class="unit">C</span></span></div>
+                <div class="row"><span class="label">EC (mS/cm)</span><span class="value"><b id="nur-ec">1.2</b></span>
+                </div>
+
+                <div class="row"><span class="label">pH</span><span class="value"><b id="nur-ph">6</b></span></div>
+              </div>
+            </article>
+
+            <article class="mini-card mv1">
+              <header><span>Main Reservoir 1</span></header>
+              <div class="body">
+                <div class="row"><span class="label">Reservoir 1</span><span class="value"><b
+                      id="r1-recipe">RX-11</b></span></div>
+                <div class="row"><span class="label">Nutrient Temp</span><span class="value"><b id="r1-nt">25</b><span
+                      class="unit">C</span></span></div>
+                <div class="row"><span class="label">EC (mS/cm)</span><span class="value"><b id="r1-ec">1.2</b></span>
+                </div>
+                <div class="row"><span class="label">pH</span><span class="value"><b id="r1-ph">6</b></span></div>
+              </div>
+            </article>
+
+            <article class="mini-card mv2">
+              <header><span>Main Reservoir 2</span></header>
+              <div class="body">
+                <div class="row"><span class="label">Reservoir 2</span><span class="value"><b
+                      id="r2-recipe">RX-12</b></span></div>
+                <div class="row"><span class="label">Nutrient Temp</span><span class="value"><b id="r2-nt">25</b><span
+                      class="unit">C</span></span></div>
+                <div class="row"><span class="label">EC (mS/cm)</span><span class="value"><b id="r2-ec">1.2</b></span>
+                </div>
+                <div class="row"><span class="label">pH</span><span class="value"><b id="r2-ph">6</b></span></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Gauges: 4 วง (Air, RH, CO2, Light
+        ใส่ data-r1, data-r2 เป็น “จุดตัด 2 จุด” (รวมเป็น 3 ช่วง) และกำหนดสีด้วย data-c1, data-c2, data-c3
+        ถ้าไม่ใส่ จะมีค่า default ให้อยู่แล้ว) -->
+        <section class="gauges">
+          <!-- Air temp -->
+          <div class="gauge" id="gAir" data-min="0" data-max="40" data-precision="1" data-r1="20" data-r2="27"
+            data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+            <div class="ring" style="--p:0">
+              <img
+                src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/icon%20temp.png"
+                alt="Air temp">
+              <div class="value"><span class="num">30</span><span class="unit">°C</span></div>
+            </div>
+            <div class="label">Air temp</div>
+          </div>
+
+          <!-- RH -->
+          <div class="gauge" id="gRH" data-min="0" data-max="100" data-precision="1" data-r1="60" data-r2="80"
+            data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+            <div class="ring" style="--p:0">
+              <img
+                src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/RH%20ICON.png"
+                alt="RH">
+              <div class="value"><span class="num">55</span><span class="unit">%</span></div>
+            </div>
+            <div class="label">RH%</div>
+          </div>
+
+          <!-- CO2 -->
+          <div class="gauge" id="gCO2" data-min="0" data-max="2200" data-precision="0" data-r1="1000" data-r2="1200"
+           data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+            <div class="ring" style="--p:0">
+              <img src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/CO2.png"
+                alt="CO₂">
+              <div class="value"><span class="num">1200</span><span class="unit">ppm</span></div>
+            </div>
+            <div class="label">CO₂</div>
+          </div>
+
+          <!-- Light (ON/OFF ไม่ใช้ช่วงสี) -->
+          <div class="gauge" id="gLight" data-min="0" data-max="1">
+            <div class="ring" style="--p:0">
+              <img
+                src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/Light.png"
+                alt="Light">
+              <div class="value"><span class="num">ON</span></div>
+            </div>
+            <div class="label">Light</div>
+          </div>
+        </section>
+
+        <!-- ✅ แผง 3 ใบ: Nursery / Main 1 / Main 2 (mini-gauge แบบวงกลม + รูปกลางวง) -->
+        <section class="res-panels">
+          <!-- Nursery Reservoir -->
+          <article class="panel">
+            <header style="background-color: rgba(255, 228, 204, 0.902);">Nursery Reservoir</header>
+            <div class="panel-body">
+              <div class="triple">
+                <div class="mini-gauge temp" data-min="0" data-max="40" id="nur-temp-mini" data-precision="1"
+                  data-r1="20" data-r2="27" data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+                  <div class="ring" style="--p:0">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/e597fa05d3810a7619766e0f5b2e45ff252c6a9f/tempsensor.svg"
+                      alt="Temp">
+                    <div class="v"><span class="num">30</span>°C</div>
+                  </div>
+                  <div class="t">Nutrient Temp</div>
+                </div>
+                <div class="mini-gauge ec" data-min="0" data-max="2.2" id="nur-ec-mini" data-precision="2" data-r1="1.1"
+                  data-r2="1.5" data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+                  <div class="ring" style="--p:0">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/854f285d82f0a1fc22e93123da994c5bb25fcbb8/sensor%20EC.svg"
+                      alt="EC">
+                    <div class="v"><span class="num">0.6</span></div>
+                  </div>
+                  <div class="t">EC (mS/cm)</div>
+                </div>
+                <div class="mini-gauge ph" data-min="0" data-max="14" id="nur-ph-mini" data-precision="1" data-r1="5"
+                  data-r2="6" data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+                  <div class="ring" style="--p:0">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/854f285d82f0a1fc22e93123da994c5bb25fcbb8/PH%20sensor.svg"
+                      alt="pH">
+                    <div class="v"><span class="num">6.5</span></div>
+                  </div>
+                  <div class="t">pH</div>
+                </div>
+              </div>
+
+              <div class="status">
+                <!-- Irrigation -->
+                <div class="row irrigation">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/Irrigation%20icons0.svg"
+                      alt="Irrigation Icon" class="icon">
+                    <span>Irrigation</span>
+                  </div>
+
+                </div>
+
+                <!-- Nutrient A -->
+                <div class="row nutrient-a">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Nutrient A Icon" class="icon">
+                    <span>Nutrient A level</span>
+                  </div>
+
+                </div>
+
+                <!-- UV lamp -->
+                <div class="row uv">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/UVS0.svg"
+                      alt="UV Lamp Icon" class="icon">
+                    <span>UV lamp</span>
+                  </div>
+
+                </div>
+
+                <!-- Nutrient B -->
+                <div class="row nutrient-b">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Nutrient B Icon" class="icon">
+                    <span>Nutrient B level</span>
+                  </div>
+                </div>
+
+                <!-- Reservoir -->
+                <div class="row reservoir">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Reservoir Icon" class="icon">
+                    <span>Reservoir Level</span>
+                  </div>
+                </div>
+
+                <!-- pH up -->
+                <div class="row ph-up">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="pH Up Icon" class="icon">
+                    <span>pH up level</span>
+                  </div>
+                </div>
+
+                <!-- Supplement -->
+                <div class="row supplement">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Supplement Icon" class="icon">
+                    <span>Supplement level</span>
+                  </div>
+
+                  <span class="state warn">Nearly Empty</span>
+                </div>
+                <div class="row supplement">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Supplement Icon" class="icon">
+                    <span>Supplement level</span>
+                  </div>
+
+                  <span class="state warn">Nearly Empty</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Main Reservoir 1 -->
+          <article class="panel">
+            <header style="background-color: rgb(230, 242, 216);">Main Reservoir 1</header>
+            <div class="panel-body">
+              <div class="triple">
+                <div class="mini-gauge temp" data-min="0" data-max="40" id="r1-temp-mini" data-precision="1"
+                  data-r1="20" data-r2="27" data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+                  <div class="ring" style="--p:0">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/e597fa05d3810a7619766e0f5b2e45ff252c6a9f/tempsensor.svg"
+                      alt="Temp">
+                    <div class="v"><span class="num">30</span>°C</div>
+                  </div>
+                  <div class="t">Nutrient Temp</div>
+                </div>
+                <div class="mini-gauge ec" data-min="0" data-max="2.2" id="r1-ec-mini" data-precision="2" data-r1="1.1"
+                  data-r2="1.5" data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+                  <div class="ring" style="--p:0">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/854f285d82f0a1fc22e93123da994c5bb25fcbb8/sensor%20EC.svg"
+                      alt="EC">
+                    <div class="v"><span class="num">0.6</span></div>
+                  </div>
+                  <div class="t">EC (mS/cm)</div>
+                </div>
+                <div class="mini-gauge ph" data-min="0" data-max="14" id="r1-ph-mini" data-precision="1" data-r1="5"
+                  data-r2="6" data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+                  <div class="ring" style="--p:0">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/854f285d82f0a1fc22e93123da994c5bb25fcbb8/PH%20sensor.svg"
+                      alt="pH">
+                    <div class="v"><span class="num">6.5</span></div>
+                  </div>
+                  <div class="t">pH</div>
+                </div>
+              </div>
+
+              <div class="status">
+                <!-- Irrigation -->
+                <div class="row irrigation">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/Irrigation%20icons0.svg"
+                      alt="Irrigation Icon" class="icon">
+                    <span>Irrigation</span>
+                  </div>
+
+                </div>
+
+                <!-- Nutrient A -->
+                <div class="row nutrient-a">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Nutrient A Icon" class="icon">
+                    <span>Nutrient A level</span>
+                  </div>
+
+                </div>
+
+                <!-- UV lamp -->
+                <div class="row uv">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/UVS0.svg"
+                      alt="UV Lamp Icon" class="icon">
+                    <span>UV lamp</span>
+                  </div>
+
+                </div>
+
+                <!-- Nutrient B -->
+                <div class="row nutrient-b">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Nutrient B Icon" class="icon">
+                    <span>Nutrient B level</span>
+                  </div>
+                </div>
+
+                <!-- Reservoir -->
+                <div class="row reservoir">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Reservoir Icon" class="icon">
+                    <span>Reservoir Level</span>
+                  </div>
+                </div>
+
+                <!-- pH up -->
+                <div class="row ph-up">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="pH Up Icon" class="icon">
+                    <span>pH up level</span>
+                  </div>
+                </div>
+
+                <!-- Supplement -->
+                <div class="row supplement">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Supplement Icon" class="icon">
+                    <span>Supplement level</span>
+                  </div>
+
+                  <span class="state warn">Nearly Empty</span>
+                </div>
+                <div class="row supplement">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Supplement Icon" class="icon">
+                    <span>Supplement level</span>
+                  </div>
+
+                  <span class="state warn">Nearly Empty</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Main Reservoir 2 -->
+          <article class="panel">
+            <header style="background-color: rgb(230, 242, 216);">Main Reservoir 2</header>
+            <div class="panel-body">
+              <div class="triple">
+                <div class="mini-gauge temp" data-min="0" data-max="40" id="r2-temp-mini" data-precision="1"
+                  data-r1="20" data-r2="27" data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+                  <div class="ring" style="--p:0">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/e597fa05d3810a7619766e0f5b2e45ff252c6a9f/tempsensor.svg"
+                      alt="Temp">
+                    <div class="v"><span class="num">30</span>°C</div>
+                  </div>
+                  <div class="t">Nutrient Temp</div>
+                </div>
+                <div class="mini-gauge ec" data-min="0" data-max="2.2" id="r2-ec-mini" data-precision="2" data-r1="1.1"
+                  data-r2="1.5" data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+                  <div class="ring" style="--p:0">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/854f285d82f0a1fc22e93123da994c5bb25fcbb8/sensor%20EC.svg"
+                      alt="EC">
+                    <div class="v"><span class="num">0.6</span></div>
+                  </div>
+                  <div class="t">EC (mS/cm)</div>
+                </div>
+                <div class="mini-gauge ph" data-min="0" data-max="14" id="r2-ph-mini" data-precision="1" data-r1="5"
+                  data-r2="6" data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+                  <div class="ring" style="--p:0">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/854f285d82f0a1fc22e93123da994c5bb25fcbb8/PH%20sensor.svg"
+                      alt="pH">
+                    <div class="v"><span class="num">6.5</span></div>
+                  </div>
+                  <div class="t">pH</div>
+                </div>
+              </div>
+
+              <!-- ===== STATUS BLOCK (HTML) ===== -->
+              <div class="status">
+
+                <!-- Irrigation -->
+                <div class="row irrigation">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/Irrigation%20icons0.svg"
+                      alt="Irrigation Icon" class="icon">
+                    <span>Irrigation</span>
+                  </div>
+
+                </div>
+
+                <!-- Nutrient A -->
+                <div class="row nutrient-a">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Nutrient A Icon" class="icon">
+                    <span>Nutrient A level</span>
+                  </div>
+
+                </div>
+
+                <!-- UV lamp -->
+                <div class="row uv">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/UVS0.svg"
+                      alt="UV Lamp Icon" class="icon">
+                    <span>UV lamp</span>
+                  </div>
+
+                </div>
+
+                <!-- Nutrient B -->
+                <div class="row nutrient-b">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Nutrient B Icon" class="icon">
+                    <span>Nutrient B level</span>
+                  </div>
+                </div>
+
+                <!-- Reservoir -->
+                <div class="row reservoir">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Reservoir Icon" class="icon">
+                    <span>Reservoir Level</span>
+                  </div>
+                </div>
+
+                <!-- pH up -->
+                <div class="row ph-up">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="pH Up Icon" class="icon">
+                    <span>pH up level</span>
+                  </div>
+                </div>
+
+                <!-- Supplement -->
+                <div class="row supplement">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Supplement Icon" class="icon">
+                    <span>Supplement level</span>
+                  </div>
+
+                  <span class="state warn">Nearly Empty</span>
+                </div>
+                <div class="row supplement">
+                  <div class="left">
+                    <img
+                      src="https://github.com/reungwitk-cyber/ssb-box/raw/dc4b1b4dfe08d8367d816201c642b28397f95dd7/LevelS0.svg"
+                      alt="Supplement Icon" class="icon">
+                    <span>Supplement level</span>
+                  </div>
+
+                  <span class="state warn">Nearly Empty</span>
+                </div>
+
+              </div>
+
+
+            </div>
+          </article>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- =======================
+       Clock script นาฬิกา
+       ======================= -->
+  <script>
+    const dateText = document.getElementById('dateText');
+    const timeText = document.getElementById('timeText');
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function fmt() {
+      const d = new Date();
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const dd = pad(d.getDate()), mm = pad(d.getMonth() + 1), yy = String(d.getFullYear()).slice(-2);
+      dateText.textContent = `${dayNames[d.getDay()]}. ${dd} - ${mm} - ${yy}`;
+      timeText.textContent = `Time - ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+    fmt(); setInterval(fmt, 1000);
+  </script>
+
+  <!-- =======================
+       Bootstrap JS (dropdown)
+       ======================= -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+  <!-- =======================
+       WebSocket เชื่อม Node-RED (เดิม)
+       - เพิ่ม topic 'light' (0/1)
+       ======================= -->
+  <!-- =======================
+     MQTT (Single topic: ssb-box/sensor)
+     ======================= -->
+  <script>
+    /* ---------- Helpers ---------- */
+    // หยิบค่าตัวแรกจาก array (ถ้าไม่ใช่อาเรย์จะพยายามแปลงเป็นตัวเลข)
+    const first = (v, fb = null) => (Array.isArray(v) && v.length ? Number(v[0]) : (
+      Number.isFinite(Number(v)) ? Number(v) : fb
+    ));
+
+    function fmtForDisplay(value, el, defaultPrec = 1) {
+      const p = Number(el?.dataset.precision);
+      const prec = Number.isFinite(p) ? p : defaultPrec;
+      const n = Number(value);
+      return Number.isFinite(n) ? n.toFixed(prec) : value;
+    }
+    // ===== helper: อ่านช่วงสี 3 ช่วงจาก data-* (มีค่า default ถ้าไม่กำหนด) =====
+    function getColorRanges(el, min, max) {
+      const r1 = Number(el?.dataset.r1);
+      const r2 = Number(el?.dataset.r2);
+      const c1 = el?.dataset.c1 || '#3b82f6'; // low
+      const c2 = el?.dataset.c2 || '#10b981'; // mid
+      const c3 = el?.dataset.c3 || '#ef4444'; // high
+
+      // ถ้าไม่ได้ใส่ r1/r2 จะสร้างจากสัดส่วน 33/66%
+      const cut1 = Number.isFinite(r1) ? r1 : (min + (max - min) * 0.33);
+      const cut2 = Number.isFinite(r2) ? r2 : (min + (max - min) * 0.66);
+
+      return [
+        { min: min, max: cut1, color: c1 },
+        { min: cut1, max: cut2, color: c2 },
+        { min: cut2, max: max, color: c3 },
+      ];
+    }
+
+    function setGaugeColor(ring, value, ranges) {
+      for (let r of ranges) {
+        if (value >= r.min && value <= r.max) {
+          ring?.style.setProperty('--progress', r.color);
+          return;
+        }
+      }
+      // ถ้าเกินช่วง ให้ใช้สีช่วงสุดท้าย
+      if (ranges?.length) ring?.style.setProperty('--progress', ranges[ranges.length - 1].color);
+    }
+    // อัปเดต mini gauge (วงเล็ก)
+    function setMiniGauge(el, value) {
+      if (!el) return;
+      const min = Number(el.dataset.min || 0);
+      const max = Number(el.dataset.max || 100);
+      const ring = el.querySelector('.ring');
+      const num = el.querySelector('.num'); // อยู่ใน <div class="v"><span class="num">…</span></div>
+      const nVal = Number(value);
+      const pct = Math.max(0, Math.min(1, (nVal - min) / (max - min))) * 100;
+      ring?.style.setProperty('--p', pct.toFixed(2));
+
+      if (num) num.textContent = fmtForDisplay(nVal, el, 1);
+
+      // === 3 ช่วงสี ===
+      const ranges = getColorRanges(el, min, max);
+      setGaugeColor(ring, nVal, ranges);
+
+
+
+
+      if (el.id === 'nur-temp-mini') {
+        const nurnt = document.getElementById('nur-nt');
+        if (nurnt) nurnt.textContent = fmtForDisplay(nVal, el, 1);
+      }
+      if (el.id === 'nur-ec-mini') {
+        const nurec = document.getElementById('nur-ec');
+        if (nurec) nurec.textContent = fmtForDisplay(nVal, el, 1);
+      }
+      if (el.id === 'nur-ph-mini') {
+        const nurph = document.getElementById('nur-ph');
+        if (nurph) nurph.textContent = fmtForDisplay(nVal, el, 1);
+      }
+
+      if (el.id === 'r1-temp-mini') {
+        const r1nt = document.getElementById('r1-nt');
+        if (r1nt) r1nt.textContent = fmtForDisplay(nVal, el, 1);
+      }
+
+      if (el.id === 'r1-ec-mini') {
+        const r1ec = document.getElementById('r1-ec');
+        if (r1ec) r1ec.textContent = fmtForDisplay(nVal, el, 1);
+      }
+
+      if (el.id === 'r1-ph-mini') {
+        const r1ph = document.getElementById('r1-ph');
+        if (r1ph) r1ph.textContent = fmtForDisplay(nVal, el, 1);
+      }
+      if (el.id === 'r2-temp-mini') {
+        const r2nt = document.getElementById('r2-nt');
+        if (r2nt) r2nt.textContent = fmtForDisplay(nVal, el, 1);
+      }
+
+      if (el.id === 'r2-ec-mini') {
+        const r2ec = document.getElementById('r2-ec');
+        if (r2ec) r2ec.textContent = fmtForDisplay(nVal, el, 1);
+      }
+
+      if (el.id === 'r2-ph-mini') {
+        const r2ph = document.getElementById('r2-ph');
+        if (r2ph) r2ph.textContent = fmtForDisplay(nVal, el, 1);
+      }
+
+
+
+
+
+
+
+
+    }
+
+    // อัปเดต gauge ใหญ่ (Air/RH/CO2/Light)
+    function setGauge(gaugeEl, value) {
+      if (!gaugeEl) return;
+      const min = Number(gaugeEl.dataset.min || 0);
+      const max = Number(gaugeEl.dataset.max || 100);
+      const ring = gaugeEl.querySelector('.ring');
+      const numEl = gaugeEl.querySelector('.num');
+      const nVal = Number(value);
+      const pct = Math.max(0, Math.min(1, (nVal - min) / (max - min))) * 100;
+      ring?.style.setProperty('--p', pct.toFixed(2));
+
+      if (gaugeEl.id === 'gLight') {
+        if (numEl) numEl.textContent = (nVal >= 0.5) ? 'ON' : 'OFF';
+      } else {
+        if (numEl) numEl.textContent = fmtForDisplay(nVal, gaugeEl, 1);
+        const ranges = getColorRanges(gaugeEl, min, max);
+        setGaugeColor(ring, nVal, ranges);
+      }
+
+      // ★ อัปเดต Room summary ด้วย
+      if (gaugeEl.id === 'gAir') {
+        const clmAir = document.getElementById('clm-air');
+        if (clmAir) clmAir.textContent = fmtForDisplay(nVal, gaugeEl, 1);
+
+      }
+      // RH% อัปเดต ลงในกรอบตาราง
+      if (gaugeEl.id === 'gRH') {
+        const clmRH = document.getElementById('clm-rh');
+        if (clmRH) clmRH.textContent = fmtForDisplay(nVal, gaugeEl, 1);
+      }
+
+      // CO₂ อัปเดต ลงในกรอบตาราง
+      if (gaugeEl.id === 'gCO2') {
+        const clmCO2 = document.getElementById('clm-co2');
+        if (clmCO2) clmCO2.textContent = fmtForDisplay(nVal, gaugeEl, 0);
+      }
+    }
+
+    /* ---------- ใช้ payload เดียว map เข้าเกจทั้งหมด ---------- */
+    function handleSensorPayload(p) {
+      console.log("📩 Sensor payload:", p);
+
+      // ★ ชื่อคีย์ตามที่ส่งมาจริง (Backrooom* มี o 3 ตัว)
+      // Gauges หลัก (ห้องหลัง)
+      const air = first(p.BackrooomTemp);
+      const rh = first(p.Backrooomhumidity);
+      const co2 = first(p.BackrooomCo2);
+
+      if (air != null) setGauge(document.getElementById('gAir'), air);
+      if (rh != null) setGauge(document.getElementById('gRH'), rh);
+      if (co2 != null) setGauge(document.getElementById('gCO2'), co2);
+
+      // Nursery mini gauges
+      if (p.NurseryTemp) setMiniGauge(document.getElementById('nur-temp-mini'), first(p.NurseryTemp));
+      if (p.NurseryEC) setMiniGauge(document.getElementById('nur-ec-mini'), first(p.NurseryEC));
+      if (p.NurserypH) setMiniGauge(document.getElementById('nur-ph-mini'), first(p.NurserypH));
+
+      // Main Reservoir 1
+      if (p.Main1Temp) setMiniGauge(document.getElementById('r1-temp-mini'), first(p.Main1Temp));
+      if (p.Main1EC) setMiniGauge(document.getElementById('r1-ec-mini'), first(p.Main1EC));
+      if (p.Main1pH) setMiniGauge(document.getElementById('r1-ph-mini'), first(p.Main1pH));
+
+      // Main Reservoir 2
+      if (p.Main2Temp) setMiniGauge(document.getElementById('r2-temp-mini'), first(p.Main2Temp));
+      if (p.Main2EC) setMiniGauge(document.getElementById('r2-ec-mini'), first(p.Main2EC));
+      if (p.Main2pH) setMiniGauge(document.getElementById('r2-ph-mini'), first(p.Main2pH));
+    }
+
+    /* ---------- WebSocket (รับจาก Node-RED) ---------- */
+    // ตั้ง URL ให้ตรงระบบคุณ
+    const WS_URL = "wss://skin-trackback-tanks-chemical.trycloudflare.com/mqtt";
+    let ws, retry;
+
+    function connect() {
+      clearTimeout(retry);
+      ws = new WebSocket(WS_URL);
+      console.log('Connecting WS:', WS_URL);
+
+      ws.onopen = () => console.log('✅ WS connected');
+      ws.onerror = () => console.warn('⚠️ WS error');
+      ws.onclose = () => { console.warn('❌ WS disconnected'); retry = setTimeout(connect, 1500); };
+
+      ws.onmessage = (evt) => {
+        console.log("🛰️ WS raw:", evt.data);
+
+
+        let msg;
+        try { msg = JSON.parse(evt.data); }
+        catch (e) { console.warn("❌ not JSON:", e); return; }
+
+        console.log("📦 WS parsed:", msg);
+
+        // รองรับ 3 รูปแบบ: {topic,payload}, payload เป็น string/object, หรือส่ง object ตรง ๆ
+        let topic = "", payload = null;
+        if (msg && typeof msg === "object") {
+          if ("topic" in msg) topic = String(msg.topic || "").trim();
+          if ("payload" in msg) {
+            payload = msg.payload;
+            if (typeof payload === "string") {
+              try { payload = JSON.parse(payload); } catch { /* ข้าม */ }
+            }
+          } else {
+            payload = msg; // ส่ง object ตรง ๆ
+          }
+        }
+
+        console.log("🔖 Topic seen:", topic || "(none)");
+        console.log("📩 Payload resolved:", payload);
+
+        // ยอมรับถ้า topic ว่าง (ส่งตรง) หรือเท่ากับ ssb-box/sensor
+        if (topic && topic !== "ssb-box/sensor") {
+          console.log("⏭️ skip other topic:", topic);
+          return;
+        }
+        if (!payload || typeof payload !== "object") {
+          console.warn("⚠️ bad payload shape");
+          return;
+        }
+
+        handleSensorPayload(payload);
+        saveSnapshot(payload);//จำค่าล่าสุด
+      };
+    }
+
+    // ค่าเริ่มต้นก่อน WS มาถึง (optional)
+    setGauge(document.getElementById('gAir'), 30);
+    setGauge(document.getElementById('gRH'), 55);
+    setGauge(document.getElementById('gCO2'), 1200);
+    // setGauge(document.getElementById('gLight'), 1); // ถ้าเพิ่ม light ไว้แล้วค่อยเปิด
+
+    // ตั้งค่า mini gauge เริ่มต้น (optional)
+    [
+      ['#nur-temp-mini', 30],
+      ['#nur-ec-mini', 1.2],
+      ['#nur-ph-mini', 6.5],
+      ['#r1-temp-mini', 30],
+      ['#r1-ec-mini', 1.2],
+      ['#r1-ph-mini', 6.5],
+      ['#r2-temp-mini', 30],
+      ['#r2-ec-mini', 1.2],
+      ['#r2-ph-mini', 6.5],
+    ].forEach(([sel, val]) => {
+      const el = document.querySelector(sel);
+      if (el) setMiniGauge(el, val);
+    });
+
+    connect();
+  </script>
+
+
+
+  <!-- =======================
+       Dark/Light toggle (เดิม)
+       ======================= -->
+  <script>
+    (function () {
+      const BTN = document.querySelector('.darklight');
+      const ROOT = document.body;
+      function setBtnLabel() {
+        const saved = localStorage.getItem('themeIcon') || 'dark';
+        BTN.textContent = (saved === 'dark') ? '🌙 Dark' : '☀️ Light';
+      }
+      BTN.addEventListener('click', () => {
+        const cur = localStorage.getItem('themeIcon') || 'dark';
+        const next = (cur === 'dark') ? 'light' : 'dark';
+        localStorage.setItem('themeIcon', next);
+        setBtnLabel();
+        // (ถ้าจะสลับธีมจริง ๆ ให้ toggle class .theme-dark ที่ ROOT)
+        // ROOT.classList.toggle('theme-dark');
+      });
+      setBtnLabel();
+    })();
+  </script>
+
+  <!-- =======================
+       ใส่ค่าตัวอย่างในการ์ด + สปาร์คลายน์ (เดิม)
+       ======================= -->
+  <script>
+    function setRoomData() {
+      document.getElementById('nur-recipe').textContent = 'RX-01';
+      document.getElementById('nur-nt').textContent = 25;
+      document.getElementById('nur-ec').textContent = 1.2;
+      document.getElementById('nur-ph').textContent = 6;
+
+      document.getElementById('clm-name').textContent = 'CL-01';
+      document.getElementById('clm-air').textContent = 25;
+      document.getElementById('clm-rh').textContent = 70;
+      document.getElementById('clm-co2').textContent = 1000;
+      document.getElementById('clm-light').textContent = 12;
+
+      document.getElementById('r1-recipe').textContent = 'RX-11';
+      document.getElementById('r2-recipe').textContent = 'RX-12';
+    }
+    setRoomData();
+
+    function sparkPath(vals) {
+      const W = 300, H = 140, pt = [10, 70, 130, 190, 250], top = 20, bot = 120;
+      const ys = vals.map(v => bot - (bot - top) * v);
+      return `M${pt[0]},${ys[0]} ${pt[1]},${ys[1]} ${pt[2]},${ys[2]} ${pt[3]},${ys[3]} ${pt[4]},${ys[4]}`;
+    }
+    document.querySelector('.spark path.s1').setAttribute('d', sparkPath([0.1, 0.35, 0.55, 0.9, 0.75]));
+    document.querySelector('.spark path.s2').setAttribute('d', sparkPath([0.1, 0.25, 0.2, 0.45, 0.45]));
+    document.querySelector('.spark path.s3').setAttribute('d', sparkPath([0.1, 0.42, 0.35, 0.6, 0.5]));
+  </script>
+
+  <!-- =========================================================
+       ✅ NEW: ฟังก์ชันควบคุม Mini Gauge (วงกลม + รูปกลางวง)
+       - setMiniGauge(): ปรับเปอร์เซ็นต์ progress จากค่า min/max
+       - ค่าเริ่มต้น: เซ็ตให้ทั้ง 3 แผง Nursery/R1/R2
+       ========================================================= -->
+  <script>
+
+
+    [
+      ['#nur-temp-mini', 30],
+      ['#nur-ec-mini', 0.6],
+      ['#nur-ph-mini', 6.5],
+      ['#r1-temp-mini', 30],
+      ['#r1-ec-mini', 0.6],
+      ['#r1-ph-mini', 6.5],
+      ['#r2-temp-mini', 30],
+      ['#r2-ec-mini', 0.6],
+      ['#r2-ph-mini', 6.5],
+    ].forEach(([sel, val]) => {
+      const el = document.querySelector(sel);
+      if (el) setMiniGauge(el, val);
+    });
+
+    /* ตัวอย่างต่อกับ WebSocket/MQTT:
+       if(topic==='farmgo/nursery/temp') setMiniGauge(document.querySelector('#nur-temp-mini'), value);
+       if(topic==='farmgo/nursery/ec')   setMiniGauge(document.querySelector('#nur-ec-mini'), value);
+       if(topic==='farmgo/nursery/ph')   setMiniGauge(document.querySelector('#nur-ph-mini'), value);
+       // ทำแบบเดียวกันกับ r1-*, r2-* ...
+    */
+  </script>
+
+
+  <!-- =========================================================
+       จำค่าล่าสุด
+       ========================================================= -->
+  <script>
+    /* === Snapshot: จำค่าล่าสุดไว้ใน localStorage === */
+    const SNAP_KEY = 'ssbbox:last-sensor';
+    const SNAP_MAX_AGE_MS = 0;  // 10 นาที (ตั้งเป็น 0 = ไม่หมดอายุ)
+
+    function saveSnapshot(payload) {
+      try {
+        localStorage.setItem(SNAP_KEY, JSON.stringify({ ts: Date.now(), data: payload }));
+      } catch (e) { console.warn('saveSnapshot failed', e); }
+    }
+
+    function loadSnapshot() {
+      try {
+        const raw = localStorage.getItem(SNAP_KEY);
+        if (!raw) return null;
+        const snap = JSON.parse(raw);
+        if (!snap || !snap.data) return null;
+        if (SNAP_MAX_AGE_MS > 0 && Date.now() - (snap.ts || 0) > SNAP_MAX_AGE_MS) return null;
+        return snap.data;
+      } catch (e) { console.warn('loadSnapshot failed', e); return null; }
+    }
+
+    /* === เรียกใช้ตอนเปิดหน้า: ลองโหลดค่าล่าสุดก่อน === */
+    (function initFromSnapshot() {
+      const snap = loadSnapshot();
+      if (snap) {
+        console.log('🗂️ load snapshot', snap);
+        handleSensorPayload(snap);       // ใช้ฟังก์ชันเดิมของคุณ
+      } else {
+        // ถ้าไม่มี snapshot ก็จะโชว์ค่า default เดิมของคุณตามปกติ
+        // (ไม่ต้องทำอะไรเพิ่ม ถ้าคุณมีบล็อก setGauge/setMiniGauge ค่าเริ่มต้นอยู่แล้ว)
+      }
+    })();
+  </script>
+  <!-- =========================================================
+      โน็ตค่าแปลงตัวแปลง
+Gauges ใหญ่ (4 วง)
+
+BackrooomTemp → Air temperature (เกจใหญ่ #gAir)
+
+Backrooomhumidity → RH% (เกจใหญ่ #gRH)
+
+BackrooomCo2 → CO₂ ppm (เกจใหญ่ #gCO2)
+
+Light → ON/OFF (เกจใหญ่ #gLight) → ตรงนี้ payload เดิมยังไม่มี key ต้องเสริมจาก Node-RED
+
+🔹 Mini Gauges Nursery (3 วง)
+
+NurseryTemp → Temp ของ nutrient (mini #nur-temp-mini)
+
+NurseryEC → EC (mini #nur-ec-mini)
+
+NurserypH → pH (mini #nur-ph-mini)
+
+🔹 Mini Gauges Main Reservoir 1 (3 วง)
+
+Main1Temp → Temp (mini #r1-temp-mini)
+
+Main1EC → EC (mini #r1-ec-mini)
+
+Main1pH → pH (mini #r1-ph-mini)
+
+🔹 Mini Gauges Main Reservoir 2 (3 วง)
+
+Main2Temp → Temp (mini #r2-temp-mini)
+
+Main2EC → EC (mini #r2-ec-mini)
+
+Main2pH → pH (mini #r2-ph-mini)
+       ========================================================= -->
+
+</body>
+
+</html>
