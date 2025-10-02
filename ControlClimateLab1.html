@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LAB BOX – Control Climate</title>
+
+    <!-- =======================
+       🔽 SWITCH DROPDOWN LAB BOX 
+       Bootstrap CSS
+       ======================= -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- ======================= -->
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --panel: #fff;
+            --ink: #121619;
+            --muted: #6b7280;
+            --brand: #b7f36a;
+            --accent: #9ad83f;
+            --sidebar: #fff;
+            --sidebar-border: #cde88b;
+            --tab-height: 40px;
+            --sidebar-width: 220px;
+            --ring-bg: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
+            color: var(--ink);
+            background: var(--bg)
+        }
+
+        .app {
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            grid-template-rows: auto 1fr;
+            height: 100vh
+        }
+
+        /* Topbar */
+        .topbar {
+            grid-column: 1/-1;
+            background: var(--panel);
+            border-bottom: 1px solid #e5e7eb;
+            position: relative
+        }
+
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 16px
+        }
+
+        .brand-logo {
+            height: 34px
+        }
+
+        .title {
+            background: var(--panel);
+            border: 1px solid var(--sidebar-border);
+            padding: 0 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            margin-right: 10px;
+            font-size: 22px;
+            color: #0f172a;
+            letter-spacing: .5px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .08)
+        }
+
+        .tabs {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            height: var(--tab-height);
+            background: var(--brand);
+            border-left: 1px solid var(--sidebar-border);
+            border-right: 1px solid var(--sidebar-border);
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            overflow-x: auto;
+            scrollbar-width: none
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none
+        }
+
+        .tab {
+            position: relative;
+            height: var(--tab-height);
+            line-height: var(--tab-height);
+            padding: 0 18px;
+            font-size: 13px;
+            color: #1f2937;
+            cursor: pointer;
+            user-select: none
+        }
+
+        .tab.active {
+            font-weight: 600;
+            border-bottom: 3px solid #3a3a3a
+        }
+
+        .tab:hover {
+            background: rgba(0, 0, 0, .04)
+        }
+
+        .clock {
+            position: absolute;
+            right: 14px;
+            top: 8px;
+            text-align: right;
+            font-size: 13px
+        }
+
+        .clock .date,
+        .clock .time {
+            font-weight: 700
+        }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .topbar-right .clock {
+            position: static
+        }
+
+        .darklight {
+            margin-left: auto;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #f1f5f9;
+            color: #0f172a;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: .2s;
+            border: 1px solid #e2e8f0
+        }
+
+        .darklight:hover {
+            background: #e2e8f0
+        }
+
+        /* Sidebar */
+        .sidebar {
+            grid-row: 2/-1;
+            background: var(--sidebar);
+            border-right: 2px solid var(--sidebar-border);
+            display: flex;
+            flex-direction: column;
+            min-width: 0
+        }
+
+        .menu {
+            padding: 8px 8px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        .menu-btn {
+            display: grid;
+            grid-template-columns: 44px 1fr;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 8px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            text-align: left;
+            background: #fff;
+            transition: .2s ease;
+            color: #111
+        }
+
+        .menu-btn:hover {
+            border-color: var(--accent);
+            background: #fafff1
+        }
+
+        .menu-btn.active {
+            background: #eaffc8;
+            border-color: var(--accent);
+            font-weight: 600
+        }
+
+        .ico img {
+            width: 40px;
+            height: 40px;
+            display: block
+        }
+
+        .side-section {
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #111;
+        }
+
+        /* Content */
+        .content {
+            grid-column: 2/-1;
+            grid-row: 2/-1;
+            background: var(--panel);
+            margin: 12px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+            border: 1px solid #e5e7eb
+        }
+
+        .content-inner {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: min-content;
+            gap: 12px;
+            padding: 0;
+            border-left: 1px solid var(--accent)
+        }
+
+        .content-inner>.tabs {
+            grid-column: 1/-1
+        }
+
+        /* Left card + gauges */
+        .control-climate {
+            padding: 10px 40px 10px
+        }
+
+        .control-climate .rowA {
+            display: grid;
+            grid-template-columns: 250px minmax(0, 1fr);
+            /* ใส่ minmax(0,1fr) กันเนื้อหาดันกริดล้น */
+            gap: 16px;
+            align-items: start;
+            width: 100%;
+
+        }
+
+        .control-climate .rowB {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px
+        }
+
+        /* คือ css แบบเจาะจง control-climate  */
+        .content-inner>.control-climate {
+            grid-column: 1 / -1;
+            /* ขยายกินตั้งแต่เส้นกริด 1 ถึงเส้นสุดท้าย */
+        }
+
+        /* ขนาดของรูปใน .icon1 */
+        .icon1 img {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            /* ให้ภาพไม่บิดเพี้ยน */
+            display: block;
+            /* กันไม่ให้มีช่องว่างข้างล่าง img */
+            margin: 6px;
+            /* ระยะห่างจากขอบรอบ ๆ (ปรับได้เอง) */
+            border-radius: 6px;
+            /* ถ้าอยากมุมโค้ง */
+        }
+
+
+
+
+
+
+
+        .cc-card {
+            background: #fff;
+            border: 1px solid var(--ring-bg);
+            border-radius: 10px;
+            padding: 5px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .05);
+            font-size: 13px
+        }
+
+        .cc-card .h {
+            background: #cfe2ff;
+            padding: 3px;
+            border-radius: 3px;
+            font-weight: 700;
+            font-size: 14px
+        }
+
+        .cc-card .head {
+            display: grid;
+            grid-template-columns: 40px 1fr;
+            gap: 40px;
+            align-items: center
+        }
+
+        .cc-card .row1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            white-space: nowrap;
+            margin: 6px 0;
+            background: #f0f7f9;
+            border-radius: 6px;
+            padding: 5px
+        }
+
+        .divider {
+            border-top: 1px dashed var(--ring-bg);
+            margin: 2px 0 2px
+        }
+
+
+
+        /* =======================
+       ★ กราฟวงกลม (gauge) ใหญ่ (เดิม)
+       - ใช้ grid + conic-gradient ทำ progress
+       ======================= */
+        .gauges {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            padding: 12px;
+        }
+
+        .gauge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gauge .ring {
+            --size: 132px;
+            --track: #e5e7eb;
+            --progress: #6ee7b7;
+            width: var(--size);
+            height: var(--size);
+            border-radius: 50%;
+            position: relative;
+            display: grid;
+            place-items: center;
+            background:
+                radial-gradient(#fff calc(50% - 10px), transparent calc(50% - 9px)),
+                conic-gradient(var(--progress) calc(var(--p)*1%), var(--track) 0);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, .08), inset 0 0 0 1px #f1f5f9;
+        }
+
+        .gauge .ring img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 15px;
+            box-shadow: 0 px 6px rgba(0, 0, 0, .12);
+            background: #fff;
+            padding: none;
+        }
+
+        .gauge .value {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .gauge .unit {
+            font-size: 12px;
+            opacity: .8;
+            margin-left: 2px
+        }
+
+        .gauge .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #0f172a;
+            background: #eeffcf;
+            border: 1px solid #cce68f;
+            padding: 4px 12px;
+            border-radius: 999px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+        }
+
+        /* สีเฉพาะ gauge ใหญ่ (เดิม) */
+        #gAir .ring {
+            --progress: #f87171
+        }
+
+        /* Temp */
+        #gRH .ring {
+            --progress: #34d399
+        }
+
+        /* RH */
+        #gCO2 .ring {
+            --progress: #fb923c
+        }
+
+        /* 3 columns below (placeholders) */
+        .rowB {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px
+        }
+
+        .ctrl-row {
+            display: grid;
+            grid-template-columns: 28px 1fr auto;
+            gap: 20px;
+            align-items: center;
+            margin: 6px
+        }
+
+
+
+
+
+
+
+        .light-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 6px
+        }
+
+        .lamp-row {
+            display: grid;
+            grid-template-columns: 60px 60px auto auto auto 60px;
+            gap: 8px;
+            align-items: center;
+            margin: 4px 0
+        }
+
+        .sp-row {
+            display: grid;
+            grid-template-columns: 28px 1fr auto auto;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 6px;
+
+        }
+
+        .icon-sm {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .icon-smd {
+            width: 80px;
+            height: 45px;
+            object-fit: contain;
+            padding: 2px;
+        }
+
+        .muted {
+            color: var(--muted)
+        }
+
+        @media (max-width:1100px) {
+            .control-climate .rowA {
+                grid-template-columns: 1fr
+            }
+
+            .rowB {
+                grid-template-columns: 1fr
+            }
+
+            .gauges {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        /* =======================
+       ★ Dropdown style (เดิม)
+       ======================= */
+        .sidebar .dropdown .btn {
+            background: #ffffff;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            transition: all .3s ease;
+            width: 100%;
+            text-align: left;
+        }
+
+        .sidebar .dropdown .btn:hover {
+            background: #f1f1f1;
+            transform: translateY(-2px);
+        }
+
+        .sidebar .dropdown-menu {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            animation: fadeIn .3s ease;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .sidebar .dropdown-item {
+            font-weight: 500;
+            padding: 10px 20px;
+            transition: all .2s ease;
+        }
+
+        .sidebar .dropdown-item:hover {
+            background-color: #fda085;
+            color: #fff;
+            border-radius: 8px;
+        }
+
+        /* =======================
+       ★จบ Dropdown style (เดิม)
+       ======================= */
+
+        /* ======================
+       ★ Dropdown style (auto)
+       ======================= */
+        .vitsidebar .dropdown .btn {
+            background: #bcf1c3;
+            border-radius: 12px;
+            font-weight: bold;
+
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            transition: all .3s ease;
+            width: 100%;
+            text-align: left;
+        }
+
+        .vitsidebar .dropdown .btn:hover {
+            background: #f1f1f1;
+            transform: translateY(-2px);
+        }
+
+        .vitsidebar .dropdown-menu {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            animation: fadeIn .3s ease;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .vitsidebar .dropdown-item {
+            font-weight: 500;
+            padding: 10px 20px;
+            transition: all .2s ease;
+        }
+
+        .vitsidebar .dropdown-item:hover {
+            background-color: #fda085;
+            color: #fff;
+            border-radius: 8px;
+        }
+
+        /* =======================
+       ★จบ Dropdown style (เดิม)
+       ======================= */
+
+        /* =======================
+       ★เริ่ม css style (switch เเละมีบ้างอันมาจาก Bootstrap)
+       ======================= */
+
+        /* กล่องจับสวิตช์ + ข้อความ ให้อยู่แนวเดียวกัน */
+        .switch-inline {
+            display: flex;
+            align-items: center;
+            /* จัดให้อยู่กึ่งกลางแนวตั้ง */
+            gap: var(--switch-gap, px);
+            /* ระยะห่างสวิตช์-ข้อความ (แก้ค่าได้) */
+        }
+
+        /* (ไม่บังคับ) ปรับขนาดสวิตช์ได้ */
+        .switch-lg.form-check-input {
+            width: 3.3rem;
+            height: 1.3rem;
+        }
+
+        .form-switch .form-check-input:checked {
+            background-color: #9cf791;
+            /* */
+            border-color: #7cff09;
+        }
+
+        /* =======================
+       ★จบ css style (switch เเละมีบ้างอันมาจาก Bootstrap)
+       ======================= */
+        /* =======================
+       ★เริ่ม css style (lamp auto manaul task off Bootstrap)
+       ======================= */
+
+        .pill.auto {
+            background: #dcf8bc;
+            color: #000;
+        }
+
+        .pill.manual {
+            background: #e54b4b;
+            color: #fff;
+        }
+
+        .pill.task {
+            background: #f7c708;
+            color: #000;
+        }
+
+        .pill.off {
+            background: #f3f3f3;
+            color: #000;
+        }
+
+        .pill {
+            min-height: 18px;
+
+            flex: 0 1 200px;
+            /* ยืดได้แต่ไม่เกิน 100px */
+        }
+
+        .form-check-input:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .form-check-input.is-pending {
+            opacity: .5;
+            pointer-events: none;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <div class="app">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-inner">
+                <div class="brand-badge">
+                    <img src="https://github.com/reungwitk-cyber/ssb-box/raw/c958231f7e20c74bff3076384c1e46bbee9eec24/Logosbb-box.png"
+                        alt="SABIENG BOX Logo" class="brand-logo">
+                </div>
+                <div class="title">LAB BOX</div>
+                <div class="topbar-right">
+
+                    <div class="side-section vitsidebar">
+                        <div class="dropdown">
+                            <button class="btn dropdown-toggle px-4 py-2" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false"> AUTO</button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="Labbox.html">LABBOX</a></li>
+                                <li><a class="dropdown-item" href="single.html">SINGLE</a></li>
+                                <li><a class="dropdown-item" href="double.html">DOUBLE</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <button class="darklight">darklight</button>
+                    <div class="clock">
+                        <div class="date" id="dateText"></div>
+                        <div class="time" id="timeText"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="menu" style="padding-top:10px">
+                <button class="menu-btn active"><span class="ico"><img
+                            src="https://github.com/reungwitk-cyber/ssb-box/raw/c958231f7e20c74bff3076384c1e46bbee9eec24/homesw1.png"
+                            alt="Home"></span><span>Sabieng HQ</span></button>
+            </div>
+            <div class="side-section">
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle px-4 py-2" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">⚙️ LAB BOX</button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="Labbox.html">LABBOX</a></li>
+                        <li><a class="dropdown-item" href="single.html">SINGLE</a></li>
+                        <li><a class="dropdown-item" href="double.html">DOUBLE</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="menu">
+                <button class="menu-btn"><span class="ico"><img
+                            src="https://github.com/reungwitk-cyber/ssb-box/raw/695cd88b6d596bfbd2b4bb6e83b47e81ab779a1f/RecipeSw.png"
+                            alt="Recipes"></span><span>Recipes</span></button>
+                <button class="menu-btn"><span class="ico"><img
+                            src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Crop%20yield.png"
+                            alt="Crop scheduling"></span><span>Crop scheduling</span></button>
+                <button class="menu-btn"><span class="ico"><img
+                            src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Crop%20scheduling.png"
+                            alt="Crop yield"></span><span>Crop yield</span></button>
+                <button class="menu-btn"><span class="ico"><img
+                            src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Energy%20Management.png"
+                            alt="Energy"></span><span>Energy Management</span></button>
+                <button class="menu-btn"><span class="ico"><img
+                            src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/SettingSw1.png"
+                            alt="Settings"></span><span>Setting</span></button>
+                <button class="menu-btn"><span class="ico"><img
+                            src="https://github.com/reungwitk-cyber/ssb-box/raw/cf3649fc297bab4602cac39e05810940d42b774f/Help.png"
+                            alt="Help"></span><span>Help</span></button>
+            </div>
+        </aside>
+
+        <!-- Content -->
+        <main class="content">
+            <div class="content-inner">
+                <nav class="tabs">
+                    <div class="tab" data-href="DashboardLab1.html">Dashboard</div>
+                    <div class="tab active">Control Climate</div>
+                    <div class="tab">Control Nutrients</div>
+                    <div class="tab">Recipe</div>
+                    <div class="tab">Notification</div>
+                    <div class="tab">Analysis</div>
+                </nav>
+
+                <section class="control-climate">
+                    <div class="rowA">
+                        <!-- left card -->
+                        <div class="cc-card">
+                            <div class="h">Farm Climate</div>
+                            <div class="head">
+                                <div class="icon1">
+                                    <img src="https://github.com/reungwitk-cyber/ssb-box/raw/df1df5666319cad318b28f4e81c9e03b222ea3cc/recipe2.svg"
+                                        alt="">
+                                </div>
+                                <div>
+                                    <div class="muted">Recipe name</div>
+                                    <div id="clm-name" style="font-weight:600">Leafy Green 1</div>
+                                </div>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="row1"><span>Air temp</span><span>= <b id="clm-air">25.0</b> °C</span></div>
+                            <div class="row1"><span>RH%</span><span>= <b id="clm-rh">70</b> %</span></div>
+                            <div class="row1"><span>CO₂</span><span>= <b id="clm-co2">1200</b> ppm</span></div>
+                            <div class="row1"><span>Light</span><span>= <b id="clm-light">ON</b></span></div>
+                        </div>
+
+                        <!-- gauges -->
+                        <section class="gauges">
+                            <div class="gauge" id="gAir" data-min="0" data-max="40" data-precision="1" data-r1="20"
+                                data-r2="27" data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+                                <div class="ring" style="--p:0">
+                                    <img src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/icon%20temp.png"
+                                        alt="Air temp">
+                                    <div class="value"><span class="num">30</span><span class="unit">°C</span></div>
+                                </div>
+                                <div class="label">Air temp</div>
+                            </div>
+
+                            <!-- RH -->
+                            <div class="gauge" id="gRH" data-min="0" data-max="100" data-precision="1" data-r1="60"
+                                data-r2="80" data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+                                <div class="ring" style="--p:0">
+                                    <img src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/RH%20ICON.png"
+                                        alt="RH">
+                                    <div class="value"><span class="num">55</span><span class="unit">%</span></div>
+                                </div>
+                                <div class="label">RH%</div>
+                            </div>
+
+                            <!-- CO2 -->
+                            <div class="gauge" id="gCO2" data-min="0" data-max="2200" data-precision="0" data-r1="1000"
+                                data-r2="1200" data-c1="#3bddf6" data-c2="#5afab2" data-c3="#fc6453">
+                                <div class="ring" style="--p:0">
+                                    <img src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/CO2.png"
+                                        alt="CO₂">
+                                    <div class="value"><span class="num">1200</span><span class="unit">ppm</span></div>
+                                </div>
+                                <div class="label">CO₂</div>
+                            </div>
+
+                            <!-- Light (ON/OFF ไม่ใช้ช่วงสี) -->
+                            <div class="gauge" id="gLight" data-min="0" data-max="1">
+                                <div class="ring" style="--p:0">
+                                    <img src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/Light.png"
+                                        alt="Light">
+                                    <div class="value"><span class="num">ON</span></div>
+                                </div>
+                                <div class="label">Light</div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- RowB placeholders -->
+                    <div class="rowB">
+                        <div class="cc-card">
+                            <div class="h">Climate Controls</div>
+                            <div class="ctrl-row">
+                                <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/AirS0.svg"
+                                    alt="Air conditioner" data-state-alias="aircon"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6934e97808b5e5fe762fb3f1173ea4a6fe2e2ad8/AirS1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/AirS0.svg">
+                                <span>Air conditioner</span>
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="airconSwitch" data-alias="aircon">
+                                    </div>
+                                    <label class="form-check-label mb-0">On/Off</label>
+                                </div>
+                            </div>
+
+                            <div class="ctrl-row">
+                                <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Humidifilers0.svg"
+                                    alt="Humidifier" data-state-alias="humidifier"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6934e97808b5e5fe762fb3f1173ea4a6fe2e2ad8/Humidifilers1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Humidifilers0.svg">
+                                <span>Humidifier</span>
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="humidifierSwitch" data-alias="humidifier">
+                                    </div>
+                                    <label class="form-check-label mb-0">On/Off</label>
+                                </div>
+                            </div>
+
+                            <div class="ctrl-row">
+                                <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/CO2.png"
+                                    alt="CO₂ injection" data-state-alias="co2"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/1b4a0f4fd8a36f160e7f41728d7c161a1e10899c/Co2S1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/CO2.png">
+                                <span>CO₂ injection</span>
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="co2Switch" data-alias="co2">
+                                    </div>
+                                    <label class="form-check-label mb-0">On/Off</label>
+                                </div>
+                            </div>
+                            <div class="ctrl-row d-flex align-items-center">
+                                <!-- ซ้าย: ไอคอน + ชื่อ -->
+                                <div class="d-flex align-items-center me-3">
+                                    <img class="icon-sm state-img"
+                                        src="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Fans0.svg"
+                                        alt="Duct fan" data-state-alias="ductfan"
+                                        data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6934e97808b5e5fe762fb3f1173ea4a6fe2e2ad8/Fans1.svg"
+                                        data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Fans0.svg"
+                                        width="48" height="48">
+                                    <span class="ms-2 fw-semibold">Duct fan</span>
+                                </div>
+
+                                <!-- กลาง: Pill แสดงสถานะ -->
+                                <div id="statusPill"
+                                    class="pill auto text-center py-2 mx-3 rounded-pill shadow-sm w-25">
+                                    <span id="statusLabel">Auto</span>
+                                </div>
+
+                                <!-- ขวา: Switch On/Off -->
+                                <div class="switch-inline d-flex align-items-center ms-3">
+                                    <div class="form-check form-switch m-0">
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="ductfanSwitch" data-alias="ductfan">
+                                    </div>
+                                    <label class="form-check-label mb-0 ms-1" for="ductfanSwitch">On/Off</label>
+                                </div>
+                            </div>
+
+                            <div class="ctrl-row">
+                                <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/ReturnFanS0.svg"
+                                    alt="Return fan" data-state-alias="returnfan"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/1b4a0f4fd8a36f160e7f41728d7c161a1e10899c/ReturnFanS1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/ReturnFanS0.svg">
+                                <span>Return fan</span>
+
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="returnfanSwitch" data-alias="returnfan">
+                                    </div>
+                                    <label class="form-check-label mb-0">On/Off</label>
+                                </div>
+
+
+
+                            </div>
+
+                            <div class="ctrl-row">
+                                <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/ExhaustS0.svg"
+                                    alt="Exhaust fan" data-state-alias="exhaustfan"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/1b4a0f4fd8a36f160e7f41728d7c161a1e10899c/ExhaustS1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/ExhaustS0.svg">
+                                <span>Exhaust fan</span>
+
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="exhaustfanSwitch" data-alias="exhaustfan">
+                                    </div>
+                                    <label class="form-check-label mb-0">On/Off</label>
+                                </div>
+                            </div>
+
+                            <div class="ctrl-row">
+                                <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Fans0.svg"
+                                    alt="Nursery Fan : Upper" data-state-alias="nurseryfanupper"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6934e97808b5e5fe762fb3f1173ea4a6fe2e2ad8/Fans1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Fans0.svg">
+                                <span>Nursery Fan : Upper</span>
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="nurseryfanupperSwitch" data-alias="nurseryfanupper">
+                                    </div>
+                                    <label class="form-check-label mb-0">On/Off</label>
+                                </div>
+
+
+
+                            </div>
+
+                            <div class="ctrl-row">
+                                <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Fans0.svg"
+                                    alt="Nursery Fan : Lower" data-state-alias="nurseryfanlower"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6934e97808b5e5fe762fb3f1173ea4a6fe2e2ad8/Fans1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Fans0.svg">
+                                <span>Nursery Fan : Lower</span>
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="nurseryfanlowerSwitch" data-alias="nurseryfanlower">
+                                    </div>
+                                    <label class="form-check-label mb-0">On/Off</label>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="cc-card">
+                            <div class="h">Light Setting</div>
+                            <div class="light-row"><img class="icon-smd"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/60952953ff1871957cf5642ee8436ad318649e5a/Dayicon.svg"
+                                    alt=""><span>Start <input type="time" value="06:00"></span><span>End
+                                    <input type="time" value="22:00"></span><b>16 Hrs</b></div>
+                            <div class="light-row"><img class="icon-smd"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/60952953ff1871957cf5642ee8436ad318649e5a/nighticon.svg"
+                                    alt=""><span>Start <input type="time" value="22:01"></span><span>End <input
+                                        type="time" value="06:00"></span><b>8
+                                    Hrs</b></div>
+                            <div class="lamp-row"><span>Row 1</span><span>Auto</span><label><input type="checkbox">
+                                    On/Off</label><span>ON <input type="time" value="00:01"></span><span>OFF <input
+                                        type="time" value="16:00"></span><b>75%</b></div>
+                            <div class="lamp-row"><span>Row 2</span><span>Auto</span><label><input type="checkbox">
+                                    On/Off</label><span>ON <input type="time" value="00:01"></span><span>OFF <input
+                                        type="time" value="16:00"></span><b>75%</b></div>
+                            <div class="lamp-row"><span>Row 3</span><span>Auto</span><label><input type="checkbox">
+                                    On/Off</label><span>ON <input type="time" value="00:01"></span><span>OFF <input
+                                        type="time" value="16:00"></span><b>75%</b></div>
+                            <div class="lamp-row"><span>Row 4</span><span>Auto</span><label><input type="checkbox">
+                                    On/Off</label><span>ON <input type="time" value="00:01"></span><span>OFF <input
+                                        type="time" value="16:00"></span><b>75%</b></div>
+                        </div>
+
+                        <div class="cc-card">
+                            <div class="h">Climate Set point</div>
+                            <div class="sp-row"><img class="icon-sm"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/136c5650822e9408fff8afce299e96f49001fb45/tempiconday.svg"
+                                    alt=""><span>Day Temp.</span><input type="number" value="25"> °C</div>
+                            <div class="sp-row"><img class="icon-sm"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/136c5650822e9408fff8afce299e96f49001fb45/tempiconnight.svg"
+                                    alt=""><span>Night Temp.</span><input type="number" value="23"> °C</div>
+                            <div class="sp-row"><img class="icon-sm"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/136c5650822e9408fff8afce299e96f49001fb45/Co2iconDay.svg"
+                                    alt=""><span>CO₂ Day</span><input type="number" value="1200"> ppm</div>
+
+                            <div class="sp-row"><img class="icon-sm"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/136c5650822e9408fff8afce299e96f49001fb45/Humday.svg"
+                                    alt=""><span>RH Day</span><input type="number" value="65"> %</div>
+                            <div class="sp-row"><img class="icon-sm"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/136c5650822e9408fff8afce299e96f49001fb45/Humnight.svg"
+                                    alt=""><span>RH Night</span><input type="number" value="80"> %</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= CLOCK ================= -->
+    <script>
+        // แสดงวันที่+เวลาแบบ real-time
+        const dateText = document.getElementById('dateText'),
+            timeText = document.getElementById('timeText');
+
+        function pad(n) { return String(n).padStart(2, '0'); }
+
+        function fmt() {
+            const d = new Date(), day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            if (dateText) dateText.textContent =
+                `${day[d.getDay()]}. ${pad(d.getDate())} - ${pad(d.getMonth() + 1)} - ${String(d.getFullYear()).slice(-2)}`;
+            if (timeText) timeText.textContent =
+                `Time - ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+        }
+        fmt();
+        setInterval(fmt, 1000);
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- ================= GAUGE ================= -->
+    <script>
+        // ช่วยดึงค่าตัวแรกจาก array หรือแปลง string → number
+        const first = (v, fb = null) =>
+        (Array.isArray(v) && v.length ? Number(v[0]) :
+            (Number.isFinite(Number(v)) ? Number(v) : fb));
+
+        // คำนวณช่วงสี (low, mid, high)
+        function getColorRanges(el, min, max) {
+            const r1 = Number(el?.dataset.r1), r2 = Number(el?.dataset.r2);
+            const c1 = el?.dataset.c1 || '#3b82f6',
+                c2 = el?.dataset.c2 || '#10b981',
+                c3 = el?.dataset.c3 || '#ef4444';
+            const cut1 = Number.isFinite(r1) ? r1 : (min + (max - min) * 0.33);
+            const cut2 = Number.isFinite(r2) ? r2 : (min + (max - min) * 0.66);
+            return [
+                { min, max: cut1, color: c1 },
+                { min: cut1, max: cut2, color: c2 },
+                { min: cut2, max, color: c3 }
+            ];
+        }
+
+        // ใส่สีเกจตามค่า
+        function setGaugeColor(ring, val, ranges) {
+            for (const r of ranges) {
+                if (val >= r.min && val <= r.max) {
+                    ring?.style.setProperty('--progress', r.color);
+                    return;
+                }
+            }
+            if (ranges?.length) ring?.style.setProperty('--progress', ranges[ranges.length - 1].color);
+        }
+
+        // อัปเดตเกจ (รวม clamp กันค่าหลุดช่วง)
+        function setGauge(gaugeEl, value) {
+            if (!gaugeEl) return;
+            const min = Number(gaugeEl.dataset.min || 0),
+                max = Number(gaugeEl.dataset.max || 100);
+            const ring = gaugeEl.querySelector('.ring'),
+                numEl = gaugeEl.querySelector('.num');
+            const nVal = Number(value);
+
+            const clamped = Math.max(min, Math.min(max, nVal));
+            const pct = Math.max(0, Math.min(1, (clamped - min) / (max - min))) * 100;
+            ring?.style.setProperty('--p', pct.toFixed(2));
+
+            if (gaugeEl.id === 'gLight') {
+                if (numEl) numEl.textContent = (clamped >= 0.5) ? 'ON' : 'OFF';
+                ring?.style.setProperty('--progress',
+                    (clamped >= 0.5) ? (gaugeEl.dataset.c2 || '#22c55e') : (gaugeEl.dataset.c1 || '#a1a1aa'));
+            } else {
+                if (numEl) numEl.textContent = clamped.toFixed(Number(gaugeEl.dataset.precision || 1));
+                setGaugeColor(ring, clamped, getColorRanges(gaugeEl, min, max));
+            }
+
+            // แสดงค่าในตารางด้านข้างด้วย
+            if (gaugeEl.id === 'gAir') document.getElementById('clm-air').textContent = clamped.toFixed(1);
+            if (gaugeEl.id === 'gRH') document.getElementById('clm-rh').textContent = clamped.toFixed(0);
+            if (gaugeEl.id === 'gCO2') document.getElementById('clm-co2').textContent = clamped.toFixed(0);
+            if (gaugeEl.id === 'gLight') document.getElementById('clm-light').textContent = (clamped >= 0.5 ? 'ON' : 'OFF');
+        }
+
+        // ฟังก์ชันรวม ใช้ตอน payload sensor มาถึง
+        function handleSensorPayload(p) {
+            const air = first(p.BackrooomTemp),
+                rh = first(p.Backrooomhumidity),
+                co2 = first(p.BackrooomCo2);
+            if (air != null) setGauge(document.getElementById('gAir'), air);
+            if (rh != null) setGauge(document.getElementById('gRH'), rh);
+            if (co2 != null) setGauge(document.getElementById('gCO2'), co2);
+            // ถ้ามี Light → เปิดคอมเมนต์บรรทัดนี้
+            // const light=first(p.Light); if(light!=null) setGauge(document.getElementById('gLight'), light);
+        }
+    </script>
+
+    <!-- ================= DEVICE STATE ================= -->
+    <script>
+        const DEVICE_STATE = Object.create(null); // เก็บสถานะ runtime ของอุปกรณ์
+
+        // decode alias จาก topic เช่น ssb-box/switch/ductfan/state → "ductfan"
+        function aliasFromTopic(topic) {
+            const p = String(topic || '').split('/');
+            return (p.length >= 4 && p[0] === 'ssb-box' &&
+                (p[1] === 'lamp' || p[1] === 'switch') &&
+                p[p.length - 1] === 'state') ? p[2] : null;
+        }
+
+        // decode payload → scalar
+        function scalarFromPayload(alias, payload) {
+            if (payload == null) return null;
+            if (typeof payload === 'string') { try { return scalarFromPayload(alias, JSON.parse(payload)); } catch { } }
+            if (Array.isArray(payload)) return payload.length ? payload[0] : null;
+            if (typeof payload === 'object') {
+                if (alias in payload) return Array.isArray(payload[alias]) ? payload[alias][0] : payload[alias];
+                const outKey = `output-${alias}`;
+                if (outKey in payload) return Array.isArray(payload[outKey]) ? payload[outKey][0] : payload[outKey];
+                if ('value' in payload) return Array.isArray(payload.value) ? payload.value[0] : payload.value;
+                const ks = Object.keys(payload);
+                if (ks.length === 1) { let v = payload[ks[0]]; return Array.isArray(v) ? v[0] : v; }
+            }
+            if (typeof payload === 'boolean' || typeof payload === 'number') return payload;
+            if (!Number.isNaN(Number(payload))) return Number(payload);
+            if (payload === 'true') return true;
+            if (payload === 'false') return false;
+            return payload;
+        }
+
+        // ใช้แปลงค่าทั่วไปให้เป็น boolean
+        function toBool(v) {
+            if (Array.isArray(v)) v = v[0];
+            if (typeof v === 'string') {
+                const s = v.toLowerCase();
+                if (['true', 'on', '1'].includes(s)) return true;
+                if (['false', 'off', '0'].includes(s)) return false;
+            }
+            if (typeof v === 'number') return v !== 0;
+            return !!v;
+        }
+
+        // sync รูป icon
+        function updateImagesByAlias(alias, val) {
+            const isOn = toBool(val);
+            document.querySelectorAll(`img.state-img[data-state-alias="${alias}"]`).forEach(img => {
+                if (isOn && img.dataset.srcOn) img.src = img.dataset.srcOn;
+                if (!isOn && img.dataset.srcOff) img.src = img.dataset.srcOff;
+                img.classList.toggle('is-on', isOn);
+                img.classList.toggle('is-off', !isOn);
+            });
+        }
+
+        // ✅ รองรับ "payload ล้วน" เช่น { "ductfan":[false], "exhaustfan":[true] }
+        function handleLooseStatePayload(obj) {
+            if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return;
+            Object.entries(obj).forEach(([alias, val]) => {
+                let v = val;
+                if (Array.isArray(v)) v = v.length ? v[0] : null;
+                if (typeof v === 'string') {
+                    const s = v.trim().toLowerCase();
+                    if (['true', 'on', '1'].includes(s)) v = true;
+                    else if (['false', 'off', '0'].includes(s)) v = false;
+                    else if (!Number.isNaN(Number(v))) v = Number(v);
+                }
+                DEVICE_STATE[alias] = v;
+                updateImagesByAlias(alias, v);
+                document.dispatchEvent(new CustomEvent('ssbbox:state', {
+                    detail: { alias, value: v, topic: '' }
+                }));
+            });
+        }
+    </script>
+
+    <!-- ================= ANTI-RACE SWITCH ================= -->
+    <script>
+        (function () {
+            function log(...a) { console.log("[SW]", ...a); }
+            window.SSB_SWITCH_TOPICS = window.SSB_SWITCH_TOPICS || new Set();
+
+            // subscribe state topic ของสวิตช์
+            function subscribeStateTopic(alias) {
+                const t = `ssb-box/switch/${alias}/state`;
+                window.SSB_SWITCH_TOPICS.add(t);
+                if (typeof safeSubscribe === 'function') { try { safeSubscribe([t]); } catch { } }
+            }
+
+            // pending control
+            const confirmedModes = new Map(), pendingTimers = new Map(), pendingSeq = new Map();
+            const PENDING_MS = 5000;
+
+            function getPrevChecked(alias, fallback) {
+                if (typeof DEVICE_STATE?.[alias] !== 'undefined') return !!DEVICE_STATE[alias];
+                if (confirmedModes.has(alias)) return confirmedModes.get(alias) === 'on';
+                return fallback ?? false;
+            }
+
+            function bindAllSwitches() {
+                document.querySelectorAll('.ssbbox-switch[data-alias]').forEach(el => {
+                    const alias = el.dataset.alias;
+                    subscribeStateTopic(alias);
+
+                    // sync เริ่มต้น
+                    if (typeof DEVICE_STATE?.[alias] !== 'undefined') {
+                        el.checked = !!DEVICE_STATE[alias];
+                        confirmedModes.set(alias, el.checked ? 'on' : 'off');
+                    }
+
+                    el.addEventListener('change', () => {
+                        const desired = el.checked;
+
+                        // ✅ ใช้ global publishCmd เพียงตัวเดียว (กำหนดในบล็อก WS)
+                        if (!(window.publishCmd && window.publishCmd(alias, desired))) {
+                            el.checked = getPrevChecked(alias, !desired);
+                            return;
+                        }
+
+                        el.classList.add('is-pending');
+
+                        const token = (pendingSeq.get(alias) || 0) + 1;
+                        pendingSeq.set(alias, token);
+                        const prevChecked = getPrevChecked(alias, !desired);
+
+                        const timer = setTimeout(() => {
+                            if (pendingSeq.get(alias) !== token) return; // ได้ state แล้ว/มีคลิกใหม่
+                            el.checked = prevChecked;
+                            el.classList.remove('is-pending');
+                            confirmedModes.set(alias, prevChecked ? 'on' : 'off');
+                        }, PENDING_MS);
+
+                        pendingTimers.set(alias, { timer, token, prevChecked });
+                    });
+                });
+            }
+
+            // sync จาก state จริง → เคลียร์ pending
+            document.addEventListener('ssbbox:state', e => {
+                const { alias, value } = e.detail || {}; if (!alias) return;
+                document.querySelectorAll(`.ssbbox-switch[data-alias="${alias}"]`).forEach(el => {
+                    el.checked = !!value;
+                    el.classList.remove('is-pending');
+                });
+                if (pendingTimers.get(alias)?.timer) clearTimeout(pendingTimers.get(alias).timer);
+                pendingTimers.delete(alias);
+                pendingSeq.delete(alias);
+                confirmedModes.set(alias, value ? 'on' : 'off');
+                DEVICE_STATE[alias] = !!value;
+                log("state ←", alias, value);
+            });
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindAllSwitches);
+            else bindAllSwitches();
+        })();
+    </script>
+
+    <!-- ================= onPLCUpdate helper ================= -->
+    <script>
+        // ให้ backend เรียกตรงนี้ได้ → ยิงเข้า event state เดียวกับ WS
+        window.onPLCUpdate = ({ alias, power }) => {
+            document.dispatchEvent(new CustomEvent('ssbbox:state', {
+                detail: { alias, value: !!power, topic: `ssb-box/switch/${alias}/state` }
+            }));
+        };
+    </script>
+
+    <!-- ================= WEBSOCKET (final) ================= -->
+    <script>
+        const WS_URL = "wss://skin-trackback-tanks-chemical.trycloudflare.com/mqtt";
+        let ws, retry;
+
+        /* ---------------- helpers ---------------- */
+        const parseMaybe = v => {
+            if (typeof v === 'string') { try { return JSON.parse(v); } catch { } }
+            return v;
+        };
+
+        // ใช้ toBool เดิมถ้ามี; ถ้าไม่มีก็สำรองเป็น toB (กันชนชื่อ)
+        const toB = (typeof window.toBool === 'function')
+            ? window.toBool
+            : function (v) {
+                if (typeof v === 'boolean') return v;
+                if (typeof v === 'number') return v !== 0;
+                if (typeof v === 'string') {
+                    const s = v.trim().toLowerCase();
+                    if (['true', 'on', '1'].includes(s)) return true;
+                    if (['false', 'off', '0'].includes(s)) return false;
+                    const n = Number(s); if (!Number.isNaN(n)) return n !== 0;
+                }
+                return !!v;
+            };
+
+        // global subscribe ฟังก์ชันเดียวให้ทุกที่เรียก
+        function safeSubscribe(topics) {
+            try { ws?.send(JSON.stringify({ action: "subscribe", topics })); } catch { }
+            try { ws?.send(JSON.stringify({ subscribe: topics })); } catch { }
+            try { ws?.send(JSON.stringify({ subs: topics })); } catch { }
+            try { topics.forEach(t => ws?.send(JSON.stringify({ action: "subscribe", topic: t }))); } catch { }
+        }
+
+        // apply snapshot map: { alias:boolean, ... }
+        function applySnapshotData(map) {
+            if (!map || typeof map !== 'object') return;
+            Object.entries(map).forEach(([alias, raw]) => {
+                const val = toB(raw);
+                DEVICE_STATE[alias] = val;
+                updateImagesByAlias(alias, val);
+                document.dispatchEvent(new CustomEvent('ssbbox:state', {
+                    detail: { alias, value: val, topic: '' }
+                }));
+            });
+        }
+
+        // state with topic = ssb-box/(lamp|switch)/<alias>/state, payload = JSON-string {"<alias>":[true]}
+        function applyTopicState(topic, payload) {
+            const parts = String(topic || '').split('/'); // ['ssb-box','lamp','ductfan','state']
+            if (parts.length < 4 || parts[0] !== 'ssb-box') return false;
+            if (!['lamp', 'switch'].includes(parts[1]) || parts[3] !== 'state') return false;
+
+            const alias = parts[2];
+            let p = parseMaybe(payload);
+
+            let raw;
+            if (p && typeof p === 'object') {
+                if (alias in p) raw = Array.isArray(p[alias]) ? p[alias][0] : p[alias];
+                else if ('value' in p) raw = Array.isArray(p.value) ? p.value[0] : p.value;
+                else raw = p;
+            } else {
+                raw = p;
+            }
+
+            const val = toB(raw);
+            DEVICE_STATE[alias] = val;
+            updateImagesByAlias(alias, val);
+            document.dispatchEvent(new CustomEvent('ssbbox:state', {
+                detail: { alias, value: val, topic }
+            }));
+            return true;
+        }
+
+        /* ---------------- connect ---------------- */
+        function connect() {
+            clearTimeout(retry);
+            try { ws = new WebSocket(WS_URL); window.ws = ws; } catch { retry = setTimeout(connect, 2000); return; }
+
+            ws.onopen = () => {
+                const extra = Array.from(window.SSB_SWITCH_TOPICS || []);
+                safeSubscribe([
+                    "ssb-box/#",
+                    "ssb-box/sensor",
+                    "ssb-box/lamp/+/state",
+                    "ssb-box/switch/+/state",
+                    ...extra
+                ]);
+                console.log("✅ WS connected");
+            };
+
+            ws.onclose = () => { window.ws = null; retry = setTimeout(connect, 1500); };
+
+            ws.onmessage = (evt) => {
+                let m = evt.data;
+                if (typeof m === 'string') { try { m = JSON.parse(m); } catch { } }
+
+                // SNAPSHOT (payload-only หรือ wholemsg:true)
+                if (m && typeof m === 'object') {
+                    const snap = (m.payload && typeof m.payload === 'object') ? m.payload : m;
+                    if (snap.action === 'snapshot' && snap.data && typeof snap.data === 'object') {
+                        applySnapshotData(snap.data);
+                        return;
+                    }
+                }
+
+                // SENSOR
+                if (m && typeof m === 'object' && 'topic' in m) {
+                    let topic = String(m.topic || '');
+                    let p = parseMaybe(m.payload);
+
+                    if (topic === 'ssb-box/sensor' && p && typeof p === 'object') {
+                        handleSensorPayload(p);
+                        return;
+                    }
+
+                    // STATE per-alias
+                    if (applyTopicState(topic, m.payload)) return;
+                }
+            };
+        }
+
+        /* --------- ค่าตั้งต้นก่อน realtime เข้ามา --------- */
+        setGauge(document.getElementById('gAir'), 30);
+        setGauge(document.getElementById('gRH'), 55);
+        setGauge(document.getElementById('gCO2'), 1200);
+        setGauge(document.getElementById('gLight'), 1);
+
+        connect();
+
+        /* ---------------- ส่งคำสั่ง (SEND) ----------------
+           ✅ ล็อกแบบเดียว:
+           topic: ssb-box/switch/<alias>/cmd
+           payload: สตริง JSON เช่น "{\"ductfan\":[true]}"
+        --------------------------------------------------- */
+        function publishCmd(alias, desired) {
+            const topic = `ssb-box/switch/${alias}/cmd`;
+            const payloadStr = JSON.stringify({ [alias]: [desired] });
+            if (!window.ws || ws.readyState !== 1) { console.warn("[SEND] ws not ready"); return false; }
+            const frame = { topic, payload: payloadStr };
+            ws.send(JSON.stringify(frame));
+            return true;
+        }
+    </script>
+
+    <!-- ================= THEME & TABS ================= -->
+    <script>
+        (function () {
+            const BTN = document.querySelector('.darklight');
+            function setBtnLabel() {
+                const s = localStorage.getItem('themeIcon') || 'dark';
+                if (BTN) BTN.textContent = (s === 'dark') ? '🌙 Dark' : '☀️ Light';
+            }
+            if (BTN) {
+                BTN.addEventListener('click', () => {
+                    const cur = localStorage.getItem('themeIcon') || 'dark';
+                    const next = (cur === 'dark') ? 'light' : 'dark';
+                    localStorage.setItem('themeIcon', next);
+                    setBtnLabel();
+                });
+            }
+            setBtnLabel();
+
+            document.querySelectorAll('.tabs .tab').forEach(tab => {
+                tab.style.cursor = 'pointer';
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    if (tab.dataset.href) window.location.href = tab.dataset.href;
+                });
+            });
+        })();
+    </script>
+
+    <!-- ================= SNAPSHOT (sensor) ================= -->
+    <script>
+        const SNAP_KEY = 'ssbbox:last-sensor', SNAP_MAX_AGE_MS = 0;
+        function saveSnapshot(payload) {
+            try { localStorage.setItem(SNAP_KEY, JSON.stringify({ ts: Date.now(), data: payload })); } catch { }
+        }
+        function loadSnapshot() {
+            try {
+                const raw = localStorage.getItem(SNAP_KEY); if (!raw) return null;
+                const snap = JSON.parse(raw); if (!snap || !snap.data) return null;
+                if (SNAP_MAX_AGE_MS > 0 && Date.now() - (snap.ts || 0) > SNAP_MAX_AGE_MS) return null;
+                return snap.data;
+            } catch { return null; }
+        }
+        (function () { const snap = loadSnapshot(); if (snap) handleSensorPayload(snap); })();
+    </script>
+
+
+
+</body>
+
+</html>
