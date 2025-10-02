@@ -605,8 +605,8 @@
       /* 12 คอลัมน์พื้นฐาน */
       grid-auto-rows: min-content;
       gap: 12px;
-      padding: 12px;
-      border-left: 3px solid var(--accent);
+      padding: 0px;
+      border-left: 1px solid var(--accent);
     }
 
     .content-inner>.tabs,
@@ -981,7 +981,7 @@
         <!-- Tabs -->
         <nav class="tabs">
           <div class="tab active">Dashboard</div>
-          <div class="tab">Control Climate</div>
+          <div class="tab" data-href="ControlClimateLab1.html" >Control Climate</div>
           <div class="tab">Control Nutrients</div>
           <div class="tab">Recipe</div>
           <div class="tab">Notification</div>
@@ -1962,6 +1962,28 @@ Main2EC → EC (mini #r2-ec-mini)
 
 Main2pH → pH (mini #r2-ph-mini)
        ========================================================= -->
+
+
+<script>
+  // คลิกแท็บแล้วไปหน้าใหม่ตาม data-href ไว้เปลี่ยนหน้า
+  (function enableTabNavigate() {
+    const tabs = document.querySelectorAll('.tabs .tab');
+    tabs.forEach(tab => {
+      tab.style.cursor = 'pointer';
+      tab.addEventListener('click', () => {
+        // เปลี่ยน active ให้มีเอฟเฟกต์กด (สวย ๆ ก่อนจะย้ายหน้า)
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        const url = tab.dataset.href;
+        if (url) {
+          window.location.href = url;   // ⬅️ เปลี่ยนหน้า
+        }
+      });
+    });
+  })();
+</script>
+
 
 </body>
 
