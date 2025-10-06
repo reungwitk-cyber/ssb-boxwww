@@ -595,7 +595,7 @@
             display: flex;
             align-items: center;
             /* จัดให้อยู่กึ่งกลางแนวตั้ง */
-            gap: var(--switch-gap, px);
+            gap: var(--switch-gap, 8px);
             /* ระยะห่างสวิตช์-ข้อความ (แก้ค่าได้) */
         }
 
@@ -645,14 +645,73 @@
             /* ยืดได้แต่ไม่เกิน 100px */
         }
 
-        .form-check-input:disabled {
-            opacity: .5;
-            cursor: not-allowed;
-        }
+        /* =======================
+       ★จบ css style (lamp auto manaul task off Bootstrap)
+       ======================= */
 
-        .form-check-input.is-pending {
+        /* =======================
+       ★เริม css จาง switch On/Off เมื่อกด
+       ======================= */
+
+        /* ล็อกทั้งบล็อกเวลารอคอนเฟิร์ม */
+        .switch-inline.is-pending {
             opacity: .5;
             pointer-events: none;
+        }
+
+        /* อยากให้ตัวปุ่มมีฟีลกำลังรอ ก็เพิ่มได้: */
+        .form-check-input.is-pending {
+            opacity: .6;
+            cursor: wait;
+        }
+
+        /* =======================
+       ★จบ css จาง switch On/Off เมื่อกด
+       ======================= */
+        /* =======================
+       ★เริ่ม css จาง mode auto manaul task เมื่อกด
+       ======================= */
+        /* MODE pending: ทำให้ปุ่มจางและกดไม่ได้ */
+
+
+        /* ปุ่ม MODE: พื้นฐาน + ทรานซิชันนิ่ม ๆ */
+        #modeDropdown .btn {
+            font-weight: 700;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            transition: background-color .2s ease, color .2s ease, filter .15s ease, opacity .15s ease;
+        }
+
+        /* สีตามโหมด */
+        #modeDropdown .btn.mode-auto {
+            background: #dcf8bc;
+            color: #0f172a;
+            border-color: #cce68f;
+        }
+
+        #modeDropdown .btn.mode-manual {
+            background: #e54b4b;
+            color: #fff;
+            border-color: #c73b3b;
+        }
+
+        #modeDropdown .btn.mode-task {
+            background: #f7c708;
+            color: #000;
+            border-color: #deb600;
+        }
+
+        #modeDropdown .btn.mode-off {
+            background: #f3f3f3;
+            color: #000;
+            border-color: #e5e7eb;
+        }
+
+        /* ตอนรอ state ให้จางและกดไม่ได้ (พี่มีไว้แล้ว เผื่อย้ำ) */
+        #modeDropdown .btn.is-pending {
+            opacity: .6;
+            pointer-events: none;
+            filter: grayscale(30%);
         }
     </style>
 
@@ -671,17 +730,18 @@
                 <div class="title">LAB BOX</div>
                 <div class="topbar-right">
 
-                    <div class="side-section vitsidebar">
-                        <div class="dropdown">
-                            <button class="btn dropdown-toggle px-4 py-2" type="button" data-bs-toggle="dropdown"
-                                aria-expanded="false"> AUTO</button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="Labbox.html">LABBOX</a></li>
-                                <li><a class="dropdown-item" href="single.html">SINGLE</a></li>
-                                <li><a class="dropdown-item" href="double.html">DOUBLE</a></li>
-                            </ul>
-                        </div>
+                    <div class="dropdown" id="modeDropdown">
+                        <button class="btn dropdown-toggle px-5 py-0" type="button" data-bs-toggle="dropdown">
+                            MODE
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-val="1">AUTO</a></li>
+                            <li><a class="dropdown-item" href="#" data-val="0">MANUAL</a></li>
+                            <li><a class="dropdown-item" href="#" data-val="2">TASK</a></li>
+                        </ul>
                     </div>
+
+
 
                     <button class="darklight">darklight</button>
                     <div class="clock">
@@ -865,6 +925,8 @@
                                     </div>
                                     <label class="form-check-label mb-0">On/Off</label>
                                 </div>
+
+
                             </div>
                             <div class="ctrl-row d-flex align-items-center">
                                 <!-- ซ้าย: ไอคอน + ชื่อ -->
@@ -879,13 +941,17 @@
                                 </div>
 
                                 <!-- กลาง: Pill แสดงสถานะ -->
-                                <div id="statusPill"
-                                    class="pill auto text-center py-2 mx-3 rounded-pill shadow-sm w-25">
-                                    <span id="statusLabel">Auto</span>
+                                <!-- ductfan -->
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-25"
+                                    id="pill-ductfan" data-alias="ductfan" data-switch-key="ductfanof"
+                                    data-mode-topic="ssb-box/mode/ductfan/state"
+                                    data-cmd-topic="ssb-box/switch/ductfanof/cmd"
+                                    data-switch-state-topic="ssb-box/switch/ductfanof/state">
+                                    <span data-label>Off</span>
                                 </div>
 
                                 <!-- ขวา: Switch On/Off -->
-                                <div class="switch-inline d-flex align-items-center ms-3">
+                                <div class="switch-inline" style="--switch-gap: 10px;">
                                     <div class="form-check form-switch m-0">
                                         <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
                                             id="ductfanSwitch" data-alias="ductfan">
@@ -1121,6 +1187,7 @@
     <!-- ================= DEVICE STATE ================= -->
     <script>
         const DEVICE_STATE = Object.create(null); // เก็บสถานะ runtime ของอุปกรณ์
+        const MODE_STATE = Object.create(null); // 🆕 เก็บค่า ssb-box/mode/<alias>/state
 
         // decode alias จาก topic เช่น ssb-box/switch/ductfan/state → "ductfan"
         function aliasFromTopic(topic) {
@@ -1207,8 +1274,13 @@
                 if (typeof safeSubscribe === 'function') { try { safeSubscribe([t]); } catch { } }
             }
 
-            // pending control
+            // ================= pending control =================
+            // - confirmedModes: จำสถานะที่ยืนยันล่าสุด (on/off)
+            // - pendingTimers:  ตั้ง timeout รอคอนเฟิร์ม
+            // - pendingSeq:     ป้องกันเคสคลิกรัว (token ล่าสุดเท่านั้นที่ยัง valid)
+            // - desiredMap:     จำ "ค่าที่สั่งล่าสุด" เพื่อปลด pending เฉพาะตอนค่ากลับมาตรงที่สั่ง
             const confirmedModes = new Map(), pendingTimers = new Map(), pendingSeq = new Map();
+            const desiredMap = new Map(); // 🆕 alias -> { val:boolean, token:number }
             const PENDING_MS = 5000;
 
             function getPrevChecked(alias, fallback) {
@@ -1222,32 +1294,48 @@
                     const alias = el.dataset.alias;
                     subscribeStateTopic(alias);
 
-                    // sync เริ่มต้น
+                    // sync เริ่มต้นจาก DEVICE_STATE ถ้ามี
                     if (typeof DEVICE_STATE?.[alias] !== 'undefined') {
                         el.checked = !!DEVICE_STATE[alias];
                         confirmedModes.set(alias, el.checked ? 'on' : 'off');
                     }
 
+                    // ====== เมื่อมีการ "กด" สวิตช์ ======
                     el.addEventListener('change', () => {
-                        const desired = el.checked;
+                        const desired = el.checked; // ค่าที่ผู้ใช้ต้องการ
 
-                        // ✅ ใช้ global publishCmd เพียงตัวเดียว (กำหนดในบล็อก WS)
+                        // ส่งคำสั่งไป backend (MQTT ผ่าน publishCmd)
                         if (!(window.publishCmd && window.publishCmd(alias, desired))) {
+                            // ส่งไม่ออก → ย้อนค่ากลับทันที
                             el.checked = getPrevChecked(alias, !desired);
                             return;
                         }
 
-                        el.classList.add('is-pending');
+                        // เข้าโหมดรอคอนเฟิร์ม (pending)
+                        el.disabled = true;                 // ⛔ ห้ามกดซ้ำ
+                        el.classList.add('is-pending');     // เอาไว้ใส่สไตล์กำลังรอ
 
+                        const wrap = el.closest('.switch-inline');
+                        wrap?.classList.add('is-pending');  // ล็อกทั้งบล็อก (กันคลิก label/พื้นที่รอบ ๆ)
+
+                        // อัปเดต token กันคลิกรัว
                         const token = (pendingSeq.get(alias) || 0) + 1;
                         pendingSeq.set(alias, token);
+
+                        // 🆕 จำ "ค่าที่สั่ง" ไว้ใช้เทียบตอน state กลับมา
+                        desiredMap.set(alias, { val: desired, token });
+
                         const prevChecked = getPrevChecked(alias, !desired);
 
+                        // ตั้ง timeout ถ้ารอเกินกำหนดยังไม่คอนเฟิร์ม → ย้อนค่า + ปลดล็อก
                         const timer = setTimeout(() => {
-                            if (pendingSeq.get(alias) !== token) return; // ได้ state แล้ว/มีคลิกใหม่
+                            if (pendingSeq.get(alias) !== token) return; // มี state แล้ว/มีคลิกใหม่
                             el.checked = prevChecked;
                             el.classList.remove('is-pending');
+                            el.disabled = false;
+                            wrap?.classList.remove('is-pending');
                             confirmedModes.set(alias, prevChecked ? 'on' : 'off');
+                            desiredMap.delete(alias); // ล้างค่าที่สั่ง
                         }, PENDING_MS);
 
                         pendingTimers.set(alias, { timer, token, prevChecked });
@@ -1255,18 +1343,39 @@
                 });
             }
 
-            // sync จาก state จริง → เคลียร์ pending
+            // ====== sync จาก state จริง → อัปเดต UI เฉพาะเมื่อ "ค่าตรงที่สั่ง" ======
             document.addEventListener('ssbbox:state', e => {
                 const { alias, value } = e.detail || {}; if (!alias) return;
+
+                const want = desiredMap.get(alias);    // สิ่งที่เราสั่งไว้
+                const hasPending = pendingSeq.has(alias);
+
+                // ถ้ามี pending และค่าที่กลับมา "ไม่ตรง" → เมินไว้ก่อน, ยังไม่ปลด pending
+                if (hasPending && want && (!!value !== !!want.val)) {
+                    DEVICE_STATE[alias] = !!value; // อัปเดตภายในได้ แต่ไม่เปลี่ยน UI
+                    return;
+                }
+
+                // ถึงตรงนี้: ไม่มี pending หรือ ค่าตรง → ปลด pending และอัปเดต UI
                 document.querySelectorAll(`.ssbbox-switch[data-alias="${alias}"]`).forEach(el => {
                     el.checked = !!value;
                     el.classList.remove('is-pending');
+                    el.disabled = false;
+
+                    const wrap = el.closest('.switch-inline');
+                    wrap?.classList.remove('is-pending');
                 });
+
+                // ล้างตัวจับเวลา/โทเคน/ค่าที่สั่ง
                 if (pendingTimers.get(alias)?.timer) clearTimeout(pendingTimers.get(alias).timer);
                 pendingTimers.delete(alias);
                 pendingSeq.delete(alias);
+                desiredMap.delete(alias);
+
+                // จดสถานะยืนยันล่าสุด + mirror ไป DEVICE_STATE
                 confirmedModes.set(alias, value ? 'on' : 'off');
                 DEVICE_STATE[alias] = !!value;
+
                 log("state ←", alias, value);
             });
 
@@ -1274,6 +1383,8 @@
             else bindAllSwitches();
         })();
     </script>
+
+
 
     <!-- ================= onPLCUpdate helper ================= -->
     <script>
@@ -1295,6 +1406,10 @@
             if (typeof v === 'string') { try { return JSON.parse(v); } catch { } }
             return v;
         };
+
+        // กันพลาด: ให้มี OBJECT สถานะไว้เสมอ
+        window.DEVICE_STATE = window.DEVICE_STATE || Object.create(null);
+        window.MODE_STATE = window.MODE_STATE || Object.create(null);
 
         // ใช้ toBool เดิมถ้ามี; ถ้าไม่มีก็สำรองเป็น toB (กันชนชื่อ)
         const toB = (typeof window.toBool === 'function')
@@ -1319,18 +1434,56 @@
             try { topics.forEach(t => ws?.send(JSON.stringify({ action: "subscribe", topic: t }))); } catch { }
         }
 
-        // apply snapshot map: { alias:boolean, ... }
+        // global publish สำหรับส่ง MQTT ผ่าน WS
+        function safePublish(topic, payload) {
+            try {
+                if (!window.ws || ws.readyState !== 1) return false;
+                const payloadStr = (typeof payload === 'string') ? payload : JSON.stringify(payload);
+                ws.send(JSON.stringify({ topic, payload: payloadStr }));
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        // helper: alias ไหนคือ "สวิตช์"
+        function isSwitchAlias(alias) {
+            if (!alias) return false;
+            return alias.includes('fan') || alias === 'aircon' || alias === 'humidifier';
+        }
+
+        // apply snapshot map: { alias:any, ... }  (สวิตช์ → boolean, อื่น ๆ คงค่า)
+        // ✅ แถม: ถ้ามี selection ใน snapshot → อัปเดตปุ่ม MODE ทันที
         function applySnapshotData(map) {
             if (!map || typeof map !== 'object') return;
+
+            // --- ดึง selection จาก snapshot ถ้ามี ---
+            if ('selection' in map) {
+                const sel = Array.isArray(map.selection) ? Number(map.selection[0]) : Number(map.selection);
+                if (!Number.isNaN(sel)) {
+                    // ใช้ handler เดิมของคุณ (อัปเดต MODE button + label)
+                    handleModeState({ selection: [sel] });
+                    // mirror ลง MODE_STATE เผื่อใช้ต่อ
+                    window.MODE_STATE = window.MODE_STATE || Object.create(null);
+                    MODE_STATE.selection = sel;
+                }
+            }
+
+            // --- ไล่อัปเดตแต่ละ alias ---
             Object.entries(map).forEach(([alias, raw]) => {
-                const val = toB(raw);
+                if (alias === 'selection') return; // จัดการไปแล้วด้านบน
+
+                const val = isSwitchAlias(alias) ? toB(raw) : raw;
                 DEVICE_STATE[alias] = val;
-                updateImagesByAlias(alias, val);
+
+                if (isSwitchAlias(alias)) updateImagesByAlias(alias, val);
+
                 document.dispatchEvent(new CustomEvent('ssbbox:state', {
                     detail: { alias, value: val, topic: '' }
                 }));
             });
         }
+
 
         // state with topic = ssb-box/(lamp|switch)/<alias>/state, payload = JSON-string {"<alias>":[true]}
         function applyTopicState(topic, payload) {
@@ -1359,6 +1512,52 @@
             return true;
         }
 
+        // ---------- MODE helpers ----------
+        function modeAliasFromTopic(topic) {
+            const p = String(topic || '').split('/'); // ['ssb-box','mode','<alias>','state']
+            return (p.length >= 4 && p[0] === 'ssb-box' && p[1] === 'mode' && p[3] === 'state') ? p[2] : null;
+        }
+
+        function parseModePayload(alias, payload) {
+            let v = payload;
+            if (typeof v === 'string') { try { v = JSON.parse(v); } catch { } }
+            if (Array.isArray(v)) return v.length ? v[0] : null;
+            if (v && typeof v === 'object') {
+                if (alias in v) return Array.isArray(v[alias]) ? v[alias][0] : v[alias];
+                if ('selection' in v) return Array.isArray(v.selection) ? v.selection[0] : v.selection;
+                if ('value' in v) return Array.isArray(v.value) ? v.value[0] : v.value;
+                const ks = Object.keys(v);
+                if (ks.length === 1) { let t = v[ks[0]]; return Array.isArray(t) ? t[0] : t; }
+                return v;
+            }
+            if (typeof v === 'string') {
+                const s = v.trim().toLowerCase();
+                if (['true', 'on', '1'].includes(s)) return true;
+                if (['false', 'off', '0'].includes(s)) return false;
+                const n = Number(s); if (!Number.isNaN(n)) return n;
+            }
+            return v;
+        }
+
+        function applyModeState(topic, payload) {
+            const alias = modeAliasFromTopic(topic);
+            if (!alias) return false;
+
+            const val = parseModePayload(alias, payload);
+            MODE_STATE[alias] = val;
+
+            // พิเศษ: selection → ให้ UI โหมดอัปเดตจาก state จริง
+            if (alias === 'selection') {
+                handleModeState(payload); // ใช้ตัวฟอร์แมตเดิม (minify + เขียน modeRaw/modeLabel + อัปเดตปุ่ม)
+            }
+
+            // broadcast event เผื่อใช้งานต่อ
+            document.dispatchEvent(new CustomEvent('ssbbox:mode', {
+                detail: { alias, value: val, topic }
+            }));
+            return true;
+        }
+
         /* ---------------- connect ---------------- */
         function connect() {
             clearTimeout(retry);
@@ -1371,6 +1570,7 @@
                     "ssb-box/sensor",
                     "ssb-box/lamp/+/state",
                     "ssb-box/switch/+/state",
+                    "ssb-box/mode/+/state",
                     ...extra
                 ]);
                 console.log("✅ WS connected");
@@ -1382,26 +1582,46 @@
                 let m = evt.data;
                 if (typeof m === 'string') { try { m = JSON.parse(m); } catch { } }
 
-                // SNAPSHOT (payload-only หรือ wholemsg:true)
-                if (m && typeof m === 'object') {
-                    const snap = (m.payload && typeof m.payload === 'object') ? m.payload : m;
-                    if (snap.action === 'snapshot' && snap.data && typeof snap.data === 'object') {
-                        applySnapshotData(snap.data);
+                // ===== A) กรณี "ไม่มี topic" (payload-only) =====
+                if (m && typeof m === 'object' && !('topic' in m)) {
+                    // ดึงแก่นข้อมูล (รองรับทั้งอยู่ใน payload หรือเป็น root)
+                    const obj = (m.payload && typeof m.payload === 'object') ? m.payload : m;
+
+                    // 1) Snapshot: { action:'snapshot', data:{...} }
+                    if (obj && obj.action === 'snapshot' && obj.data && typeof obj.data === 'object') {
+                        applySnapshotData(obj.data);
+                        return;
+                    }
+
+                    // 2) Mode selection: { selection:[N] }
+                    if (obj && typeof obj === 'object' && 'selection' in obj) {
+                        handleModeState(obj); // minify + เขียน modeRaw/modeLabel + อัปเดตปุ่ม/สี
+                        MODE_STATE.selection = Array.isArray(obj.selection) ? obj.selection[0] : obj.selection;
+                        return;
+                    }
+
+                    // 3) สวิตช์/แลมป์แบบหลวม ๆ: { ductfan:true, exhaustfan:false, ... }
+                    if (obj && typeof obj === 'object') {
+                        handleLooseStatePayload(obj); // ตัวช่วยของพี่ที่มีอยู่แล้ว
                         return;
                     }
                 }
 
-                // SENSOR
+                // ===== B) กรณี "มี topic" ปกติ =====
                 if (m && typeof m === 'object' && 'topic' in m) {
-                    let topic = String(m.topic || '');
-                    let p = parseMaybe(m.payload);
+                    const topic = String(m.topic || '');
+                    const p = parseMaybe(m.payload);
 
+                    // 1) โหมดทั้งหมด: ssb-box/mode/+/state
+                    if (applyModeState(topic, m.payload)) return;
+
+                    // 2) ข้อมูล sensor รวม
                     if (topic === 'ssb-box/sensor' && p && typeof p === 'object') {
                         handleSensorPayload(p);
                         return;
                     }
 
-                    // STATE per-alias
+                    // 3) สวิตช์/แลมป์ราย alias: ssb-box/(lamp|switch)/<alias>/state
                     if (applyTopicState(topic, m.payload)) return;
                 }
             };
@@ -1429,6 +1649,76 @@
             return true;
         }
     </script>
+
+
+
+    <script>
+        /* ====== PILL (data-*) MODULE – place after WEBSOCKET(final) ====== */
+        (function () {
+            function init() { document.querySelectorAll('.pill[data-alias]').forEach(mount); }
+
+            function mount(el) {
+                const label = el.querySelector('[data-label]') || el.querySelector('span');
+
+                const alias = (el.dataset.alias || '').trim();                 // โหมด เช่น ductfan
+                const switchKey = (el.dataset.switchKey || (alias + 'of')).trim(); // คีย์สวิตช์ เช่น ductfanof
+                const prefix = (el.dataset.prefix || 'ssb-box').trim();         // ใช้กับ "คำสั่ง" เท่านั้น
+                const cmdTopic = (el.dataset.cmdTopic || `${prefix}/switch/${switchKey}/cmd`).trim();
+                const stateAlias = (el.dataset.stateAlias || alias).trim();         // ใช้จับคู่ ssbbox:state
+
+                // คลิก -> ส่งคำสั่ง
+                el.style.cursor = 'pointer';
+                el.addEventListener('click', () => {
+                    const desired = !(el.dataset._sw === 'true');                      // toggle local
+                    const payload = JSON.stringify({ [switchKey]: [desired] });
+                    const ok = (typeof safePublish === 'function') && safePublish(cmdTopic, payload);
+                    if (!ok) { console.warn('[pill] safePublish not ready'); return; }
+                    // optimistic ไว้ก่อน (รอ state จริงมา overwrite)
+                    el.dataset._sw = String(desired);
+                    // ไม่เปลี่ยนสี pill ตาม ON/OFF — pill แสดง "โหมด" เท่านั้น
+                });
+
+                // โหมด 0/1/2/3 -> อัปเดตสี/ข้อความ
+                document.addEventListener('ssbbox:mode', (e) => {
+                    const { alias: a, value } = e.detail || {};
+                    if (a !== alias) return;
+                    renderMode(el, label, value);
+                });
+
+                // ถ้ามี event สวิตช์ของ alias นี้ -> จำสถานะไว้ใช้ตอน toggle
+                document.addEventListener('ssbbox:state', (e) => {
+                    const { alias: a, value } = e.detail || {};
+                    if (a !== stateAlias) return;
+                    el.dataset._sw = String(!!value);
+                });
+            }
+
+            function renderMode(el, label, val) {
+                const n = Number(Array.isArray(val) ? val[0] : val);
+                el.classList.remove('auto', 'manual', 'task', 'off', 'unknown');
+                switch (n) {
+                    case 0: el.classList.add('manual'); label.textContent = 'Manual'; break;
+                    case 1: el.classList.add('auto'); label.textContent = 'Auto'; break;
+                    case 2: el.classList.add('task'); label.textContent = 'Task'; break;
+                    case 3: el.classList.add('off'); label.textContent = 'Off'; break;
+                    default: el.classList.add('unknown'); label.textContent = 'Unknown';
+                }
+            }
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+            else init();
+        })();
+    </script>
+
+
+
+
+
+
+
+
+
+
 
     <!-- ================= THEME & TABS ================= -->
     <script>
@@ -1475,6 +1765,134 @@
         }
         (function () { const snap = loadSnapshot(); if (snap) handleSensorPayload(snap); })();
     </script>
+
+
+
+    <!-- ================= Mode  ================= -->
+    <script>
+        const MODE_LABEL = { 0: 'MANUAL', 1: 'AUTO', 2: 'TASK' };
+
+        // ---------- pending control สำหรับ MODE ----------
+        let MODE_PENDING = null, MODE_TOKEN = 0, MODE_TIMER = null;
+        const MODE_PENDING_MS = 5000;
+
+        function setModePending(flag) {
+            const btn = document.querySelector('#modeDropdown > button');
+            if (!btn) return;
+            if (flag) {
+                btn.classList.add('is-pending');
+                btn.setAttribute('disabled', 'disabled');
+            } else {
+                btn.classList.remove('is-pending');
+                btn.removeAttribute('disabled');
+            }
+        }
+
+        // อัปเดต UI จากค่า mode จริง (ปุ่ม + pill + label)
+        function updateModeUI(sel) {
+            const btn = document.querySelector('#modeDropdown > button');
+            const pill = document.getElementById('statusPill');
+            const pillLabel = document.getElementById('statusLabel');
+
+            // === ปุ่ม MODE: ข้อความ + สีตามโหมด ===
+            if (btn && sel !== undefined) {
+                btn.textContent = "MODE: " + ({ 0: 'MANUAL', 1: 'AUTO', 2: 'TASK' }[sel] ?? sel);
+                btn.classList.remove('mode-auto', 'mode-manual', 'mode-task', 'mode-off');
+                if (sel === 1) btn.classList.add('mode-auto');
+                else if (sel === 0) btn.classList.add('mode-manual');
+                else if (sel === 2) btn.classList.add('mode-task');
+                else btn.classList.add('mode-off');
+            }
+
+
+
+        }
+
+        // 🔁 ถูกเรียกเมื่อได้รับ state จริงจาก topic ssb-box/mode/selection/state
+        function handleModeState(payload) {
+            let rawMinified = payload;
+            let sel;
+            try {
+                const obj = (typeof payload === 'string') ? JSON.parse(payload) : payload;
+                sel = Array.isArray(obj?.selection) ? obj.selection[0] : undefined;
+                rawMinified = JSON.stringify({ selection: [sel] }); // {"selection":[N]}
+            } catch {
+                const m = String(payload || '').match(/"selection"\s*:\s*\[\s*(\d+)\s*\]/);
+                if (m) {
+                    sel = parseInt(m[1], 10);
+                    rawMinified = `{"selection":[${sel}]}`;
+                }
+            }
+
+            // โชว์ค่า raw + label ที่เคยมีอยู่แล้ว
+            document.getElementById('modeRaw')?.replaceChildren(rawMinified);
+            document.getElementById('modeLabel')?.replaceChildren(
+                (sel in MODE_LABEL) ? MODE_LABEL[sel] : (sel !== undefined ? `UNKNOWN(${sel})` : '-')
+            );
+
+            // 🆕 อัปเดตปุ่มและ pill ตาม state จริง
+            if (sel !== undefined) updateModeUI(sel);
+
+            // 🆕 ถ้ามี pending และค่าที่กลับมาตรงกับที่สั่ง → ปลด pending
+            if (MODE_PENDING && sel !== undefined) {
+                if (sel === MODE_PENDING.val) {
+                    setModePending(false);
+                    MODE_PENDING = null;
+                    if (MODE_TIMER) { clearTimeout(MODE_TIMER); MODE_TIMER = null; }
+                }
+            }
+        }
+
+        // ---------- bind dropdown ให้ส่ง cmd + เข้า pending ----------
+        (function bindModeDropdown() {
+            const root = document.getElementById('modeDropdown');
+            if (!root) return;
+
+            const btn = root.querySelector('button');
+            // ใช้ Bootstrap dropdown instance เพื่อปิดเมนูหลังคลิก
+            let dd = null;
+            try { dd = bootstrap.Dropdown.getOrCreateInstance(btn); } catch { }
+
+            root.querySelectorAll('.dropdown-item').forEach(a => {
+                a.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const val = parseInt(a.dataset.val, 10);
+                    const payload = `{"selection":[${val}]}`; // ไม่เว้นวรรค
+
+                    const ok = (typeof safePublish === 'function')
+                        ? safePublish("ssb-box/mode/selection/cmd", payload)
+                        : false;
+
+                    if (!ok) {
+                        console.warn("[MODE] ws not ready, cannot publish");
+                        return;
+                    }
+
+                    // เข้าโหมดรอคอนเฟิร์ม
+                    MODE_TOKEN += 1;
+                    MODE_PENDING = { val, token: MODE_TOKEN };
+                    setModePending(true);
+                    if (dd) dd.hide();
+
+                    // ตั้ง timeout ถ้าไม่คอนเฟิร์มภายในกำหนด → ปลดล็อกเฉย ๆ (คง UI เดิมไว้)
+                    if (MODE_TIMER) clearTimeout(MODE_TIMER);
+                    MODE_TIMER = setTimeout(() => {
+                        if (MODE_PENDING && MODE_PENDING.token === MODE_TOKEN) {
+                            setModePending(false);
+                            MODE_PENDING = null;
+                            MODE_TIMER = null;
+                        }
+                    }, MODE_PENDING_MS);
+                });
+            });
+        })();
+    </script>
+
+
+
+
+
+
 
 
 
