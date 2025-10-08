@@ -18,6 +18,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <style>
+        /* =========================================================
+ ⚙️ VARIABLES & RESETS
+ - รวมตัวแปรที่ใช้ควบคุม layout ของ Zone B ด้วย
+========================================================= */
         :root {
             --bg: #f0f2f5;
             --panel: #fff;
@@ -30,6 +34,16 @@
             --tab-height: 40px;
             --sidebar-width: 220px;
             --ring-bg: #e5e7eb;
+
+            /* 🔧 คุมคอลัมน์ในแถวอุปกรณ์ (Zone B) */
+            --ctrl-icon: 42px;
+            /* ไอคอนซ้ายขนาดคงที่ */
+            --ctrl-pill: 128px;
+            /* ความกว้าง pill */
+            --ctrl-switch: 136px;
+            /* ความกว้างคอลัมน์สวิตช์+ป้าย */
+            --ctrl-row-h: 44px;
+            /* ความสูงขั้นต่ำของแถว */
         }
 
         * {
@@ -45,17 +59,22 @@
             margin: 0;
             font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
             color: var(--ink);
-            background: var(--bg)
+            background: var(--bg);
         }
 
+        /* =========================================================
+ 🧱 APP LAYOUT
+========================================================= */
         .app {
             display: grid;
             grid-template-columns: var(--sidebar-width) 1fr;
             grid-template-rows: auto 1fr;
-            height: 100vh
+            height: 100vh;
         }
 
-        /* Topbar */
+        /* =========================================================
+ ⬆️ TOPBAR
+========================================================= */
         .topbar {
             grid-column: 1/-1;
             background: var(--panel);
@@ -167,7 +186,9 @@
             background: #e2e8f0
         }
 
-        /* Sidebar */
+        /* =========================================================
+ 📚 SIDEBAR
+========================================================= */
         .sidebar {
             grid-row: 2/-1;
             background: var(--sidebar);
@@ -219,10 +240,12 @@
         .side-section {
             padding: 10px 14px;
             font-size: 13px;
-            color: #111;
+            color: #111
         }
 
-        /* Content */
+        /* =========================================================
+ 📦 CONTENT
+========================================================= */
         .content {
             grid-column: 2/-1;
             grid-row: 2/-1;
@@ -230,7 +253,7 @@
             margin: 12px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
-            border: 1px solid #e5e7eb
+            border: 1px solid #e5e7eb;
         }
 
         .content-inner {
@@ -246,53 +269,47 @@
             grid-column: 1/-1
         }
 
-        /* Left card + gauges */
+        /* =========================================================
+ 🌡 CONTROL CLIMATE (Row A & B)
+========================================================= */
         .control-climate {
             padding: 10px 40px 10px
         }
 
+        /* Row A: การ์ดซ้าย + เกจขวา */
         .control-climate .rowA {
             display: grid;
             grid-template-columns: 250px minmax(0, 1fr);
-            /* ใส่ minmax(0,1fr) กันเนื้อหาดันกริดล้น */
             gap: 16px;
             align-items: start;
-            width: 100%;
-
+            width: 100%
         }
 
+        /* Row B: การ์ด 3 คอลัมน์ */
         .control-climate .rowB {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 16px
         }
 
-        /* คือ css แบบเจาะจง control-climate  */
+        /* block นี้กินทั้งความกว้าง */
         .content-inner>.control-climate {
-            grid-column: 1 / -1;
-            /* ขยายกินตั้งแต่เส้นกริด 1 ถึงเส้นสุดท้าย */
+            grid-column: 1/-1
         }
 
-        /* ขนาดของรูปใน .icon1 */
+        /* ไอคอน recipe */
         .icon1 img {
             width: 65px;
             height: 65px;
             object-fit: contain;
-            /* ให้ภาพไม่บิดเพี้ยน */
             display: block;
-            /* กันไม่ให้มีช่องว่างข้างล่าง img */
             margin: 6px;
-            /* ระยะห่างจากขอบรอบ ๆ (ปรับได้เอง) */
-            border-radius: 6px;
-            /* ถ้าอยากมุมโค้ง */
+            border-radius: 6px
         }
 
-
-
-
-
-
-
+        /* =========================================================
+ 🃏 CARD + HEADERS
+========================================================= */
         .cc-card {
             background: #fff;
             border: 1px solid var(--ring-bg);
@@ -304,10 +321,11 @@
 
         .cc-card .h {
             background: #cfe2ff;
-            padding: 3px;
             border-radius: 3px;
-            font-weight: 700;
-            font-size: 14px
+            display: flex;
+            align-items: center;
+            min-height: 36px;
+            padding: 6px 8px
         }
 
         .cc-card .head {
@@ -333,24 +351,22 @@
             margin: 2px 0 2px
         }
 
-
-
-        /* =======================
-       ★ กราฟวงกลม (gauge) ใหญ่ (เดิม)
-       - ใช้ grid + conic-gradient ทำ progress
-       ======================= */
+        /* =============
+        ============================================
+ 🥧 GAUGES
+========================================================= */
         .gauges {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 12px;
-            padding: 12px;
+            padding: 12px
         }
 
         .gauge {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 8px
         }
 
         .gauge .ring {
@@ -363,10 +379,8 @@
             position: relative;
             display: grid;
             place-items: center;
-            background:
-                radial-gradient(#fff calc(50% - 10px), transparent calc(50% - 9px)),
-                conic-gradient(var(--progress) calc(var(--p)*1%), var(--track) 0);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, .08), inset 0 0 0 1px #f1f5f9;
+            background: radial-gradient(#fff calc(50% - 10px), transparent calc(50% - 9px)), conic-gradient(var(--progress) calc(var(--p)*1%), var(--track) 0);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, .08), inset 0 0 0 1px #f1f5f9
         }
 
         .gauge .ring img {
@@ -374,9 +388,7 @@
             height: 60px;
             object-fit: contain;
             border-radius: 15px;
-            box-shadow: 0 px 6px rgba(0, 0, 0, .12);
-            background: #fff;
-            padding: none;
+            background: #fff
         }
 
         .gauge .value {
@@ -386,7 +398,7 @@
             right: 0;
             text-align: center;
             font-weight: 700;
-            font-size: 18px;
+            font-size: 18px
         }
 
         .gauge .unit {
@@ -403,10 +415,9 @@
             border: 1px solid #cce68f;
             padding: 4px 12px;
             border-radius: 999px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .06)
         }
 
-        /* สีเฉพาะ gauge ใหญ่ (เดิม) */
         #gAir .ring {
             --progress: #f87171
         }
@@ -416,33 +427,115 @@
             --progress: #34d399
         }
 
-        /* RH */
+        /* RH   */
         #gCO2 .ring {
             --progress: #fb923c
         }
 
-        /* 3 columns below (placeholders) */
+        /* CO2  */
+
+        /* =========================================================
+ 🧩 ZONE B – แถวอุปกรณ์ (ไอคอน / ชื่อ / pill / สวิตช์)
+ - ชื่ออุปกรณ์ “ขึ้นบรรทัดใหม่ได้” และสวิตช์เรียงคอลัมน์ขวาเท่ากัน
+========================================================= */
         .rowB {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 16px;
-            margin-top: 16px
+            align-items: start
         }
 
+        .rowB .cc-card {
+            padding-right: 10px
+        }
+
+        .rowB>.cc-card {
+            min-width: 0
+        }
+
+        /* ให้การ์ดหดได้ ไม่ดันล้น */
+
+        /* แถวอุปกรณ์ 4 คอลัมน์คงรูป */
         .ctrl-row {
             display: grid;
-            grid-template-columns: 28px 1fr auto;
-            gap: 20px;
+            grid-template-columns: var(--ctrl-icon) 1fr var(--ctrl-pill) var(--ctrl-switch);
+            gap: 14px;
             align-items: center;
-            margin: 6px
+            margin: 6px;
+            min-height: var(--ctrl-row-h)
         }
 
+        /* ชื่ออุปกรณ์: อนุญาตขึ้นบรรทัดใหม่ */
+        .ctrl-row>span {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+            line-height: 1.2;
+            min-width: 0;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            display: block
+        }
 
+        /* เคสพิเศษ: ใช้ .ctrl-title ภายใน และอยากให้ส่วนหลังขึ้นบรรทัดใหม่จริง ๆ */
+        .ctrl-title span {
+            display: block;
+            margin-top: 2px
+        }
 
+        /* ไอคอนซ้าย */
+        .icon-sm {
+            width: var(--ctrl-icon);
+            height: var(--ctrl-icon);
+            object-fit: contain;
+            padding: 4px;
+            display: block
+        }
 
+        /* pill ในคอลัมน์ตัวเอง */
+        .ctrl-row .pill {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 36px;
+            border-radius: 999px;
+            padding: 6px 10px;
+            margin-left: 0 !important;
+            margin-right: 0 !important
+        }
 
+        /* สวิตช์ขวาสุด */
+        .ctrl-row .switch-inline {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            width: 100%;
+            white-space: nowrap
+        }
 
+        .ctrl-row .switch-inline .form-switch {
+            padding-left: 0
+        }
 
+        .ctrl-row .switch-inline .form-check-input {
+            margin-left: 0
+        }
+
+        .ctrl-row .switch-inline label {
+            margin: 0
+        }
+
+        /* ขนาดสวิตช์สัมพันธ์กับความสูงแถว */
+        .switch-lg.form-check-input {
+            width: 3.4rem;
+            height: 1.4rem
+        }
+
+        /* =========================================================
+ 💡 LIGHT / LAMP / SETPOINT ROWS
+========================================================= */
         .light-row {
             display: flex;
             gap: 10px;
@@ -463,26 +556,28 @@
             grid-template-columns: 28px 1fr auto auto;
             gap: 8px;
             align-items: center;
-            margin-bottom: 6px;
-
-        }
-
-        .icon-sm {
-            width: 42px;
-            height: 42px;
-            object-fit: contain;
-            padding: 4px;
+            margin-bottom: 6px
         }
 
         .icon-smd {
             width: 80px;
             height: 45px;
             object-fit: contain;
-            padding: 2px;
+            padding: 2px
         }
 
         .muted {
             color: var(--muted)
+        }
+
+        /* =========================================================
+ 📱 RESPONSIVE
+========================================================= */
+        /* ✅ จอ 15.6" (~1366px) → RowB เหลือ 2 คอลัมน์ ลดการเบียด */
+        @media (max-width:1800px) {
+            .control-climate .rowB {
+                grid-template-columns: 1fr 1fr
+            }
         }
 
         @media (max-width:1100px) {
@@ -490,230 +585,250 @@
                 grid-template-columns: 1fr
             }
 
-            .rowB {
+            .control-climate .rowB {
                 grid-template-columns: 1fr
             }
 
+            /* การ์ดเรียงลง 1 คอลัมน์ */
             .gauges {
                 grid-template-columns: repeat(2, 1fr)
             }
         }
 
-        /* =======================
-       ★ Dropdown style (เดิม)
-       ======================= */
+        /* มือถือ: 2 บรรทัด/แถว
+   บรรทัดบน: ไอคอน | ชื่อ | สวิตช์
+   บรรทัดล่าง: (ว่าง) | pill | pill */
+        @media (max-width:560px) {
+            :root {
+                --ctrl-icon: 36px;
+                --ctrl-switch: 120px
+            }
+
+            .ctrl-row {
+                grid-template-columns: 36px 1fr var(--ctrl-switch);
+                grid-template-areas:
+                    "icon title switch"
+                    ".    pill  pill";
+                gap: 10px;
+            }
+
+            .ctrl-row img.icon-sm {
+                grid-area: icon
+            }
+
+            .ctrl-row>span {
+                grid-area: title
+            }
+
+            .ctrl-row .pill {
+                grid-area: pill
+            }
+
+            .ctrl-row .switch-inline {
+                grid-area: switch
+            }
+        }
+
+        /* =========================================================
+ ⬇️ DROPDOWNS
+========================================================= */
         .sidebar .dropdown .btn {
             background: #ffffff;
             border-radius: 12px;
             font-weight: 600;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .15);
             transition: all .3s ease;
             width: 100%;
-            text-align: left;
+            text-align: left
         }
 
         .sidebar .dropdown .btn:hover {
             background: #f1f1f1;
-            transform: translateY(-2px);
+            transform: translateY(-2px)
         }
 
         .sidebar .dropdown-menu {
             border-radius: 12px;
             border: none;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .15);
             animation: fadeIn .3s ease;
             width: 100%;
-            z-index: 1000;
+            z-index: 1000
         }
 
         .sidebar .dropdown-item {
             font-weight: 500;
             padding: 10px 20px;
-            transition: all .2s ease;
+            transition: all .2s ease
         }
 
         .sidebar .dropdown-item:hover {
             background-color: #fda085;
             color: #fff;
-            border-radius: 8px;
+            border-radius: 8px
         }
 
-        /* =======================
-       ★จบ Dropdown style (เดิม)
-       ======================= */
-
-        /* ======================
-       ★ Dropdown style (auto)
-       ======================= */
+        /* (สไตล์ชุดสอง – vitsidebar) */
         .vitsidebar .dropdown .btn {
             background: #bcf1c3;
             border-radius: 12px;
             font-weight: bold;
-
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .15);
             transition: all .3s ease;
             width: 100%;
-            text-align: left;
+            text-align: left
         }
 
         .vitsidebar .dropdown .btn:hover {
             background: #f1f1f1;
-            transform: translateY(-2px);
+            transform: translateY(-2px)
         }
 
         .vitsidebar .dropdown-menu {
             border-radius: 12px;
             border: none;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .15);
             animation: fadeIn .3s ease;
             width: 100%;
-            z-index: 1000;
+            z-index: 1000
         }
 
         .vitsidebar .dropdown-item {
             font-weight: 500;
             padding: 10px 20px;
-            transition: all .2s ease;
+            transition: all .2s ease
         }
 
         .vitsidebar .dropdown-item:hover {
             background-color: #fda085;
             color: #fff;
-            border-radius: 8px;
+            border-radius: 8px
         }
 
-        /* =======================
-       ★จบ Dropdown style (เดิม)
-       ======================= */
-
-        /* =======================
-       ★เริ่ม css style (switch เเละมีบ้างอันมาจาก Bootstrap)
-       ======================= */
-
-        /* กล่องจับสวิตช์ + ข้อความ ให้อยู่แนวเดียวกัน */
+        /* =========================================================
+ 🧲 SWITCH & PILL STATES
+========================================================= */
         .switch-inline {
-            display: flex;
-            align-items: center;
-            /* จัดให้อยู่กึ่งกลางแนวตั้ง */
-            gap: var(--switch-gap, 8px);
-            /* ระยะห่างสวิตช์-ข้อความ (แก้ค่าได้) */
+            white-space: nowrap
         }
 
-        /* (ไม่บังคับ) ปรับขนาดสวิตช์ได้ */
-        .switch-lg.form-check-input {
-            width: 3.3rem;
-            height: 1.3rem;
-        }
-
+        /* ป้าย On/Off ไม่พับ */
         .form-switch .form-check-input:checked {
             background-color: #9cf791;
-            /* */
-            border-color: #7cff09;
+            border-color: #7cff09
         }
-
-        /* =======================
-       ★จบ css style (switch เเละมีบ้างอันมาจาก Bootstrap)
-       ======================= */
-        /* =======================
-       ★เริ่ม css style (lamp auto manaul task off Bootstrap)
-       ======================= */
 
         .pill.auto {
             background: #dcf8bc;
-            color: #000;
+            color: #000
         }
 
         .pill.manual {
             background: #e54b4b;
-            color: #fff;
+            color: #fff
         }
 
         .pill.task {
             background: #f7c708;
-            color: #000;
+            color: #000
         }
 
         .pill.off {
             background: #f3f3f3;
-            color: #000;
+            color: #000
         }
 
         .pill {
-            min-height: 18px;
-
-            flex: 0 1 200px;
-            /* ยืดได้แต่ไม่เกิน 100px */
+            min-width: var(--ctrl-pill);
+            justify-content: center
         }
 
-        /* =======================
-       ★จบ css style (lamp auto manaul task off Bootstrap)
-       ======================= */
-
-        /* =======================
-       ★เริม css จาง switch On/Off เมื่อกด
-       ======================= */
-
-        /* ล็อกทั้งบล็อกเวลารอคอนเฟิร์ม */
         .switch-inline.is-pending {
             opacity: .5;
-            pointer-events: none;
+            pointer-events: none
         }
 
-        /* อยากให้ตัวปุ่มมีฟีลกำลังรอ ก็เพิ่มได้: */
         .form-check-input.is-pending {
             opacity: .6;
-            cursor: wait;
+            cursor: wait
         }
 
-        /* =======================
-       ★จบ css จาง switch On/Off เมื่อกด
-       ======================= */
-        /* =======================
-       ★เริ่ม css จาง mode auto manaul task เมื่อกด
-       ======================= */
-        /* MODE pending: ทำให้ปุ่มจางและกดไม่ได้ */
+        .pill.is-pending {
+            opacity: .7;
+            pointer-events: none
+        }
 
-
-        /* ปุ่ม MODE: พื้นฐาน + ทรานซิชันนิ่ม ๆ */
+        /* ปุ่ม MODE (ด้านบน) + สีตามโหมด */
         #modeDropdown .btn {
             font-weight: 700;
             border-radius: 12px;
             border: 1px solid transparent;
-            transition: background-color .2s ease, color .2s ease, filter .15s ease, opacity .15s ease;
+            transition: background-color .2s ease, color .2s ease, filter .15s ease, opacity .15s ease
         }
 
-        /* สีตามโหมด */
         #modeDropdown .btn.mode-auto {
             background: #dcf8bc;
             color: #0f172a;
-            border-color: #cce68f;
+            border-color: #cce68f
         }
 
         #modeDropdown .btn.mode-manual {
             background: #e54b4b;
             color: #fff;
-            border-color: #c73b3b;
+            border-color: #c73b3b
         }
 
         #modeDropdown .btn.mode-task {
             background: #f7c708;
             color: #000;
-            border-color: #deb600;
+            border-color: #deb600
         }
 
         #modeDropdown .btn.mode-off {
             background: #f3f3f3;
             color: #000;
-            border-color: #e5e7eb;
+            border-color: #e5e7eb
         }
 
-        /* ตอนรอ state ให้จางและกดไม่ได้ (พี่มีไว้แล้ว เผื่อย้ำ) */
         #modeDropdown .btn.is-pending {
             opacity: .6;
             pointer-events: none;
-            filter: grayscale(30%);
+            filter: grayscale(30%)
+        }
+
+        /* =========================================================
+ 🧩 Utilities — จำกัดจำนวนบรรทัด + … (webkit + มาตรฐานแบบ @supports)
+ ใช้กับ <span class="clamp-1|clamp-2|clamp-3"> ภายใน .ctrl-row
+========================================================= */
+
+        /* ===== Multi-line clamp สำหรับชื่ออุปกรณ์ ===== */
+        .ctrl-row>span[class*="clamp-"] {
+            display: -webkit-box;
+            /* ให้ -webkit-line-clamp ทำงาน */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            /* ตัดส่วนเกิน */
+            /* (optional) text-overflow: ellipsis;  // บราวเซอร์ส่วนใหญ่ไม่แสดง … แบบหลายบรรทัด แต่ไม่พัง */
+        }
+
+        /* ใส่ทั้งมาตรฐาน + webkit ในกฎเดียวกัน เพื่อตัด warning */
+        .ctrl-row>span.clamp-1 {
+            -webkit-line-clamp: 1;
+            line-clamp: 1;
+        }
+
+        .ctrl-row>span.clamp-2 {
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+        }
+
+        .ctrl-row>span.clamp-3 {
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
         }
     </style>
+
+
 
 
 </head>
@@ -879,15 +994,24 @@
                             <div class="ctrl-row">
                                 <img class="icon-sm state-img"
                                     src="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/AirS0.svg"
-                                    alt="Air conditioner" data-state-alias="aircon"
+                                    alt="Air" data-state-alias="air"
                                     data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6934e97808b5e5fe762fb3f1173ea4a6fe2e2ad8/AirS1.svg"
                                     data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/AirS0.svg">
                                 <span>Air conditioner</span>
+                              
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto" id="pill-air"
+                                    data-alias="air" data-switch-key="airof" data-mode-topic="ssb-box/mode/air/state"
+                                    data-cmd-topic="ssb-box/switch/airof/cmd"
+                                    data-switch-state-topic="ssb-box/switch/airof/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
+
                                 <div class="switch-inline" style="--switch-gap: 10px;">
                                     <div class="form-check form-switch m-0">
                                         <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
-                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
-                                            id="airconSwitch" data-alias="aircon">
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox" id="air"
+                                            data-alias="air">
                                     </div>
                                     <label class="form-check-label mb-0">On/Off</label>
                                 </div>
@@ -900,12 +1024,25 @@
                                     data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6934e97808b5e5fe762fb3f1173ea4a6fe2e2ad8/Humidifilers1.svg"
                                     data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Humidifilers0.svg">
                                 <span>Humidifier</span>
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
+                                    id="pill-humidifier" data-alias="humidifier" data-switch-key="humidifierof"
+                                    data-mode-topic="ssb-box/mode/humidifier/state"
+                                    data-cmd-topic="ssb-box/switch/humidifierof/cmd"
+                                    data-switch-state-topic="ssb-box/switch/humidifierof/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
+
+
+
                                 <div class="switch-inline" style="--switch-gap: 10px;">
                                     <div class="form-check form-switch m-0">
                                         <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
                                         <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
                                             id="humidifierSwitch" data-alias="humidifier">
                                     </div>
+
                                     <label class="form-check-label mb-0">On/Off</label>
                                 </div>
                             </div>
@@ -917,38 +1054,47 @@
                                     data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/1b4a0f4fd8a36f160e7f41728d7c161a1e10899c/Co2S1.svg"
                                     data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/497513610937edbe8884a21c7b8c3d916d96a5b7/CO2.png">
                                 <span>CO₂ injection</span>
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto" id="pill-co2"
+                                    data-alias="co2" data-switch-key="co2of" data-mode-topic="ssb-box/mode/co2/state"
+                                    data-cmd-topic="ssb-box/switch/co2of/cmd"
+                                    data-switch-state-topic="ssb-box/switch/co2of/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
+
                                 <div class="switch-inline" style="--switch-gap: 10px;">
                                     <div class="form-check form-switch m-0">
                                         <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
                                         <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
                                             id="co2Switch" data-alias="co2">
                                     </div>
+
                                     <label class="form-check-label mb-0">On/Off</label>
                                 </div>
 
-
                             </div>
-                            <div class="ctrl-row d-flex align-items-center">
+                            <div class="ctrl-row ">
                                 <!-- ซ้าย: ไอคอน + ชื่อ -->
-                                <div class="d-flex align-items-center me-3">
-                                    <img class="icon-sm state-img"
-                                        src="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Fans0.svg"
-                                        alt="Duct fan" data-state-alias="ductfan"
-                                        data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6934e97808b5e5fe762fb3f1173ea4a6fe2e2ad8/Fans1.svg"
-                                        data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Fans0.svg"
-                                        width="48" height="48">
-                                    <span class="ms-2 fw-semibold">Duct fan</span>
-                                </div>
 
-                                <!-- กลาง: Pill แสดงสถานะ -->
-                                <!-- ductfan -->
-                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-25"
+                                <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Fans0.svg"
+                                    alt="Duct fan" data-state-alias="ductfan"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6934e97808b5e5fe762fb3f1173ea4a6fe2e2ad8/Fans1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Fans0.svg"
+                                    width="48" height="48">
+                                <span>Duct fan</span>
+
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
                                     id="pill-ductfan" data-alias="ductfan" data-switch-key="ductfanof"
                                     data-mode-topic="ssb-box/mode/ductfan/state"
                                     data-cmd-topic="ssb-box/switch/ductfanof/cmd"
-                                    data-switch-state-topic="ssb-box/switch/ductfanof/state">
+                                    data-switch-state-topic="ssb-box/switch/ductfanof/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
                                     <span data-label>Off</span>
                                 </div>
+
 
                                 <!-- ขวา: Switch On/Off -->
                                 <div class="switch-inline" style="--switch-gap: 10px;">
@@ -967,6 +1113,15 @@
                                     data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/1b4a0f4fd8a36f160e7f41728d7c161a1e10899c/ReturnFanS1.svg"
                                     data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/ReturnFanS0.svg">
                                 <span>Return fan</span>
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
+                                    id="pill-returnfan" data-alias="returnfan" data-switch-key="returnfanof"
+                                    data-mode-topic="ssb-box/mode/returnfan/state"
+                                    data-cmd-topic="ssb-box/switch/returnfanof/cmd"
+                                    data-switch-state-topic="ssb-box/switch/returnfan/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
 
                                 <div class="switch-inline" style="--switch-gap: 10px;">
                                     <div class="form-check form-switch m-0">
@@ -989,6 +1144,16 @@
                                     data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/ExhaustS0.svg">
                                 <span>Exhaust fan</span>
 
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
+                                    id="pill-exhaustfan" data-alias="exhaustfan" data-switch-key="exhaustfanof"
+                                    data-mode-topic="ssb-box/mode/exhaustfan/state"
+                                    data-cmd-topic="ssb-box/switch/exhaustfanof/cmd"
+                                    data-switch-state-topic="ssb-box/switch/exhaustfan/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
+
                                 <div class="switch-inline" style="--switch-gap: 10px;">
                                     <div class="form-check form-switch m-0">
                                         <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
@@ -1005,7 +1170,18 @@
                                     alt="Nursery Fan : Upper" data-state-alias="nurseryfanupper"
                                     data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6934e97808b5e5fe762fb3f1173ea4a6fe2e2ad8/Fans1.svg"
                                     data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Fans0.svg">
-                                <span>Nursery Fan : Upper</span>
+                                <span class="ctrl-title">Nursery Fan : <span>Upper</span></span>
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
+                                    id="pill-nurseryfanupper" data-alias="nurseryfanupper"
+                                    data-switch-key="nurseryfanupperof"
+                                    data-mode-topic="ssb-box/mode/nurseryfanupper/state"
+                                    data-cmd-topic="ssb-box/switch/nurseryfanupperof/cmd"
+                                    data-switch-state-topic="ssb-box/switch/nurseryfanupper/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
+
                                 <div class="switch-inline" style="--switch-gap: 10px;">
                                     <div class="form-check form-switch m-0">
                                         <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
@@ -1025,7 +1201,78 @@
                                     alt="Nursery Fan : Lower" data-state-alias="nurseryfanlower"
                                     data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6934e97808b5e5fe762fb3f1173ea4a6fe2e2ad8/Fans1.svg"
                                     data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Fans0.svg">
-                                <span>Nursery Fan : Lower</span>
+                                <span class="ctrl-title">Nursery Fan : <span>Lower</span></span>
+
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
+                                    id="pill-nurseryfanlower" data-alias="nurseryfanlower"
+                                    data-switch-key="nurseryfanlowerof"
+                                    data-mode-topic="ssb-box/mode/nurseryfanlower/state"
+                                    data-cmd-topic="ssb-box/switch/nurseryfanlowerof/cmd"
+                                    data-switch-state-topic="ssb-box/switch/nurseryfanlower/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
+
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="nurseryfanlowerSwitch" data-alias="nurseryfanlower">
+                                    </div>
+                                    <label class="form-check-label mb-0">On/Off</label>
+                                </div>
+                            </div>
+ <!-- agitator 1-->
+                            <div class="ctrl-row">
+                                <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/8360faa12f4a8b86ccaa05d48f7b1fa126fd4f12/AgtatorS0.svg"
+                                    alt="Nursery Fan : Lower" data-state-alias="nurseryfanlower"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/8360faa12f4a8b86ccaa05d48f7b1fa126fd4f12/AgtatorS1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/8360faa12f4a8b86ccaa05d48f7b1fa126fd4f12/AgtatorS0.svg">
+                                <span class="ctrl-title">Agitator : <span>Section1-2</span></span>
+
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
+                                    id="pill-nurseryfanlower" data-alias="nurseryfanlower"
+                                    data-switch-key="nurseryfanlowerof"
+                                    data-mode-topic="ssb-box/mode/nurseryfanlower/state"
+                                    data-cmd-topic="ssb-box/switch/nurseryfanlowerof/cmd"
+                                    data-switch-state-topic="ssb-box/switch/nurseryfanlower/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
+
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="nurseryfanlowerSwitch" data-alias="nurseryfanlower">
+                                    </div>
+                                    <label class="form-check-label mb-0">MoveIn</label>
+                                </div>
+                            </div>
+
+                            <!-- agitator 2-->
+                            <div class="ctrl-row">
+                                <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Fans0.svg"
+                                    alt="Nursery Fan : Lower" data-state-alias="nurseryfanlower"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6934e97808b5e5fe762fb3f1173ea4a6fe2e2ad8/Fans1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/Fans0.svg">
+                                <span class="ctrl-title">Agitator : <span>Section3-4</span></span>
+
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
+                                    id="pill-nurseryfanlower" data-alias="nurseryfanlower"
+                                    data-switch-key="nurseryfanlowerof"
+                                    data-mode-topic="ssb-box/mode/nurseryfanlower/state"
+                                    data-cmd-topic="ssb-box/switch/nurseryfanlowerof/cmd"
+                                    data-switch-state-topic="ssb-box/switch/nurseryfanlower/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
+
                                 <div class="switch-inline" style="--switch-gap: 10px;">
                                     <div class="form-check form-switch m-0">
                                         <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
@@ -1049,18 +1296,186 @@
                                     alt=""><span>Start <input type="time" value="22:01"></span><span>End <input
                                         type="time" value="06:00"></span><b>8
                                     Hrs</b></div>
-                            <div class="lamp-row"><span>Row 1</span><span>Auto</span><label><input type="checkbox">
-                                    On/Off</label><span>ON <input type="time" value="00:01"></span><span>OFF <input
-                                        type="time" value="16:00"></span><b>75%</b></div>
-                            <div class="lamp-row"><span>Row 2</span><span>Auto</span><label><input type="checkbox">
-                                    On/Off</label><span>ON <input type="time" value="00:01"></span><span>OFF <input
-                                        type="time" value="16:00"></span><b>75%</b></div>
-                            <div class="lamp-row"><span>Row 3</span><span>Auto</span><label><input type="checkbox">
-                                    On/Off</label><span>ON <input type="time" value="00:01"></span><span>OFF <input
-                                        type="time" value="16:00"></span><b>75%</b></div>
-                            <div class="lamp-row"><span>Row 4</span><span>Auto</span><label><input type="checkbox">
-                                    On/Off</label><span>ON <input type="time" value="00:01"></span><span>OFF <input
-                                        type="time" value="16:00"></span><b>75%</b></div>
+                            <!-- ← Row1 -->
+                            <div class="ctrl-row">
+                                <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow0.svg"
+                                    alt="ledrow1" data-state-alias="ledrow1"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow0.svg">
+                                <span>Ledrow1</span>
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
+                                    id="pill-ledrow1" data-alias="ledrow1" data-switch-key="ledrow1of"
+                                    data-mode-topic="ssb-box/mode/ledrow1/state"
+                                    data-cmd-topic="ssb-box/switch/ledrow1of/cmd"
+                                    data-switch-state-topic="ssb-box/switch/ledrow1/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
+
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="ledrow1switch" data-alias="ledrow1">
+                                    </div>
+
+                                    <label class="form-check-label mb-0">On/Off</label>
+                                </div>
+
+                            </div>
+
+
+                            <!-- ← Row2 -->
+                            <div class="ctrl-row">
+                               <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow0.svg"
+                                    alt="ledrow2" data-state-alias="ledrow2"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow0.svg">
+                                <span>Ledrow2</span>
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
+                                    id="pill-ledrow2" data-alias="ledrow2" data-switch-key="ledrow2of"
+                                    data-mode-topic="ssb-box/mode/ledrow2/state"
+                                    data-cmd-topic="ssb-box/switch/ledrow2of/cmd"
+                                    data-switch-state-topic="ssb-box/switch/ledrow2/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
+
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="ledrow2switch" data-alias="ledrow2">
+                                    </div>
+
+                                    <label class="form-check-label mb-0">On/Off</label>
+                                </div>
+                            </div>
+                            <!-- ← Row3 -->
+                            <div class="ctrl-row">
+                                 <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow0.svg"
+                                    alt="ledrow3" data-state-alias="ledrow3"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow0.svg">
+                                <span>Ledrow3</span>
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
+                                    id="pill-ledrow3" data-alias="ledrow3" data-switch-key="ledrow3of"
+                                    data-mode-topic="ssb-box/mode/ledrow3/state"
+                                    data-cmd-topic="ssb-box/switch/ledrow3of/cmd"
+                                    data-switch-state-topic="ssb-box/switch/ledrow3/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
+
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="ledrow3switch" data-alias="ledrow3">
+                                    </div>
+
+                                    <label class="form-check-label mb-0">On/Off</label>
+                                </div>
+                            </div>
+                            <!-- ← Row4 -->
+                            <div class="ctrl-row">
+                                 <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow0.svg"
+                                    alt="ledrow4" data-state-alias="ledrow4"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow0.svg">
+                                <span>Ledrow4</span>
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
+                                    id="pill-ledrow4" data-alias="ledrow4" data-switch-key="ledrow4of"
+                                    data-mode-topic="ssb-box/mode/Ledrow4/state"
+                                    data-cmd-topic="ssb-box/switch/ledrow4of/cmd"
+                                    data-switch-state-topic="ssb-box/switch/ledrow4/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
+
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="ledrow4switch" data-alias="ledrow4">
+                                    </div>
+
+                                    <label class="form-check-label mb-0">On/Off</label>
+                                </div>
+                            </div>
+
+                            <!-- ← Lamp upper -->
+                            <div class="ctrl-row">
+                                <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/6ddb716a15605e5a023bc1ef59f5328abcc86bf5/Lampup0.svg"
+                                    alt="Lamp upper injection" data-state-alias="nursery-ledupper"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6ddb716a15605e5a023bc1ef59f5328abcc86bf5/Lampup1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/6ddb716a15605e5a023bc1ef59f5328abcc86bf5/Lampup0.svg">
+                                <span>Lamp upper</span>
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto" id="pill-nursery-ledupper"
+                                    data-alias="nursery-ledupper" data-switch-key="nursery-ledupperof" data-mode-topic="ssb-box/mode/nursery-ledupper/state"
+                                    data-cmd-topic="ssb-box/switch/nursery-ledupperof/cmd"
+                                    data-switch-state-topic="ssb-box/switch/nursery-ledupperof/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
+
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="nursery-ledupperSwitch" data-alias="nursery-ledupper">
+                                    </div>
+
+                                    <label class="form-check-label mb-0">On/Off</label>
+                                </div>
+
+                            </div>
+                            <!-- ← Lamp lower -->
+                            <div class="ctrl-row">
+                                <img class="icon-sm state-img"
+                                    src="https://github.com/reungwitk-cyber/ssb-box/raw/6ddb716a15605e5a023bc1ef59f5328abcc86bf5/Lampup0.svg"
+                                    alt="Lamp lower injection" data-state-alias="nursery-ledlower"
+                                    data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6ddb716a15605e5a023bc1ef59f5328abcc86bf5/Lampup1.svg"
+                                    data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/6ddb716a15605e5a023bc1ef59f5328abcc86bf5/Lampup0.svg">
+                                <span>Lamp lower</span>
+
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto" id="pill-nursery-ledupper"
+                                    data-alias="nursery-ledlower" data-switch-key="nursery-ledlowerof" data-mode-topic="ssb-box/mode/nursery-ledlower/state"
+                                    data-cmd-topic="ssb-box/switch/nursery-ledlowerof/cmd"
+                                    data-switch-state-topic="ssb-box/switch/nursery-ledlowerof/state" data-off-code="3">
+                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    <span data-label>Off</span>
+                                </div>
+
+                                <div class="switch-inline" style="--switch-gap: 10px;">
+                                    <div class="form-check form-switch m-0">
+                                        <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
+                                        <input class="form-check-input switch-lg ssbbox-switch" type="checkbox"
+                                            id="nursery-ledlowerSwitch" data-alias="nursery-ledlower">
+                                    </div>
+
+                                    <label class="form-check-label mb-0">On/Off</label>
+                                    
+                                </div>
+
+                            </div>
+
+                            
+
+
+
+
+
                         </div>
 
                         <div class="cc-card">
@@ -1449,7 +1864,7 @@
         // helper: alias ไหนคือ "สวิตช์"
         function isSwitchAlias(alias) {
             if (!alias) return false;
-            return alias.includes('fan') || alias === 'aircon' || alias === 'humidifier';
+            return alias.includes('fan') || alias === 'air' || alias === 'humidifier';
         }
 
         // apply snapshot map: { alias:any, ... }  (สวิตช์ → boolean, อื่น ๆ คงค่า)
@@ -1652,49 +2067,100 @@
 
 
 
+
+
     <script>
-        /* ====== PILL (data-*) MODULE – place after WEBSOCKET(final) ====== */
+        /* ===== PILL (data-*) — ใช้ mode ตัดสินใจ true/false + กันกดรัว + รับ retained แน่ ๆ ===== */
         (function () {
+            if (window.__PILL_BINDER__) return; window.__PILL_BINDER__ = true;
+
+            // set ไว้รวม topic เพิ่มเติมสำหรับ re-sub ตอน ws ต่อใหม่
+            window.SSB_SWITCH_TOPICS = window.SSB_SWITCH_TOPICS || new Set();
+
             function init() { document.querySelectorAll('.pill[data-alias]').forEach(mount); }
 
             function mount(el) {
                 const label = el.querySelector('[data-label]') || el.querySelector('span');
+                const alias = el.dataset.alias.trim();                            // ex. 'ductfan'
+                const switchKey = (el.dataset.switchKey || (alias + 'of')).trim();// ex. 'ductfanof'
+                const cmdTopic = (el.dataset.cmdTopic || `ssb-box/switch/${switchKey}/cmd`).trim();
+                const modeTopic = (el.dataset.modeTopic || `ssb-box/mode/${alias}/state`).trim();
+                const swStateTopic = (el.dataset.switchStateTopic || `ssb-box/switch/${switchKey}/state`).trim();
+                const offCode = Number(el.dataset.offCode ?? 3);
+                const LS_MODE_KEY = `ssbbox:mode:last:${alias}`;
+                let pending = false, timer = null;
 
-                const alias = (el.dataset.alias || '').trim();                 // โหมด เช่น ductfan
-                const switchKey = (el.dataset.switchKey || (alias + 'of')).trim(); // คีย์สวิตช์ เช่น ductfanof
-                const prefix = (el.dataset.prefix || 'ssb-box').trim();         // ใช้กับ "คำสั่ง" เท่านั้น
-                const cmdTopic = (el.dataset.cmdTopic || `${prefix}/switch/${switchKey}/cmd`).trim();
-                const stateAlias = (el.dataset.stateAlias || alias).trim();         // ใช้จับคู่ ssbbox:state
+                /* ---------- 0) subscribe แบบเจาะจง + เก็บไว้ re-sub ---------- */
+                try { window.SSB_SWITCH_TOPICS.add(modeTopic); window.SSB_SWITCH_TOPICS.add(swStateTopic); } catch { }
+                if (typeof safeSubscribe === 'function') {
+                    try { safeSubscribe([modeTopic, swStateTopic]); } catch { }
+                }
 
-                // คลิก -> ส่งคำสั่ง
-                el.style.cursor = 'pointer';
-                el.addEventListener('click', () => {
-                    const desired = !(el.dataset._sw === 'true');                      // toggle local
-                    const payload = JSON.stringify({ [switchKey]: [desired] });
-                    const ok = (typeof safePublish === 'function') && safePublish(cmdTopic, payload);
-                    if (!ok) { console.warn('[pill] safePublish not ready'); return; }
-                    // optimistic ไว้ก่อน (รอ state จริงมา overwrite)
-                    el.dataset._sw = String(desired);
-                    // ไม่เปลี่ยนสี pill ตาม ON/OFF — pill แสดง "โหมด" เท่านั้น
-                });
+                /* ---------- 1) hydrate จาก localStorage (โชว์ก่อน) ---------- */
+                try {
+                    const s = localStorage.getItem(LS_MODE_KEY);
+                    if (s !== null && s !== undefined && s !== '') {
+                        const n = Number(s);
+                        if (!Number.isNaN(n)) renderMode(el, label, n);
+                    }
+                } catch { }
 
-                // โหมด 0/1/2/3 -> อัปเดตสี/ข้อความ
+                /* ---------- 2) ฟังโหมดจริง (0/1/2/3) ---------- */
                 document.addEventListener('ssbbox:mode', (e) => {
                     const { alias: a, value } = e.detail || {};
                     if (a !== alias) return;
-                    renderMode(el, label, value);
+                    const code = Array.isArray(value) ? Number(value[0]) : Number(value);
+                    if (!Number.isNaN(code)) {
+                        el.dataset._modeCode = String(code);
+                        renderMode(el, label, code);
+                        try { localStorage.setItem(LS_MODE_KEY, String(code)); } catch { }
+                    }
                 });
 
-                // ถ้ามี event สวิตช์ของ alias นี้ -> จำสถานะไว้ใช้ตอน toggle
+                /* ---------- 3) ฟังสถานะสวิตช์ (ไว้ fallback + ปลด pending) ---------- */
                 document.addEventListener('ssbbox:state', (e) => {
                     const { alias: a, value } = e.detail || {};
-                    if (a !== stateAlias) return;
+                    if (a !== switchKey) return;
                     el.dataset._sw = String(!!value);
+                    if (pending) {
+                        pending = false;
+                        el.classList.remove('is-pending');
+                        if (timer) { clearTimeout(timer); timer = null; }
+                    }
+                });
+
+                /* ---------- 4) คลิก -> ตัดสินใจจาก mode ---------- */
+                el.style.cursor = 'pointer';
+                el.addEventListener('click', () => {
+                    if (pending) return;
+
+                    let modeCode = Number(el.dataset._modeCode);
+                    if (Number.isNaN(modeCode) && window.MODE_STATE && typeof MODE_STATE[alias] !== 'undefined') {
+                        const m = MODE_STATE[alias]; modeCode = Number(Array.isArray(m) ? m[0] : m);
+                    }
+
+                    let desired;
+                    if (!Number.isNaN(modeCode)) {
+                        // ถ้าโหมดล่าสุด = offCode (ปกติ 3) → ส่ง false, อื่น ๆ → ส่ง true
+                        desired = (modeCode === offCode) ? false : true;
+                    } else {
+                        // ยังไม่รู้โหมด → toggle จากสถานะสวิตช์ล่าสุด
+                        desired = !(el.dataset._sw === 'true');
+                    }
+
+                    const payload = JSON.stringify({ [switchKey]: [Boolean(desired)] });
+                    const ok = (typeof safePublish === 'function') && safePublish(cmdTopic, payload);
+                    if (!ok) { console.warn('[pill] safePublish not ready'); return; }
+
+                    // กันกดรัวจนกว่าจะมี state กลับ หรือครบเวลา
+                    pending = true;
+                    el.classList.add('is-pending');
+                    timer = setTimeout(() => { pending = false; el.classList.remove('is-pending'); timer = null; }, 3000);
                 });
             }
 
-            function renderMode(el, label, val) {
-                const n = Number(Array.isArray(val) ? val[0] : val);
+            function renderMode(el, label, code) {
+                const n = Number(code);
                 el.classList.remove('auto', 'manual', 'task', 'off', 'unknown');
                 switch (n) {
                     case 0: el.classList.add('manual'); label.textContent = 'Manual'; break;
@@ -1709,9 +2175,6 @@
             else init();
         })();
     </script>
-
-
-
 
 
 
@@ -1887,6 +2350,7 @@
             });
         })();
     </script>
+
 
 
 
