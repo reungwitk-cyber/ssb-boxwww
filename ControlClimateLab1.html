@@ -998,7 +998,7 @@
                                     data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6934e97808b5e5fe762fb3f1173ea4a6fe2e2ad8/AirS1.svg"
                                     data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/AirS0.svg">
                                 <span>Air conditioner</span>
-                              
+
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto" id="pill-air"
                                     data-alias="air" data-switch-key="airof" data-mode-topic="ssb-box/mode/air/state"
                                     data-cmd-topic="ssb-box/switch/airof/cmd"
@@ -1223,7 +1223,7 @@
                                     <label class="form-check-label mb-0">On/Off</label>
                                 </div>
                             </div>
- <!-- agitator 1-->
+                            <!-- agitator 1-->
                             <div class="ctrl-row">
                                 <img class="icon-sm state-img"
                                     src="https://github.com/reungwitk-cyber/ssb-box/raw/8360faa12f4a8b86ccaa05d48f7b1fa126fd4f12/AgtatorS0.svg"
@@ -1329,7 +1329,7 @@
 
                             <!-- ← Row2 -->
                             <div class="ctrl-row">
-                               <img class="icon-sm state-img"
+                                <img class="icon-sm state-img"
                                     src="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow0.svg"
                                     alt="ledrow2" data-state-alias="ledrow2"
                                     data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow1.svg"
@@ -1357,7 +1357,7 @@
                             </div>
                             <!-- ← Row3 -->
                             <div class="ctrl-row">
-                                 <img class="icon-sm state-img"
+                                <img class="icon-sm state-img"
                                     src="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow0.svg"
                                     alt="ledrow3" data-state-alias="ledrow3"
                                     data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow1.svg"
@@ -1385,7 +1385,7 @@
                             </div>
                             <!-- ← Row4 -->
                             <div class="ctrl-row">
-                                 <img class="icon-sm state-img"
+                                <img class="icon-sm state-img"
                                     src="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow0.svg"
                                     alt="ledrow4" data-state-alias="ledrow4"
                                     data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/3e25a9b3596d13c5522c57d6382d3e76db44ac8e/LampRow1.svg"
@@ -1421,8 +1421,10 @@
                                     data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/6ddb716a15605e5a023bc1ef59f5328abcc86bf5/Lampup0.svg">
                                 <span>Lamp upper</span>
 
-                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto" id="pill-nursery-ledupper"
-                                    data-alias="nursery-ledupper" data-switch-key="nursery-ledupperof" data-mode-topic="ssb-box/mode/nursery-ledupper/state"
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
+                                    id="pill-nursery-ledupper" data-alias="nursery-ledupper"
+                                    data-switch-key="nursery-ledupperof"
+                                    data-mode-topic="ssb-box/mode/nursery-ledupper/state"
                                     data-cmd-topic="ssb-box/switch/nursery-ledupperof/cmd"
                                     data-switch-state-topic="ssb-box/switch/nursery-ledupperof/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
@@ -1449,8 +1451,10 @@
                                     data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/6ddb716a15605e5a023bc1ef59f5328abcc86bf5/Lampup0.svg">
                                 <span>Lamp lower</span>
 
-                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto" id="pill-nursery-ledupper"
-                                    data-alias="nursery-ledlower" data-switch-key="nursery-ledlowerof" data-mode-topic="ssb-box/mode/nursery-ledlower/state"
+                                <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
+                                    id="pill-nursery-ledupper" data-alias="nursery-ledlower"
+                                    data-switch-key="nursery-ledlowerof"
+                                    data-mode-topic="ssb-box/mode/nursery-ledlower/state"
                                     data-cmd-topic="ssb-box/switch/nursery-ledlowerof/cmd"
                                     data-switch-state-topic="ssb-box/switch/nursery-ledlowerof/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
@@ -1465,12 +1469,12 @@
                                     </div>
 
                                     <label class="form-check-label mb-0">On/Off</label>
-                                    
+
                                 </div>
 
                             </div>
 
-                            
+
 
 
 
@@ -1501,6 +1505,7 @@
                 </section>
             </div>
         </main>
+        <img id="cam1" width="480" height="270" style="background:#000;border-radius:12px;object-fit:cover" alt="CAM1">
     </div>
 
     <!-- ================= CLOCK ================= -->
@@ -2351,8 +2356,19 @@
         })();
     </script>
 
-
-
+   <script>
+(() => {
+  const cam1WS = new WebSocket('wss://skin-trackback-tanks-chemical.trycloudflare.com/ws/cam1');
+  cam1WS.onmessage = (e) => {
+    try {
+      const d = JSON.parse(e.data);
+      if (d.type === 'cam1' && d.frame) {
+        document.getElementById('cam1').src = 'data:image/jpeg;base64,' + d.frame;
+      }
+    } catch {}
+  };
+})();
+</script>
 
 
 
