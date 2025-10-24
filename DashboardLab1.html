@@ -913,14 +913,28 @@
         </div>
         <div class="title">LAB BOX</div>
 
+         <div class="topbar-right">
+
+                    <div class="dropdown" id="modeDropdown">
+                        <button class="btn dropdown-toggle px-5 py-0" type="button" data-bs-toggle="dropdown">
+                            MODE
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-val="1">AUTO</a></li>
+                            <li><a class="dropdown-item" href="#" data-val="0">MANUAL</a></li>
+                            <li><a class="dropdown-item" href="#" data-val="2">TASK</a></li>
+                        </ul>
+                    </div>
+
+
         <!-- ปุ่ม + นาฬิกาอยู่ขวา -->
-        <div class="topbar-right">
+        
           <button class="darklight">darklight</button>
           <div class="clock">
             <div class="date" id="dateText">Mon. 12 - 09 - 25</div>
             <div class="time" id="timeText">Time - 17:12:35</div>
           </div>
-        </div>
+        
       </div>
     </header>
 
@@ -982,7 +996,7 @@
         <nav class="tabs">
           <div class="tab active">Dashboard</div>
           <div class="tab" data-href="ControlClimateLab1.html" >Control Climate</div>
-          <div class="tab">Control Nutrients</div>
+          <div class="tab" data-href="ControlNutrientsLab1.html">Control Nutrients</div>
           <div class="tab">Recipe</div>
           <div class="tab">Notification</div>
           <div class="tab">Analysis</div>
@@ -1722,7 +1736,7 @@
 
     /* ---------- WebSocket (รับจาก Node-RED) ---------- */
     // ตั้ง URL ให้ตรงระบบคุณ
-    const WS_URL = "wss://skin-trackback-tanks-chemical.trycloudflare.com/mqtt";
+    const WS_URL = "wss://transition-memo-nails-realm.trycloudflare.com/mqtt";
     let ws, retry;
 
     function connect() {

@@ -184,6 +184,7 @@
 
         .darklight:hover {
             background: #e2e8f0
+                /*hover หมายถึง “ตอนที่เอาเมาส์ไปวางอยู่เหนือ element นั้น*/
         }
 
         /* =========================================================
@@ -1600,9 +1601,22 @@
     <!-- ================= GAUGE ================= -->
     <script>
         // ช่วยดึงค่าตัวแรกจาก array หรือแปลง string → number
-        const first = (v, fb = null) =>
-        (Array.isArray(v) && v.length ? Number(v[0]) :
-            (Number.isFinite(Number(v)) ? Number(v) : fb));
+        function first(v, fb = null) { /*ฟังชัน first มีตัวแปร v เเละ fb = ว่าง*/
+            if (Array.isArray(v) && v.length) { /*Array.isArray(v) → เช็คว่า v เป็น array หรือไม่ v.length → เช็คว่า array มีของข้างในไหม*/
+                return Number(v[0]); /*v = ["25.7"] → คืนค่า 25.7*/
+            } else if (Number.isFinite(Number(v))) { /*จะเช็คว่า “สิ่งที่แปลงออกมาเป็นเลขจริงไหม (ไม่ใช่ NaN, ไม่ใช่ Infinity)”*/
+                return Number(v); /*ถ้า v = "20.5" → คืนค่า 20.5*/
+            } else {
+                return fb; /*ถ้าไม่เข้าเงื่อนไขเลย จะส่ง fb*/
+            }
+        }
+        /*ตัวอย่างผลลัพ function first
+        first([ "27.3" ]);     // ✅ ได้ 27.3
+        first("45");           // ✅ ได้ 45
+        first(12.5);           // ✅ ได้ 12.5
+        first("abc");          // ❌ ได้ null (เพราะแปลงเป็นเลขไม่ได้)
+        first("abc", 0);       // ✅ ได้ 0 (ใช้ fallback)*/
+
 
         // คำนวณช่วงสี (low, mid, high)
         function getColorRanges(el, min, max) {
@@ -1631,11 +1645,11 @@
         }
 
         // อัปเดตเกจ (รวม clamp กันค่าหลุดช่วง)
-        function setGauge(gaugeEl, value) {
-            if (!gaugeEl) return;
-            const min = Number(gaugeEl.dataset.min || 0),
+        function setGauge(gaugeEl, value) {/*gaugeEl = element ของเกจในหน้าเว็บ (เช่น <div id="gAir">…</div> , value ค่าจาก websoket*/
+            if (!gaugeEl) return; /*ถ้าไม่มีค่าที่ค้นหาในหน้าเว็บ จะ ออกฟังชั้น*/
+            const min = Number(gaugeEl.dataset.min || 0), /*กำหนดค่า min ถ้าไม่กำหนด = 0 ตัวอย่าง <div id="gAir" data-min="10" data-max="40"></div>*/
                 max = Number(gaugeEl.dataset.max || 100);
-            const ring = gaugeEl.querySelector('.ring'),
+            const ring = gaugeEl.querySelector('.ring'), /**/
                 numEl = gaugeEl.querySelector('.num');
             const nVal = Number(value);
 
@@ -1659,12 +1673,24 @@
             if (gaugeEl.id === 'gLight') document.getElementById('clm-light').textContent = (clamped >= 0.5 ? 'ON' : 'OFF');
         }
 
-        // ฟังก์ชันรวม ใช้ตอน payload sensor มาถึง
-        function handleSensorPayload(p) {
-            const air = first(p.BackrooomTemp),
+        // ฟังก์ชันรวม ใช้ตอน payload sensor มาถึง *รับมาจาก WebSocket 
+        function handleSensorPayload(p) { /*ตัวแปร p คือ “payload” (ข้อมูลที่ส่งมาจากเซนเซอร์ทั้งหมด)*/
+            /*p = {
+                BackrooomTemp: ["27.5"],
+                Backrooomhumidity: ["55"],
+                BackrooomCo2: ["860"],
+                 Light: [1]
+                };) */
+            /*เรียกใช้ ฟังชัน first */
+            const air = first(p.BackrooomTemp), /*p.BackrooomTemp คือ ["27.5"] จะไปเเทนค่า v ใน funtion first */
                 rh = first(p.Backrooomhumidity),
                 co2 = first(p.BackrooomCo2);
-            if (air != null) setGauge(document.getElementById('gAir'), air);
+            /*ตัวอย่าง ผลลัพ
+                air = 27.5;
+                rh  = 55;
+                co2 = 860;*/
+
+            if (air != null) setGauge(document.getElementById('gAir'), air); /*document.getElementById('gAir') คือนำค่าในหน้าโปรเเกรมนี้ชื่อ <div id="gAir"> มาใช้ ส่วน air คือค่าจาก websokect */
             if (rh != null) setGauge(document.getElementById('gRH'), rh);
             if (co2 != null) setGauge(document.getElementById('gCO2'), co2);
             // const light=first(p.Light); if(light!=null) setGauge(document.getElementById('gLight'), light);
@@ -1867,8 +1893,9 @@
 
     <!-- ================= WEBSOCKET (final) ================= -->
     <script>
-        const WS_URL = "wss://skin-trackback-tanks-chemical.trycloudflare.com/mqtt";
+        const WS_URL = "wss://transition-memo-nails-realm.trycloudflare.com/mqtt";
         let ws, retry;
+
 
         /* ---------------- helpers ---------------- */
         const parseMaybe = v => {
@@ -2374,39 +2401,39 @@
         })();
     </script>
 
-<script>
-// บันทึกเฉพาะ alias ที่มีสวิตช์อยู่ในหน้า (กันไปชนพวก lamp)
-document.addEventListener('ssbbox:state', (e) => {
-  const { alias } = e.detail || {};
-  if (!alias) return;
-  // มีสวิตช์ตัวนี้อยู่จริงใน DOM ไหม?
-  const hasSwitch = !!document.querySelector(`.ssbbox-switch[data-alias="${alias}"]`);
-  if (!hasSwitch) return;
-  try { localStorage.setItem(`ssbbox:last:${alias}`, JSON.stringify(!!e.detail.value)); } catch {}
-});
-</script>
+    <script>
+        // บันทึกเฉพาะ alias ที่มีสวิตช์อยู่ในหน้า (กันไปชนพวก lamp)
+        document.addEventListener('ssbbox:state', (e) => {
+            const { alias } = e.detail || {};
+            if (!alias) return;
+            // มีสวิตช์ตัวนี้อยู่จริงใน DOM ไหม?
+            const hasSwitch = !!document.querySelector(`.ssbbox-switch[data-alias="${alias}"]`);
+            if (!hasSwitch) return;
+            try { localStorage.setItem(`ssbbox:last:${alias}`, JSON.stringify(!!e.detail.value)); } catch { }
+        });
+    </script>
 
 
-<script>
-(function hydrateSwitchesFromLocalStorage(){
-  function run(){
-    window.DEVICE_STATE = window.DEVICE_STATE || Object.create(null);
-    document.querySelectorAll('.ssbbox-switch[data-alias]').forEach(el => {
-      const a = el.dataset.alias;
-      try{
-        const raw = localStorage.getItem(`ssbbox:last:${a}`);
-        if (raw !== null){
-          const v = !!JSON.parse(raw);
-          DEVICE_STATE[a] = v;  // ให้ bindAllSwitches เห็นค่าเริ่มต้น
-          el.checked = v;       // ให้ UI ตรงทันที
-        }
-      }catch{}
-    });
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
-  else run();
-})();
-</script>
+    <script>
+        (function hydrateSwitchesFromLocalStorage() {
+            function run() {
+                window.DEVICE_STATE = window.DEVICE_STATE || Object.create(null);
+                document.querySelectorAll('.ssbbox-switch[data-alias]').forEach(el => {
+                    const a = el.dataset.alias;
+                    try {
+                        const raw = localStorage.getItem(`ssbbox:last:${a}`);
+                        if (raw !== null) {
+                            const v = !!JSON.parse(raw);
+                            DEVICE_STATE[a] = v;  // ให้ bindAllSwitches เห็นค่าเริ่มต้น
+                            el.checked = v;       // ให้ UI ตรงทันที
+                        }
+                    } catch { }
+                });
+            }
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+            else run();
+        })();
+    </script>
 
 
 
