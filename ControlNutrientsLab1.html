@@ -1683,7 +1683,7 @@
     </main>
   </div>
 
-  <!-- =======================
+ <!-- =======================
        Clock script นาฬิกา
        ======================= -->
   <script>
@@ -1714,415 +1714,258 @@
      MQTT (Single topic: ssb-box/sensor)
      ======================= -->
   <script>
+    /* =========================
+       ControlNutrientsLab1 – Full Script
+       ========================= */
+
     /* ---------- Helpers ---------- */
-    // หยิบค่าตัวแรกจาก array (ถ้าไม่ใช่อาเรย์จะพยายามแปลงเป็นตัวเลข)
-    const first = (v, fb = null) => (Array.isArray(v) && v.length ? Number(v[0]) : (
-      Number.isFinite(Number(v)) ? Number(v) : fb
-    ));
+    const first = (v, fb = null) => (Array.isArray(v) && v.length ? Number(v[0]) :
+      (Number.isFinite(Number(v)) ? Number(v) : fb));
 
-    function fmtForDisplay(value, el, defaultPrec = 1) {
+    function fmt(el, val, defPrec = 1) {
       const p = Number(el?.dataset.precision);
-      const prec = Number.isFinite(p) ? p : defaultPrec;
-      const n = Number(value);
-      return Number.isFinite(n) ? n.toFixed(prec) : value;
-    }
-    // ===== helper: อ่านช่วงสี 3 ช่วงจาก data-* (มีค่า default ถ้าไม่กำหนด) =====
-    function getColorRanges(el, min, max) {
-      const r1 = Number(el?.dataset.r1);
-      const r2 = Number(el?.dataset.r2);
-      const c1 = el?.dataset.c1 || '#3b82f6'; // low
-      const c2 = el?.dataset.c2 || '#10b981'; // mid
-      const c3 = el?.dataset.c3 || '#ef4444'; // high
-
-      // ถ้าไม่ได้ใส่ r1/r2 จะสร้างจากสัดส่วน 33/66%
-      const cut1 = Number.isFinite(r1) ? r1 : (min + (max - min) * 0.33);
-      const cut2 = Number.isFinite(r2) ? r2 : (min + (max - min) * 0.66);
-
-      return [
-        { min: min, max: cut1, color: c1 },
-        { min: cut1, max: cut2, color: c2 },
-        { min: cut2, max: max, color: c3 },
-      ];
+      const prec = Number.isFinite(p) ? p : defPrec; const n = Number(val);
+      return Number.isFinite(n) ? n.toFixed(prec) : val;
     }
 
-    function setGaugeColor(ring, value, ranges) {
-      for (let r of ranges) {
-        if (value >= r.min && value <= r.max) {
-          ring?.style.setProperty('--progress', r.color);
-          return;
-        }
+    function getRanges(el, min, max) {
+      const r1 = Number(el?.dataset.r1), r2 = Number(el?.dataset.r2);
+      const c1 = el?.dataset.c1 || '#3b82f6', c2 = el?.dataset.c2 || '#10b981', c3 = el?.dataset.c3 || '#ef4444';
+      const cut1 = Number.isFinite(r1) ? r1 : min + (max - min) * .33;
+      const cut2 = Number.isFinite(r2) ? r2 : min + (max - min) * .66;
+      return [{ min, max: cut1, color: c1 }, { min: cut1, max: cut2, color: c2 }, { min: cut2, max, color: c3 }];
+    }
+    function setRingColor(ring, val, ranges) {
+      for (const r of ranges) { if (val >= r.min && val <= r.max) { ring?.style.setProperty('--progress', r.color); return; } }
+      if (ranges?.length) ring?.style.setProperty('--progress', ranges.at(-1).color);
+    }
+    function toBool(v) { if (typeof v === 'string') return ['1', 'on', 'true'].includes(v.toLowerCase()); return !!v; }
+    function normalizeMode(val) {
+      if (typeof val === 'string') {
+        const s = val.trim().toUpperCase();
+        if (s === 'AUTO') return { text: 'AUTO', cls: 'auto' };
+        if (s === 'MANUAL') return { text: 'MANUAL', cls: 'manual' };
+        return { text: 'OFF', cls: 'off' };
       }
-      // ถ้าเกินช่วง ให้ใช้สีช่วงสุดท้าย
-      if (ranges?.length) ring?.style.setProperty('--progress', ranges[ranges.length - 1].color);
+      if (typeof val === 'number') {
+        if (val === 1) return { text: 'AUTO', cls: 'auto' };
+        if (val === 0) return { text: 'MANUAL', cls: 'manual' }; return { text: 'OFF', cls: 'off' };
+      }
+      return { text: 'OFF', cls: 'off' };
     }
-    // อัปเดต mini gauge (วงเล็ก)
+
+    /* ---------- Gauges ---------- */
     function setMiniGauge(el, value) {
       if (!el) return;
-      const min = Number(el.dataset.min || 0);
-      const max = Number(el.dataset.max || 100);
-      const ring = el.querySelector('.ring');
-      const num = el.querySelector('.num'); // อยู่ใน <div class="v"><span class="num">…</span></div>
-      const nVal = Number(value);
-      const pct = Math.max(0, Math.min(1, (nVal - min) / (max - min))) * 100;
+      const min = Number(el.dataset.min || 0), max = Number(el.dataset.max || 100);
+      const ring = el.querySelector('.ring'), num = el.querySelector('.num');
+      const v = Number(value);
+      const pct = Math.max(0, Math.min(1, (v - min) / (max - min))) * 100;
       ring?.style.setProperty('--p', pct.toFixed(2));
-
-      if (num) num.textContent = fmtForDisplay(nVal, el, 1);
-
-      // === 3 ช่วงสี ===
-      const ranges = getColorRanges(el, min, max);
-      setGaugeColor(ring, nVal, ranges);
-
-
-
-
-      if (el.id === 'nur-temp-mini') {
-        const nurnt = document.getElementById('nur-nt');
-        if (nurnt) nurnt.textContent = fmtForDisplay(nVal, el, 1);
-      }
-      if (el.id === 'nur-ec-mini') {
-        const nurec = document.getElementById('nur-ec');
-        if (nurec) nurec.textContent = fmtForDisplay(nVal, el, 1);
-      }
-      if (el.id === 'nur-ph-mini') {
-        const nurph = document.getElementById('nur-ph');
-        if (nurph) nurph.textContent = fmtForDisplay(nVal, el, 1);
-      }
-
-      if (el.id === 'r1-temp-mini') {
-        const r1nt = document.getElementById('r1-nt');
-        if (r1nt) r1nt.textContent = fmtForDisplay(nVal, el, 1);
-      }
-
-      if (el.id === 'r1-ec-mini') {
-        const r1ec = document.getElementById('r1-ec');
-        if (r1ec) r1ec.textContent = fmtForDisplay(nVal, el, 1);
-      }
-
-      if (el.id === 'r1-ph-mini') {
-        const r1ph = document.getElementById('r1-ph');
-        if (r1ph) r1ph.textContent = fmtForDisplay(nVal, el, 1);
-      }
-      if (el.id === 'r2-temp-mini') {
-        const r2nt = document.getElementById('r2-nt');
-        if (r2nt) r2nt.textContent = fmtForDisplay(nVal, el, 1);
-      }
-
-      if (el.id === 'r2-ec-mini') {
-        const r2ec = document.getElementById('r2-ec');
-        if (r2ec) r2ec.textContent = fmtForDisplay(nVal, el, 1);
-      }
-
-      if (el.id === 'r2-ph-mini') {
-        const r2ph = document.getElementById('r2-ph');
-        if (r2ph) r2ph.textContent = fmtForDisplay(nVal, el, 1);
-      }
-
-
-
-
-
-
-
-
+      if (num) num.textContent = fmt(el, v, 1);
+      setRingColor(ring, v, getRanges(el, min, max));
+    }
+    function setGauge(el, value) {
+      if (!el) return;
+      const min = Number(el.dataset.min || 0), max = Number(el.dataset.max || 100);
+      const ring = el.querySelector('.ring'), num = el.querySelector('.num');
+      const v = Number(value);
+      const pct = Math.max(0, Math.min(1, (v - min) / (max - min))) * 100;
+      ring?.style.setProperty('--p', pct.toFixed(2));
+      if (el.id === 'gLight') { if (num) num.textContent = (v >= .5) ? 'ON' : 'OFF'; }
+      else { if (num) num.textContent = fmt(el, v, 1); setRingColor(ring, v, getRanges(el, min, max)); }
     }
 
-    // อัปเดต gauge ใหญ่ (Air/RH/CO2/Light)
-    function setGauge(gaugeEl, value) {
-      if (!gaugeEl) return;
-      const min = Number(gaugeEl.dataset.min || 0);
-      const max = Number(gaugeEl.dataset.max || 100);
-      const ring = gaugeEl.querySelector('.ring');
-      const numEl = gaugeEl.querySelector('.num');
-      const nVal = Number(value);
-      const pct = Math.max(0, Math.min(1, (nVal - min) / (max - min))) * 100;
-      ring?.style.setProperty('--p', pct.toFixed(2));
-
-      if (gaugeEl.id === 'gLight') {
-        if (numEl) numEl.textContent = (nVal >= 0.5) ? 'ON' : 'OFF';
-      } else {
-        if (numEl) numEl.textContent = fmtForDisplay(nVal, gaugeEl, 1);
-        const ranges = getColorRanges(gaugeEl, min, max);
-        setGaugeColor(ring, nVal, ranges);
-      }
-
-      // ★ อัปเดต Room summary ด้วย
-      if (gaugeEl.id === 'gAir') {
-        const clmAir = document.getElementById('clm-air');
-        if (clmAir) clmAir.textContent = fmtForDisplay(nVal, gaugeEl, 1);
-
-      }
-      // RH% อัปเดต ลงในกรอบตาราง
-      if (gaugeEl.id === 'gRH') {
-        const clmRH = document.getElementById('clm-rh');
-        if (clmRH) clmRH.textContent = fmtForDisplay(nVal, gaugeEl, 1);
-      }
-
-      // CO₂ อัปเดต ลงในกรอบตาราง
-      if (gaugeEl.id === 'gCO2') {
-        const clmCO2 = document.getElementById('clm-co2');
-        if (clmCO2) clmCO2.textContent = fmtForDisplay(nVal, gaugeEl, 0);
-      }
-    }
-
-    /* ---------- ใช้ payload เดียว map เข้าเกจทั้งหมด ---------- */
+    /* ---------- Payload → UI ---------- */
     function handleSensorPayload(p) {
-      console.log("📩 Sensor payload:", p);
-
-      // ★ ชื่อคีย์ตามที่ส่งมาจริง (Backrooom* มี o 3 ตัว)
-      // Gauges หลัก (ห้องหลัง)
-      const air = first(p.BackrooomTemp);
-      const rh = first(p.Backrooomhumidity);
-      const co2 = first(p.BackrooomCo2);
-
-      if (air != null) setGauge(document.getElementById('gAir'), air);
-      if (rh != null) setGauge(document.getElementById('gRH'), rh);
-      if (co2 != null) setGauge(document.getElementById('gCO2'), co2);
-
-      // Nursery mini gauges
+      // Nursery
       if (p.NurseryTemp) setMiniGauge(document.getElementById('nur-temp-mini'), first(p.NurseryTemp));
       if (p.NurseryEC) setMiniGauge(document.getElementById('nur-ec-mini'), first(p.NurseryEC));
       if (p.NurserypH) setMiniGauge(document.getElementById('nur-ph-mini'), first(p.NurserypH));
 
-      // Main Reservoir 1
+      // Main 1
       if (p.Main1Temp) setMiniGauge(document.getElementById('r1-temp-mini'), first(p.Main1Temp));
       if (p.Main1EC) setMiniGauge(document.getElementById('r1-ec-mini'), first(p.Main1EC));
       if (p.Main1pH) setMiniGauge(document.getElementById('r1-ph-mini'), first(p.Main1pH));
 
-      // Main Reservoir 2
+      // Main 2
       if (p.Main2Temp) setMiniGauge(document.getElementById('r2-temp-mini'), first(p.Main2Temp));
       if (p.Main2EC) setMiniGauge(document.getElementById('r2-ec-mini'), first(p.Main2EC));
       if (p.Main2pH) setMiniGauge(document.getElementById('r2-ph-mini'), first(p.Main2pH));
+
+      // (ถ้ามีเกจห้อง)
+      if (p.BackrooomTemp) setGauge(document.getElementById('gAir'), first(p.BackrooomTemp));
+      if (p.Backrooomhumidity) setGauge(document.getElementById('gRH'), first(p.Backrooomhumidity));
+      if (p.BackrooomCo2) setGauge(document.getElementById('gCO2'), first(p.BackrooomCo2));
+      if (p.Light != null) setGauge(document.getElementById('gLight'), first(p.Light));
     }
 
-    /* ---------- WebSocket (รับจาก Node-RED) ---------- */
-    // ตั้ง URL ให้ตรงระบบคุณ
-    const WS_URL = "wss://skin-trackback-tanks-chemical.trycloudflare.com/mqtt";
+    /* ---------- Switch / Pill / Lamp UI ---------- */
+    function updateSwitchUI(alias, b) {
+      document.querySelectorAll(`.ssbbox-switch[data-alias="${alias}"]`).forEach(el => { el.checked = b; });
+      document.querySelectorAll(`.pill[data-alias="${alias}"]`).forEach(p => { p.dataset._sw = String(b); });
+      try { localStorage.setItem(`ssbbox:last:${alias}`, JSON.stringify(b)); } catch { }
+    }
+    function applyModeToPillByTopic(topic, payload) {
+      const alias = topic.split('/')[2];
+      const modeVal = (payload?.mode ?? payload?.value ?? payload);
+      const { text, cls } = normalizeMode(modeVal);
+      const pills = document.querySelectorAll(`.pill[data-mode-topic="${topic}"], .pill[data-alias="${alias}"]`);
+      pills.forEach(p => {
+        const label = p.querySelector('[data-label]'); if (label) label.textContent = text;
+        p.classList.remove('auto', 'manual', 'off'); p.classList.add(cls);
+      });
+    }
+    function applyLampByTopic(topic, payload) {
+      const alias = topic.split('/')[2];
+      let val = payload;
+      if (payload && typeof payload === 'object') {
+        if (alias in payload) val = payload[alias][0];
+        else if (Array.isArray(payload.value)) val = payload.value[0];
+      }
+      const on = toBool(val);
+      document.querySelectorAll(`.state-img[data-state-alias="${alias}"]`).forEach(img => {
+        const onSrc = img.getAttribute('data-src-on'), offSrc = img.getAttribute('data-src-off');
+        if (on && onSrc) img.src = onSrc; if (!on && offSrc) img.src = offSrc;
+      });
+    }
+
+    /* ---------- Bind switches & pills ---------- */
+    function publishCmd(alias, desired) {
+      if (!window.ws || ws.readyState !== 1) return false;
+      const topic = `ssb-box/switch/${alias}/cmd`;
+      const payload = JSON.stringify({ [alias]: [Boolean(desired)] });
+      ws.send(JSON.stringify({ topic, payload })); return true;
+    }
+    function bindAllSwitches() {
+      document.querySelectorAll('.ssbbox-switch[data-alias]').forEach(sw => {
+        const alias = sw.dataset.alias;
+        try { const raw = localStorage.getItem(`ssbbox:last:${alias}`); if (raw !== null) { sw.checked = !!JSON.parse(raw); } } catch { }
+        sw.addEventListener('change', () => {
+          const ok = publishCmd(alias, sw.checked);
+          if (!ok) sw.checked = !sw.checked;
+        });
+      });
+    }
+    function bindPills() {
+      document.querySelectorAll('.pill[data-alias]').forEach(p => {
+        const alias = p.dataset.alias.trim();
+        const switchKey = (p.dataset.switchKey || alias).trim();
+        const cmdTopic = (p.dataset.cmdTopic || `ssb-box/switch/${switchKey}/cmd`).trim();
+        const swState = (p.dataset.switchStateTopic || `ssb-box/switch/${switchKey}/state`).trim();
+        const modeTopic = (p.dataset.modeTopic || '').trim();
+
+        // subscribe ตามที่ pillar ต้องใช้
+        safeSubscribe([swState]); if (modeTopic) safeSubscribe([modeTopic]);
+
+        // คลิก pill = toggle สวิตช์จริง
+        p.style.cursor = 'pointer';
+        p.addEventListener('click', () => {
+          const cur = (p.dataset._sw === 'true');
+          safePublish(cmdTopic, JSON.stringify({ [switchKey]: [!cur] }));
+        });
+      });
+    }
+
+    /* ---------- WebSocket ---------- */
+    const WS_URL = "gourmet-soon-impression-slideshow.trycloudflare.com/mqtt";
     let ws, retry;
+
+    function safePublish(topic, payload) {
+      try { if (!ws || ws.readyState !== 1) return false; ws.send(JSON.stringify({ topic, payload })); return true; } catch { return false; }
+    }
+    function safeSubscribe(topics) {
+      try { ws?.send(JSON.stringify({ action: "subscribe", topics })); } catch { }
+      try { topics.forEach(t => ws?.send(JSON.stringify({ action: "subscribe", topic: t }))); } catch { }
+    }
 
     function connect() {
       clearTimeout(retry);
-      ws = new WebSocket(WS_URL);
-      console.log('Connecting WS:', WS_URL);
+      try { ws = new WebSocket(WS_URL); window.ws = ws; } catch { retry = setTimeout(connect, 1500); return; }
 
-      ws.onopen = () => console.log('✅ WS connected');
-      ws.onerror = () => console.warn('⚠️ WS error');
-      ws.onclose = () => { console.warn('❌ WS disconnected'); retry = setTimeout(connect, 1500); };
+      ws.onopen = () => {
+        safeSubscribe([
+          "ssb-box/sensor",
+          "ssb-box/switch/+/state",
+          "ssb-box/mode/+/state",
+          "ssb-box/lamp/+/state"
+        ]);
+
+        // pills ที่กำหนด topic เฉพาะ
+        const extra = new Set();
+        document.querySelectorAll('.pill[data-mode-topic]').forEach(p => {
+          const t = (p.dataset.modeTopic || '').trim(); if (t) extra.add(t);
+        });
+        if (extra.size) safeSubscribe([...extra]);
+      };
+
+      ws.onclose = () => { window.ws = null; retry = setTimeout(connect, 1500); };
 
       ws.onmessage = (evt) => {
-        console.log("🛰️ WS raw:", evt.data);
+        let msg; try { msg = JSON.parse(evt.data); } catch { return; }
 
-
-        let msg;
-        try { msg = JSON.parse(evt.data); }
-        catch (e) { console.warn("❌ not JSON:", e); return; }
-
-        console.log("📦 WS parsed:", msg);
-
-        // รองรับ 3 รูปแบบ: {topic,payload}, payload เป็น string/object, หรือส่ง object ตรง ๆ
         let topic = "", payload = null;
         if (msg && typeof msg === "object") {
           if ("topic" in msg) topic = String(msg.topic || "").trim();
-          if ("payload" in msg) {
-            payload = msg.payload;
-            if (typeof payload === "string") {
-              try { payload = JSON.parse(payload); } catch { /* ข้าม */ }
-            }
-          } else {
-            payload = msg; // ส่ง object ตรง ๆ
+          if ("payload" in msg) { payload = msg.payload; if (typeof payload === 'string') { try { payload = JSON.parse(payload); } catch { } } }
+          else { payload = msg; } // object ตรง ๆ
+        }
+
+        // SENSOR
+        if (!topic || topic === "ssb-box/sensor") {
+          if (payload && typeof payload === 'object') { handleSensorPayload(payload); saveSnapshot(payload); }
+          return;
+        }
+
+        // SWITCH STATE
+        if (topic.startsWith("ssb-box/switch/") && topic.endsWith("/state")) {
+          const alias = topic.split('/')[2];
+          let val = payload;
+          if (payload && typeof payload === 'object') {
+            if (alias in payload) val = payload[alias][0];
+            else if (Array.isArray(payload.value)) val = payload.value[0];
           }
-        }
-
-        console.log("🔖 Topic seen:", topic || "(none)");
-        console.log("📩 Payload resolved:", payload);
-
-        // ยอมรับถ้า topic ว่าง (ส่งตรง) หรือเท่ากับ ssb-box/sensor
-        if (topic && topic !== "ssb-box/sensor") {
-          console.log("⏭️ skip other topic:", topic);
-          return;
-        }
-        if (!payload || typeof payload !== "object") {
-          console.warn("⚠️ bad payload shape");
+          updateSwitchUI(alias, toBool(val));
           return;
         }
 
-        handleSensorPayload(payload);
-        saveSnapshot(payload);//จำค่าล่าสุด
+        // MODE STATE
+        if (topic.startsWith("ssb-box/mode/") && topic.endsWith("/state")) {
+          applyModeToPillByTopic(topic, payload); return;
+        }
+
+        // LAMP STATE
+        if (topic.startsWith("ssb-box/lamp/") && topic.endsWith("/state")) {
+          applyLampByTopic(topic, payload); return;
+        }
       };
     }
 
-    // ค่าเริ่มต้นก่อน WS มาถึง (optional)
-    setGauge(document.getElementById('gAir'), 30);
-    setGauge(document.getElementById('gRH'), 55);
-    setGauge(document.getElementById('gCO2'), 1200);
-    // setGauge(document.getElementById('gLight'), 1); // ถ้าเพิ่ม light ไว้แล้วค่อยเปิด
-
-    // ตั้งค่า mini gauge เริ่มต้น (optional)
-    [
-      ['#nur-temp-mini', 30],
-      ['#nur-ec-mini', 1.2],
-      ['#nur-ph-mini', 6.5],
-      ['#r1-temp-mini', 30],
-      ['#r1-ec-mini', 1.2],
-      ['#r1-ph-mini', 6.5],
-      ['#r2-temp-mini', 30],
-      ['#r2-ec-mini', 1.2],
-      ['#r2-ph-mini', 6.5],
-    ].forEach(([sel, val]) => {
-      const el = document.querySelector(sel);
-      if (el) setMiniGauge(el, val);
-    });
-
-    connect();
-  </script>
-
-
-
-  <!-- =======================
-       Dark/Light toggle (เดิม)
-       ======================= -->
-  <script>
-    (function () {
-      const BTN = document.querySelector('.darklight');
-      const ROOT = document.body;
-      function setBtnLabel() {
-        const saved = localStorage.getItem('themeIcon') || 'dark';
-        BTN.textContent = (saved === 'dark') ? '🌙 Dark' : '☀️ Light';
-      }
-      BTN.addEventListener('click', () => {
-        const cur = localStorage.getItem('themeIcon') || 'dark';
-        const next = (cur === 'dark') ? 'light' : 'dark';
-        localStorage.setItem('themeIcon', next);
-        setBtnLabel();
-        // (ถ้าจะสลับธีมจริง ๆ ให้ toggle class .theme-dark ที่ ROOT)
-        // ROOT.classList.toggle('theme-dark');
-      });
-      setBtnLabel();
-    })();
-  </script>
-
-  <!-- =======================
-       ใส่ค่าตัวอย่างในการ์ด + สปาร์คลายน์ (เดิม)
-       ======================= -->
-  <script>
-    function setRoomData() {
-      document.getElementById('nur-recipe').textContent = 'RX-01';
-      document.getElementById('nur-nt').textContent = 25;
-      document.getElementById('nur-ec').textContent = 1.2;
-      document.getElementById('nur-ph').textContent = 6;
-
-      document.getElementById('clm-name').textContent = 'CL-01';
-      document.getElementById('clm-air').textContent = 25;
-      document.getElementById('clm-rh').textContent = 70;
-      document.getElementById('clm-co2').textContent = 1000;
-      document.getElementById('clm-light').textContent = 12;
-
-      document.getElementById('r1-recipe').textContent = 'RX-11';
-      document.getElementById('r2-recipe').textContent = 'RX-12';
-    }
-    setRoomData();
-
-    function sparkPath(vals) {
-      const W = 300, H = 140, pt = [10, 70, 130, 190, 250], top = 20, bot = 120;
-      const ys = vals.map(v => bot - (bot - top) * v);
-      return `M${pt[0]},${ys[0]} ${pt[1]},${ys[1]} ${pt[2]},${ys[2]} ${pt[3]},${ys[3]} ${pt[4]},${ys[4]}`;
-    }
-    document.querySelector('.spark path.s1').setAttribute('d', sparkPath([0.1, 0.35, 0.55, 0.9, 0.75]));
-    document.querySelector('.spark path.s2').setAttribute('d', sparkPath([0.1, 0.25, 0.2, 0.45, 0.45]));
-    document.querySelector('.spark path.s3').setAttribute('d', sparkPath([0.1, 0.42, 0.35, 0.6, 0.5]));
-  </script>
-
-  <!-- =========================================================
-       จำค่าล่าสุด
-       ========================================================= -->
-  <script>
-    /* === Snapshot: จำค่าล่าสุดไว้ใน localStorage === */
-    const SNAP_KEY = 'ssbbox:last-sensor';
-    const SNAP_MAX_AGE_MS = 0;  // 10 นาที (ตั้งเป็น 0 = ไม่หมดอายุ)
-
-    function saveSnapshot(payload) {
-      try {
-        localStorage.setItem(SNAP_KEY, JSON.stringify({ ts: Date.now(), data: payload }));
-      } catch (e) { console.warn('saveSnapshot failed', e); }
-    }
-
-    function loadSnapshot() {
-      try {
-        const raw = localStorage.getItem(SNAP_KEY);
-        if (!raw) return null;
-        const snap = JSON.parse(raw);
-        if (!snap || !snap.data) return null;
-        if (SNAP_MAX_AGE_MS > 0 && Date.now() - (snap.ts || 0) > SNAP_MAX_AGE_MS) return null;
-        return snap.data;
-      } catch (e) { console.warn('loadSnapshot failed', e); return null; }
-    }
-
-    /* === เรียกใช้ตอนเปิดหน้า: ลองโหลดค่าล่าสุดก่อน === */
+    /* ---------- Snapshot ---------- */
+    const SNAP_KEY = 'ssbbox:last-sensor', SNAP_MAX_AGE_MS = 0;
+    function saveSnapshot(payload) { try { localStorage.setItem(SNAP_KEY, JSON.stringify({ ts: Date.now(), data: payload })); } catch { } }
     (function initFromSnapshot() {
-      const snap = loadSnapshot();
-      if (snap) {
-        console.log('🗂️ load snapshot', snap);
-        handleSensorPayload(snap);       // ใช้ฟังก์ชันเดิมของคุณ
-      } else {
-        // ถ้าไม่มี snapshot ก็จะโชว์ค่า default เดิมของคุณตามปกติ
-        // (ไม่ต้องทำอะไรเพิ่ม ถ้าคุณมีบล็อก setGauge/setMiniGauge ค่าเริ่มต้นอยู่แล้ว)
-      }
+      try {
+        const raw = localStorage.getItem(SNAP_KEY); if (!raw) return;
+        const snap = JSON.parse(raw); if (!snap || !snap.data) return;
+        if (SNAP_MAX_AGE_MS > 0 && Date.now() - (snap.ts || 0) > SNAP_MAX_AGE_MS) return;
+        handleSensorPayload(snap.data);
+      } catch { }
     })();
+
+    /* ---------- Boot ---------- */
+    setTimeout(() => { // ค่าเริ่มต้น (เห็นก่อน WS เชื่อม)
+      [['#nur-temp-mini', 30], ['#nur-ec-mini', 1.2], ['#nur-ph-mini', 6.5],
+      ['#r1-temp-mini', 30], ['#r1-ec-mini', 1.2], ['#r1-ph-mini', 6.5],
+      ['#r2-temp-mini', 30], ['#r2-ec-mini', 1.2], ['#r2-ph-mini', 6.5]
+      ].forEach(([sel, val]) => { const el = document.querySelector(sel); if (el) setMiniGauge(el, val); });
+    }, 0);
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => { bindAllSwitches(); bindPills(); connect(); });
+    } else { bindAllSwitches(); bindPills(); connect(); }
   </script>
-  <!-- =========================================================
-      โน็ตค่าแปลงตัวแปลง
-Gauges ใหญ่ (4 วง)
 
-BackrooomTemp → Air temperature (เกจใหญ่ #gAir)
-
-Backrooomhumidity → RH% (เกจใหญ่ #gRH)
-
-BackrooomCo2 → CO₂ ppm (เกจใหญ่ #gCO2)
-
-Light → ON/OFF (เกจใหญ่ #gLight) → ตรงนี้ payload เดิมยังไม่มี key ต้องเสริมจาก Node-RED
-
-🔹 Mini Gauges Nursery (3 วง)
-
-NurseryTemp → Temp ของ nutrient (mini #nur-temp-mini)
-
-NurseryEC → EC (mini #nur-ec-mini)
-
-NurserypH → pH (mini #nur-ph-mini)
-
-🔹 Mini Gauges Main Reservoir 1 (3 วง)
-
-Main1Temp → Temp (mini #r1-temp-mini)
-
-Main1EC → EC (mini #r1-ec-mini)
-
-Main1pH → pH (mini #r1-ph-mini)
-
-🔹 Mini Gauges Main Reservoir 2 (3 วง)
-
-Main2Temp → Temp (mini #r2-temp-mini)
-
-Main2EC → EC (mini #r2-ec-mini)
-
-Main2pH → pH (mini #r2-ph-mini)
-       ========================================================= -->
-  <script>
-    // คลิกแท็บแล้วไปหน้าใหม่ตาม data-href
-    (function enableTabNavigate() {
-      const tabs = document.querySelectorAll('.tabs .tab');
-      tabs.forEach(tab => {
-        tab.style.cursor = 'pointer';
-        tab.addEventListener('click', () => {
-          // เปลี่ยน active ให้มีเอฟเฟกต์กด (สวย ๆ ก่อนจะย้ายหน้า)
-          tabs.forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-
-          const url = tab.dataset.href;
-          if (url) {
-            window.location.href = url;   // ⬅️ เปลี่ยนหน้า
-          }
-        });
-      });
-    })();
-  </script>
   <!-- Dark/Light toggle ========================================================= -->
   <script>
     (function () {
@@ -2139,6 +1982,37 @@ Main2pH → pH (mini #r2-ph-mini)
       setBtnLabel();
     })();
   </script>
+
+<script>
+(function () {
+  function enableTabNavigate() {
+    const tabsRoot = document.querySelector('.tabs');
+    if (!tabsRoot) return;
+
+    tabsRoot.addEventListener('click', (e) => {
+      const tab = e.target.closest('.tab');
+      if (!tab || !tabsRoot.contains(tab)) return;
+
+      // ลบ active เดิม แล้วใส่ใหม่
+      document.querySelectorAll('.tabs .tab').forEach(t => {
+        t.classList.toggle('active', t === tab);
+      });
+
+      // เปลี่ยนหน้า (เฉพาะแท็บที่มี data-href)
+      const url = tab.dataset.href;
+      if (url) window.location.href = url;
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', enableTabNavigate);
+  } else {
+    enableTabNavigate();
+  }
+})();
+</script>
+
+
 
 </body>
 

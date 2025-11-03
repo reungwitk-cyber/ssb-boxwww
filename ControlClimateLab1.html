@@ -1063,6 +1063,7 @@
                                     alt="Air" data-state-alias="air"
                                     data-src-on="https://github.com/reungwitk-cyber/ssb-box/raw/6934e97808b5e5fe762fb3f1173ea4a6fe2e2ad8/AirS1.svg"
                                     data-src-off="https://github.com/reungwitk-cyber/ssb-box/raw/57c00370db4344094aa6c268bb5f5505f1259332/AirS0.svg">
+                                <!-- data-state-alias คือ ค่าไว้เก็บ ไป เเสดงสถานะ Lamp ฟัง: ssb-box/lamp/<alias>/state -->
                                 <span>Air conditioner</span>
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto" id="pill-air"
@@ -1078,6 +1079,7 @@
                                         <!-- 🆕 เพิ่ม class="ssbbox-switch" และ data-alias -->
                                         <input class="form-check-input switch-lg ssbbox-switch" type="checkbox" id="air"
                                             data-alias="air">
+                                        <!-- data-alias คือ ค่าไว้เก็บ ไป เเสดงสถานะ ssb-box/switch/<alias>/state -->
                                     </div>
                                     <label class="form-check-label mb-0">On/Off</label>
                                 </div>
@@ -1624,6 +1626,10 @@
             const c1 = el?.dataset.c1 || '#3b82f6',
                 c2 = el?.dataset.c2 || '#10b981',
                 c3 = el?.dataset.c3 || '#ef4444';
+
+
+
+
             const cut1 = Number.isFinite(r1) ? r1 : (min + (max - min) * 0.33);
             const cut2 = Number.isFinite(r2) ? r2 : (min + (max - min) * 0.66);
             return [
@@ -1703,33 +1709,6 @@
         const DEVICE_STATE = Object.create(null); // เก็บสถานะ runtime ของอุปกรณ์
         const MODE_STATE = Object.create(null); // เก็บค่า ssb-box/mode/<alias>/state
 
-        // decode alias จาก topic เช่น ssb-box/(lamp|switch)/ductfan/state → "ductfan"
-        function aliasFromTopic(topic) {
-            const p = String(topic || '').split('/');
-            return (p.length >= 4 && p[0] === 'ssb-box' &&
-                (p[1] === 'lamp' || p[1] === 'switch') &&
-                p[p.length - 1] === 'state') ? p[2] : null;
-        }
-
-        // decode payload → scalar
-        function scalarFromPayload(alias, payload) {
-            if (payload == null) return null;
-            if (typeof payload === 'string') { try { return scalarFromPayload(alias, JSON.parse(payload)); } catch { } }
-            if (Array.isArray(payload)) return payload.length ? payload[0] : null;
-            if (typeof payload === 'object') {
-                if (alias in payload) return Array.isArray(payload[alias]) ? payload[alias][0] : payload[alias];
-                const outKey = `output-${alias}`;
-                if (outKey in payload) return Array.isArray(payload[outKey]) ? payload[outKey][0] : payload[outKey];
-                if ('value' in payload) return Array.isArray(payload.value) ? payload.value[0] : payload.value;
-                const ks = Object.keys(payload);
-                if (ks.length === 1) { let v = payload[ks[0]]; return Array.isArray(v) ? v[0] : v; }
-            }
-            if (typeof payload === 'boolean' || typeof payload === 'number') return payload;
-            if (!Number.isNaN(Number(payload))) return Number(payload);
-            if (payload === 'true') return true;
-            if (payload === 'false') return false;
-            return payload;
-        }
 
         // ใช้แปลงค่าทั่วไปให้เป็น boolean
         function toBool(v) {
@@ -1757,26 +1736,53 @@
         // ✅ รองรับ "payload ล้วน" เช่น { "ductfan":[false], "exhaustfan":[true] }
         // 🔧 ไม่อัปเดตรูปจาก payload หลวม ๆ (ไม่รู้ว่า lamp หรือ switch) — ให้รูปฟังจาก lamp เท่านั้น
         function handleLooseStatePayload(obj) {
+            // ตรวจอินพุตเบื้องต้น
             if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return;
+
+            let count = 0; // นับจำนวน alias ที่อัปเดต
+
             Object.entries(obj).forEach(([alias, val]) => {
                 let v = val;
-                if (Array.isArray(v)) v = v.length ? v[0] : null;
+
+                // ถ้า value เป็น array เช่น [true] → เอาค่าแรก
+                if (Array.isArray(v)) {
+                    v = v.length ? v[0] : null;
+                }
+
+                // ถ้าเป็น string → แปลงเป็น boolean / number
                 if (typeof v === 'string') {
                     const s = v.trim().toLowerCase();
-                    if (['true', 'on', '1'].includes(s)) v = true;
-                    else if (['false', 'off', '0'].includes(s)) v = false;
-                    else if (!Number.isNaN(Number(v))) v = Number(v);
+                    if (s === 'true' || s === 'on' || s === '1') {
+                        v = true;
+                    } else if (s === 'false' || s === 'off' || s === '0') {
+                        v = false;
+                    } else {
+                        const n = Number(v);
+                        if (!Number.isNaN(n)) v = n;
+                    }
                 }
+
+                // เก็บค่าใน DEVICE_STATE
                 DEVICE_STATE[alias] = v;
-                // ❌ ไม่เรียก updateImagesByAlias ที่นี่
+
+                // ส่ง event แจ้งให้ระบบอื่นรู้
                 document.dispatchEvent(new CustomEvent('ssbbox:state', {
                     detail: { alias, value: v, topic: '' }
                 }));
+
+                // log สั้นๆ ต่อ alias
+                console.log(`🟢 ${alias} →`, v);
+                count++;
             });
+
+            // สรุปจำนวนท้ายสุด
+            console.log(`📦 handleLooseStatePayload: อัปเดตทั้งหมด ${count} ค่า`);
         }
+
+
     </script>
 
-    <!-- ================= ANTI-RACE SWITCH ================= -->
+    <!-- ================= ANTI-RACE SWITCH =================กัน กันเคสที่ผู้ใช้กดสวิตช์แล้ว สั่ง ON/OFF ออกไป แต่ “สถานะจริง” (state) จากอุปกรณ์/เซิร์ฟเวอร์ เข้ามาช้า หรือเข้ามา “สลับลำดับ” จน UI กระพริบ/ผิดค่า -->
     <script>
         (function () {
             function log(...a) { console.log("[SW]", ...a); }
@@ -1882,6 +1888,9 @@
     </script>
 
     <!-- ================= onPLCUpdate helper ================= -->
+    <!-- 💬 “WebSocket คือท่อหลัก”
+    ส่วน onPLCUpdate() คือ “ข้อต่อ/หัวเสียบ” ที่ให้ข้อมูลจากท่อนั้นเข้าระบบ UI เดิมได้เลย
+     ทำให้หน้าเว็บไม่ต้องรู้ว่าข้อมูลมาจาก WS, MQTT, หรือ API อะไร — แค่เห็น event เดียวพอ-->
     <script>
         // ให้ backend เรียกตรงนี้ได้ → ยิงเข้า event state เดียวกับ WS
         window.onPLCUpdate = ({ alias, power }) => {
@@ -1892,14 +1901,17 @@
     </script>
 
     <!-- ================= WEBSOCKET (final) ================= -->
+
     <script>
-        const WS_URL = "wss://transition-memo-nails-realm.trycloudflare.com/mqtt";
+        const WS_URL = "wss://gourmet-soon-impression-slideshow.trycloudflare.com/mqtt";
         let ws, retry;
 
 
         /* ---------------- helpers ---------------- */
         const parseMaybe = v => {
-            if (typeof v === 'string') { try { return JSON.parse(v); } catch { } }
+            if (typeof v === 'string') { try { return JSON.parse(v); } catch { } } //JSON.parse(text) แปลง string JSON → object
+            //ก่อน parse: "{"name":"rak","age":25}" → แค่ข้อความธรรมดา
+            //หลัง parse: {name:"rak", age:25} → กลายเป็น object ที่เข้าถึงได้ด้วย obj.name
             return v;
         };
 
@@ -1920,14 +1932,16 @@
                 return !!v;
             };
 
-        function safeSubscribe(topics) {
-            try { ws?.send(JSON.stringify({ action: "subscribe", topics })); } catch { }
-            try { ws?.send(JSON.stringify({ subscribe: topics })); } catch { }
-            try { ws?.send(JSON.stringify({ subs: topics })); } catch { }
-            try { topics.forEach(t => ws?.send(JSON.stringify({ action: "subscribe", topic: t }))); } catch { }
+        function safeSubscribe(topics) {// พยายามส่งคำสั่ง subscribe  WS 
+            try {
+                if (!ws || ws.readyState !== 1) return;
+                ws.send(JSON.stringify({ action: "subscribe", topics }));
+            } catch (err) {
+                console.warn("[safeSubscribe] failed:", err);
+            }
         }
 
-        function safePublish(topic, payload) {
+        function safePublish(topic, payload) {//publish ข้อความไปที่ WS ในกรอบ { topic, payload }
             try {
                 if (!window.ws || ws.readyState !== 1) return false;
                 const payloadStr = (typeof payload === 'string') ? payload : JSON.stringify(payload);
@@ -1939,11 +1953,58 @@
         }
 
         function isSwitchAlias(alias) {
-            if (!alias) return false;
-            return alias.includes('fan') || alias === 'air' || alias === 'humidifier';
-        }
+  if (!alias) return false;
+  const a = alias.toLowerCase();
 
-        // 🔧 Snapshot: ไม่อัปเดตรูปไอคอนจาก snapshot ใด ๆ (ให้รูปฟัง lamp เท่านั้น)
+  // รายชื่อ alias ทั้งหมดที่เป็นสวิตช์ (ON/OFF)
+  const switchList = new Set([
+    "air",
+    "humidifier",
+    "co2",
+    "ductfan",
+    "returnfan",
+    "exhaustfan",
+    "nurseryfanupper",
+    "nurseryfanlower",
+    "agitator1-2in",
+    "agitator1-2out",
+    "agitator3-4in",
+    "agitator3-4out",
+    "ledrow1",
+    "ledrow2",
+    "ledrow3",
+    "ledrow4",
+    "nursery-ledlower",
+    "nursery-ledupper",
+    "nursery-dosing-a",
+    "nursery-dosing-b",
+    "nursery-dosing-up",
+    "nursery-dosing-down",
+    "nursery-pump-upper",
+    "nursery-pump-lower",
+    "nursery-ro-pump",
+    "nursery-circulation-pump",
+    "main1-dosing-a",
+    "main1-dosing-b",
+    "main1-dosing-up",
+    "main1-dosing-down",
+    "main1-pumpdrop",
+    "main1-ro-pump",
+    "main1-circulation-pump",
+    "main2-dosing-a",
+    "main2-dosing-b",
+    "main2-dosing-up",
+    "main2-dosing-down",
+    "main2-pumpdrop",
+    "main2-ro-pump",
+    "main2-circulation-pump"
+  ]);
+
+  return switchList.has(a);
+}
+
+
+        // 🔧 Snapshot: ไม่อัปเดตรูปไอคอนจาก snapshot ใด ๆ (ให้รูปฟัง lamp เท่านั้น ดังนั้นเราต้องให้เฉพาะ “state สดจาก MQTT (lamp)” เท่านั้นที่ไปอัปเดตรูปจริง)
         function applySnapshotData(map) {
             if (!map || typeof map !== 'object') return;
 
@@ -1968,7 +2029,7 @@
             });
         }
 
-        // state with topic = ssb-box/(lamp|switch)/<alias>/state, payload = {"<alias>":[true]}
+        // state with topic = ssb-box/(lamp|switch)/<alias>/state, payload = {"<alias>":[true]} **ตัวรับสถานะจริงจาก MQTT
         function applyTopicState(topic, payload) {
             const parts = String(topic || '').split('/');
             if (parts.length < 4 || parts[0] !== 'ssb-box') return false;
@@ -2000,7 +2061,7 @@
             return true;
         }
 
-        // ---------- MODE helpers ----------
+        // ---------- MODE helpers ฟังก์ชันนี้ใช้ “เช็กว่า topic เป็นของโหมดไหม ----------
         function modeAliasFromTopic(topic) {
             const p = String(topic || '').split('/'); // ['ssb-box','mode','<alias>','state']
             return (p.length >= 4 && p[0] === 'ssb-box' && p[1] === 'mode' && p[3] === 'state') ? p[2] : null;
@@ -2434,6 +2495,7 @@
             else run();
         })();
     </script>
+
 
 
 
