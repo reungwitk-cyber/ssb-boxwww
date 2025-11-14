@@ -681,7 +681,7 @@
         }
 
         .vitsidebar .dropdown .btn:hover {
-            background: #f1f1f1;
+            background: #f8c75d;
             transform: translateY(-2px)
         }
 
@@ -796,6 +796,18 @@
             pointer-events: none;
             filter: grayscale(30%)
         }
+
+        #modeDropdown .dropdown-item:hover,
+        #modeDropdown .dropdown-item:focus,
+        #modeDropdown .dropdown-item.active,
+        #modeDropdown .dropdown-item:active {
+            background-color: #ff9800 !important;
+            /* สีส้ม */
+            color: #fff !important;
+            /* ตัวอักษรขาว */
+        }
+
+
 
         /* =========================================================
  🧩 Utilities — จำกัดจำนวนบรรทัด + … (webkit + มาตรฐานแบบ @supports)
@@ -1067,9 +1079,9 @@
                                 <span>Air conditioner</span>
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto" id="pill-air"
-                                    data-alias="air" data-switch-key="airof" data-mode-topic="ssb-box/mode/air/state"
-                                    data-cmd-topic="ssb-box/switch/airof/cmd"
-                                    data-switch-state-topic="ssb-box/switch/airof/state" data-off-code="3">
+                                    data-alias="air" data-switch-key="air" data-mode-topic="ssb-box/mode/air/state"
+                                    data-cmd-topic="ssb-box/onoff/air/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/air/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
                                     <span data-label>Off</span>
                                 </div>
@@ -1094,11 +1106,10 @@
                                 <span>Humidifier</span>
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
-                                    id="pill-humidifier" data-alias="humidifier" data-switch-key="humidifierof"
+                                    id="pill-humidifier" data-alias="humidifier" data-switch-key="humidifier"
                                     data-mode-topic="ssb-box/mode/humidifier/state"
-                                    data-cmd-topic="ssb-box/switch/humidifierof/cmd"
-                                    data-switch-state-topic="ssb-box/switch/humidifierof/state" data-off-code="3">
-                                    <!-- ← โหมดที่ถือว่า Off -->
+                                    data-cmd-topic="ssb-box/onoff/humidifier/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/humidifier/state" data-off-code="3">
                                     <span data-label>Off</span>
                                 </div>
 
@@ -1124,9 +1135,9 @@
                                 <span>CO₂ injection</span>
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto" id="pill-co2"
-                                    data-alias="co2" data-switch-key="co2of" data-mode-topic="ssb-box/mode/co2/state"
-                                    data-cmd-topic="ssb-box/switch/co2of/cmd"
-                                    data-switch-state-topic="ssb-box/switch/co2of/state" data-off-code="3">
+                                    data-alias="co2" data-switch-key="co2" data-mode-topic="ssb-box/mode/co2/state"
+                                    data-cmd-topic="ssb-box/onoff/co2/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/co2/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
                                     <span data-label>Off</span>
                                 </div>
@@ -1155,10 +1166,10 @@
 
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
-                                    id="pill-ductfan" data-alias="ductfan" data-switch-key="ductfanof"
+                                    id="pill-ductfan" data-alias="ductfan" data-switch-key="ductfan"
                                     data-mode-topic="ssb-box/mode/ductfan/state"
-                                    data-cmd-topic="ssb-box/switch/ductfanof/cmd"
-                                    data-switch-state-topic="ssb-box/switch/ductfanof/state" data-off-code="3">
+                                    data-cmd-topic="ssb-box/onoff/ductfan/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/ductfan/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
                                     <span data-label>Off</span>
                                 </div>
@@ -1183,10 +1194,10 @@
                                 <span>Return fan</span>
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
-                                    id="pill-returnfan" data-alias="returnfan" data-switch-key="returnfanof"
+                                    id="pill-returnfan" data-alias="returnfan" data-switch-key="returnfan"
                                     data-mode-topic="ssb-box/mode/returnfan/state"
-                                    data-cmd-topic="ssb-box/switch/returnfanof/cmd"
-                                    data-switch-state-topic="ssb-box/switch/returnfan/state" data-off-code="3">
+                                    data-cmd-topic="ssb-box/onoff/returnfan/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/returnfan/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
                                     <span data-label>Off</span>
                                 </div>
@@ -1214,10 +1225,10 @@
 
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
-                                    id="pill-exhaustfan" data-alias="exhaustfan" data-switch-key="exhaustfanof"
+                                    id="pill-exhaustfan" data-alias="exhaustfan" data-switch-key="exhaustfan"
                                     data-mode-topic="ssb-box/mode/exhaustfan/state"
-                                    data-cmd-topic="ssb-box/switch/exhaustfanof/cmd"
-                                    data-switch-state-topic="ssb-box/switch/exhaustfan/state" data-off-code="3">
+                                    data-cmd-topic="ssb-box/onoff/exhaustfan/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/exhaustfan/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
                                     <span data-label>Off</span>
                                 </div>
@@ -1242,10 +1253,10 @@
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
                                     id="pill-nurseryfanupper" data-alias="nurseryfanupper"
-                                    data-switch-key="nurseryfanupperof"
+                                    data-switch-key="nurseryfanupper"
                                     data-mode-topic="ssb-box/mode/nurseryfanupper/state"
-                                    data-cmd-topic="ssb-box/switch/nurseryfanupperof/cmd"
-                                    data-switch-state-topic="ssb-box/switch/nurseryfanupper/state" data-off-code="3">
+                                    data-cmd-topic="ssb-box/onoff/nurseryfanupper/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/nurseryfanupper/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
                                     <span data-label>Off</span>
                                 </div>
@@ -1274,10 +1285,10 @@
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
                                     id="pill-nurseryfanlower" data-alias="nurseryfanlower"
-                                    data-switch-key="nurseryfanlowerof"
+                                    data-switch-key="nurseryfanlower"
                                     data-mode-topic="ssb-box/mode/nurseryfanlower/state"
-                                    data-cmd-topic="ssb-box/switch/nurseryfanlowerof/cmd"
-                                    data-switch-state-topic="ssb-box/switch/nurseryfanlower/state" data-off-code="3">
+                                    data-cmd-topic="ssb-box/onoff/nurseryfanlower/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/nurseryfanlower/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
                                     <span data-label>Off</span>
                                 </div>
@@ -1301,10 +1312,10 @@
                                 <span class="ctrl-title">Agitator : <span>Section1–2</span></span>
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
-                                    id="pill-agitator1-2in" data-alias="agitator1-2" data-switch-key="agitator1-2of"
+                                    id="pill-agitator1-2in" data-alias="agitator1-2" data-switch-key="agitator1-2"
                                     data-mode-topic="ssb-box/mode/agitator1-2/state"
-                                    data-cmd-topic="ssb-box/switch/agitator1-2of/cmd"
-                                    data-switch-state-topic="ssb-box/switch/agitator1-2in/state" data-off-code="3">
+                                    data-cmd-topic="ssb-box/onoff/agitator1-2/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/agitator1-2/state" data-off-code="3">
                                     <span data-label>Off</span>
                                 </div>
 
@@ -1333,10 +1344,10 @@
                                 <span class="ctrl-title">Agitator : <span>Section3–4</span></span>
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
-                                    id="pill-agitator3-4in" data-alias="agitator3-4" data-switch-key="agitator3-4of"
+                                    id="pill-agitator3-4in" data-alias="agitator3-4" data-switch-key="agitator3-4"
                                     data-mode-topic="ssb-box/mode/agitator3-4/state"
-                                    data-cmd-topic="ssb-box/switch/agitator3-4of/cmd"
-                                    data-switch-state-topic="ssb-box/switch/agitator3-4in/state" data-off-code="3">
+                                    data-cmd-topic="ssb-box/onoff/agitator3-4/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/agitator3-4/state" data-off-code="3">
                                     <span data-label>Off</span>
                                 </div>
 
@@ -1377,10 +1388,10 @@
                                 <span>Ledrow1</span>
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
-                                    id="pill-ledrow1" data-alias="ledrow1" data-switch-key="ledrow1of"
+                                    id="pill-ledrow1" data-alias="ledrow1" data-switch-key="ledrow1"
                                     data-mode-topic="ssb-box/mode/ledrow1/state"
-                                    data-cmd-topic="ssb-box/switch/ledrow1of/cmd"
-                                    data-switch-state-topic="ssb-box/switch/ledrow1of/state" data-off-code="3">
+                                    data-cmd-topic="ssb-box/onoff/ledrow1/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/ledrow1/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
                                     <span data-label>Off</span>
                                 </div>
@@ -1408,10 +1419,10 @@
                                 <span>Ledrow2</span>
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
-                                    id="pill-ledrow2" data-alias="ledrow2" data-switch-key="ledrow2of"
+                                    id="pill-ledrow2" data-alias="ledrow2" data-switch-key="ledrow2"
                                     data-mode-topic="ssb-box/mode/ledrow2/state"
-                                    data-cmd-topic="ssb-box/switch/ledrow2of/cmd"
-                                    data-switch-state-topic="ssb-box/switch/ledrow2/state" data-off-code="3">
+                                    data-cmd-topic="ssb-box/onoff/ledrow2/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/ledrow2/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
                                     <span data-label>Off</span>
                                 </div>
@@ -1436,10 +1447,10 @@
                                 <span>Ledrow3</span>
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
-                                    id="pill-ledrow3" data-alias="ledrow3" data-switch-key="ledrow3of"
+                                    id="pill-ledrow3" data-alias="ledrow3" data-switch-key="ledrow3"
                                     data-mode-topic="ssb-box/mode/ledrow3/state"
-                                    data-cmd-topic="ssb-box/switch/ledrow3of/cmd"
-                                    data-switch-state-topic="ssb-box/switch/ledrow3/state" data-off-code="3">
+                                    data-cmd-topic="ssb-box/onoff/ledrow3/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/ledrow3/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
                                     <span data-label>Off</span>
                                 </div>
@@ -1464,10 +1475,10 @@
                                 <span>Ledrow4</span>
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
-                                    id="pill-ledrow4" data-alias="ledrow4" data-switch-key="ledrow4of"
-                                    data-mode-topic="ssb-box/mode/Ledrow4/state"
-                                    data-cmd-topic="ssb-box/switch/ledrow4of/cmd"
-                                    data-switch-state-topic="ssb-box/switch/ledrow4/state" data-off-code="3">
+                                    id="pill-ledrow4" data-alias="ledrow4" data-switch-key="ledrow4"
+                                    data-mode-topic="ssb-box/mode/ledrow4/state"
+                                    data-cmd-topic="ssb-box/onoff/ledrow4/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/ledrow4/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
                                     <span data-label>Off</span>
                                 </div>
@@ -1494,10 +1505,10 @@
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
                                     id="pill-nursery-ledupper" data-alias="nursery-ledupper"
-                                    data-switch-key="nursery-ledupperof"
+                                    data-switch-key="nursery-ledupper"
                                     data-mode-topic="ssb-box/mode/nursery-ledupper/state"
-                                    data-cmd-topic="ssb-box/switch/nursery-ledupperof/cmd"
-                                    data-switch-state-topic="ssb-box/switch/nursery-ledupperof/state" data-off-code="3">
+                                    data-cmd-topic="ssb-box/onoff/nursery-ledupper/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/nursery-ledupper/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
                                     <span data-label>Off</span>
                                 </div>
@@ -1523,11 +1534,11 @@
                                 <span>Lamp lower</span>
 
                                 <div class="pill off text-center py-2 mx-3 rounded-pill shadow-sm w-auto"
-                                    id="pill-nursery-ledupper" data-alias="nursery-ledlower"
-                                    data-switch-key="nursery-ledlowerof"
+                                    id="pill-nursery-ledlower" data-alias="nursery-ledlower"
+                                    data-switch-key="nursery-ledlower"
                                     data-mode-topic="ssb-box/mode/nursery-ledlower/state"
-                                    data-cmd-topic="ssb-box/switch/nursery-ledlowerof/cmd"
-                                    data-switch-state-topic="ssb-box/switch/nursery-ledlowerof/state" data-off-code="3">
+                                    data-cmd-topic="ssb-box/onoff/nursery-ledlower/cmd"
+                                    data-switch-state-topic="ssb-box/onoff/nursery-ledlower/state" data-off-code="3">
                                     <!-- ← โหมดที่ถือว่า Off -->
                                     <span data-label>Off</span>
                                 </div>
@@ -1790,8 +1801,8 @@
 
             // subscribe state topic ของสวิตช์
             function subscribeStateTopic(alias) {
-                const t = `ssb-box/switch/${alias}/state`;
-                window.SSB_SWITCH_TOPICS.add(t);
+                const t = `ssb-box/switch/${alias}/state`;   // ← เฉพาะ switch
+                try { window.SSB_SWITCH_TOPICS = window.SSB_SWITCH_TOPICS || new Set(); window.SSB_SWITCH_TOPICS.add(t); } catch { }
                 if (typeof safeSubscribe === 'function') { try { safeSubscribe([t]); } catch { } }
             }
 
@@ -1807,53 +1818,49 @@
 
             function bindAllSwitches() {
                 document.querySelectorAll('.ssbbox-switch[data-alias]').forEach(el => {
-                    const alias = el.dataset.alias;
+                    const alias = el.dataset.alias.trim();
                     subscribeStateTopic(alias);
 
-                    // sync เริ่มต้นจาก DEVICE_STATE ถ้ามี
-                    if (typeof DEVICE_STATE?.[alias] !== 'undefined') {
+                    // hydrate เริ่มต้นจาก DEVICE_STATE เฉพาะ switch
+                    if (typeof window.DEVICE_STATE?.[alias] !== 'undefined') {
                         el.checked = !!DEVICE_STATE[alias];
-                        confirmedModes.set(alias, el.checked ? 'on' : 'off');
                     }
 
-                    // เมื่อผู้ใช้กดสวิตช์
+                    // ผู้ใช้กด → ส่งไป switch/<alias>/cmd เท่านั้น
                     el.addEventListener('change', () => {
                         const desired = el.checked;
-
                         if (!(window.publishCmd && window.publishCmd(alias, desired))) {
-                            el.checked = getPrevChecked(alias, !desired);
+                            el.checked = !desired; // rollback ถ้าส่งไม่ออก
                             return;
                         }
-
                         el.disabled = true;
                         el.classList.add('is-pending');
-                        const wrap = el.closest('.switch-inline');
-                        wrap?.classList.add('is-pending');
-
-                        const token = (pendingSeq.get(alias) || 0) + 1;
-                        pendingSeq.set(alias, token);
-                        desiredMap.set(alias, { val: desired, token });
-
-                        const prevChecked = getPrevChecked(alias, !desired);
-
-                        const timer = setTimeout(() => {
-                            if (pendingSeq.get(alias) !== token) return;
-                            el.checked = prevChecked;
-                            el.classList.remove('is-pending');
-                            el.disabled = false;
-                            wrap?.classList.remove('is-pending');
-                            confirmedModes.set(alias, prevChecked ? 'on' : 'off');
-                            desiredMap.delete(alias);
-                        }, PENDING_MS);
-
-                        pendingTimers.set(alias, { timer, token, prevChecked });
+                        el.closest('.switch-inline')?.classList.add('is-pending');
                     });
                 });
             }
 
+            // เรียกครั้งแรกหลังโหลด
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', bindAllSwitches);
+            } else {
+                bindAllSwitches();
+            }
+
+
             // sync จาก state จริง → อัปเดต UI ตามที่สั่ง
             document.addEventListener('ssbbox:state', e => {
-                const { alias, value } = e.detail || {}; if (!alias) return;
+                const { alias, value, topic } = e.detail || {};
+                if (!alias) return;
+
+                // 💡 อัปเดต checkbox เฉพาะ switch/*
+                if (typeof topic !== 'string' || !topic.startsWith('ssb-box/switch/')) {
+                    // (ออปชัน) จะเก็บค่าไว้รวมก็ได้ แต่ห้ามไปขยับ checkbox
+                    DEVICE_STATE[alias] = !!value;
+                    return;
+                }
+
+                // === ด้านล่างคือ logic เดิมของพี่ แต่จำกัดให้กับ switch/* เท่านั้น ===
 
                 const want = desiredMap.get(alias);
                 const hasPending = pendingSeq.has(alias);
@@ -1863,6 +1870,7 @@
                     return;
                 }
 
+                // อัปเดต checkbox ที่ตรง alias
                 document.querySelectorAll(`.ssbbox-switch[data-alias="${alias}"]`).forEach(el => {
                     el.checked = !!value;
                     el.classList.remove('is-pending');
@@ -1871,7 +1879,9 @@
                     wrap?.classList.remove('is-pending');
                 });
 
-                if (pendingTimers.get(alias)?.timer) clearTimeout(pendingTimers.get(alias).timer);
+                // เคลียร์ pending/timers สำหรับ alias นี้
+                const t = pendingTimers.get(alias)?.timer;
+                if (t) clearTimeout(t);
                 pendingTimers.delete(alias);
                 pendingSeq.delete(alias);
                 desiredMap.delete(alias);
@@ -1879,11 +1889,13 @@
                 confirmedModes.set(alias, value ? 'on' : 'off');
                 DEVICE_STATE[alias] = !!value;
 
-                log("state ←", alias, value);
+                // (ออปชัน) จำค่าเฉพาะสวิตช์: แยกคีย์ไม่ให้ปน onoff
+                try { localStorage.setItem(`ssbbox:last:switch:${alias}`, JSON.stringify(!!value)); } catch { }
+
+                log?.("state ←(switch)", alias, value);
             });
 
-            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindAllSwitches);
-            else bindAllSwitches();
+            
         })();
     </script>
 
@@ -1903,9 +1915,9 @@
     <!-- ================= WEBSOCKET (final) ================= -->
 
     <script>
-        const WS_URL = "wss://gourmet-soon-impression-slideshow.trycloudflare.com/mqtt";
+        const WS_URL = "wss://alumni-vpn-rental-written.trycloudflare.com/mqtt";
         let ws, retry;
-
+ 
 
         /* ---------------- helpers ---------------- */
         const parseMaybe = v => {
@@ -1953,58 +1965,59 @@
         }
 
         function isSwitchAlias(alias) {
-  if (!alias) return false;
-  const a = alias.toLowerCase();
+            if (!alias) return false;
+            const a = alias.toLowerCase();
 
-  // รายชื่อ alias ทั้งหมดที่เป็นสวิตช์ (ON/OFF)
-  const switchList = new Set([
-    "air",
-    "humidifier",
-    "co2",
-    "ductfan",
-    "returnfan",
-    "exhaustfan",
-    "nurseryfanupper",
-    "nurseryfanlower",
-    "agitator1-2in",
-    "agitator1-2out",
-    "agitator3-4in",
-    "agitator3-4out",
-    "ledrow1",
-    "ledrow2",
-    "ledrow3",
-    "ledrow4",
-    "nursery-ledlower",
-    "nursery-ledupper",
-    "nursery-dosing-a",
-    "nursery-dosing-b",
-    "nursery-dosing-up",
-    "nursery-dosing-down",
-    "nursery-pump-upper",
-    "nursery-pump-lower",
-    "nursery-ro-pump",
-    "nursery-circulation-pump",
-    "main1-dosing-a",
-    "main1-dosing-b",
-    "main1-dosing-up",
-    "main1-dosing-down",
-    "main1-pumpdrop",
-    "main1-ro-pump",
-    "main1-circulation-pump",
-    "main2-dosing-a",
-    "main2-dosing-b",
-    "main2-dosing-up",
-    "main2-dosing-down",
-    "main2-pumpdrop",
-    "main2-ro-pump",
-    "main2-circulation-pump"
-  ]);
+            // รายชื่อ alias ทั้งหมดที่เป็นสวิตช์ (ON/OFF)
+            const switchList = new Set([
+                "air",
+                "humidifier",
+                "co2",
+                "ductfan",
+                "returnfan",
+                "exhaustfan",
+                "nurseryfanupper",
+                "nurseryfanlower",
+                "agitator1-2in",
+                "agitator1-2out",
+                "agitator3-4in",
+                "agitator3-4out",
+                "ledrow1",
+                "ledrow2",
+                "ledrow3",
+                "ledrow4",
+                "nursery-ledlower",
+                "nursery-ledupper",
+                "nursery-dosing-a",
+                "nursery-dosing-b",
+                "nursery-dosing-up",
+                "nursery-dosing-down",
+                "nursery-pump-upper",
+                "nursery-pump-lower",
+                "nursery-ro-pump",
+                "nursery-circulation-pump",
+                "main1-dosing-a",
+                "main1-dosing-b",
+                "main1-dosing-up",
+                "main1-dosing-down",
+                "main1-pumpdrop",
+                "main1-ro-pump",
+                "main1-circulation-pump",
+                "main2-dosing-a",
+                "main2-dosing-b",
+                "main2-dosing-up",
+                "main2-dosing-down",
+                "main2-pumpdrop",
+                "main2-ro-pump",
+                "main2-circulation-pump"
+            ]);
 
-  return switchList.has(a);
-}
+            return switchList.has(a);
+        }
 
 
         // 🔧 Snapshot: ไม่อัปเดตรูปไอคอนจาก snapshot ใด ๆ (ให้รูปฟัง lamp เท่านั้น ดังนั้นเราต้องให้เฉพาะ “state สดจาก MQTT (lamp)” เท่านั้นที่ไปอัปเดตรูปจริง)
+        // 🔧 Snapshot: ตั้งค่าเฉพาะสวิตช์ และ broadcast เป็น ssb-box/switch/<alias>/state
         function applySnapshotData(map) {
             if (!map || typeof map !== 'object') return;
 
@@ -2019,25 +2032,31 @@
 
             Object.entries(map).forEach(([alias, raw]) => {
                 if (alias === 'selection') return;
-                const val = isSwitchAlias(alias) ? toB(raw) : raw;
+                // ✅ ตั้งใจใช้เฉพาะค่า snapshot ให้เป็น switch/*
+                const val = toB(raw);
                 DEVICE_STATE[alias] = val;
 
-                // ❌ ไม่เรียก updateImagesByAlias ที่นี่
+                // สำคัญ: ระบุ topic ให้ชัดว่าเป็น switch เพื่อกันชน
+                const topic = `ssb-box/switch/${alias}/state`;
                 document.dispatchEvent(new CustomEvent('ssbbox:state', {
-                    detail: { alias, value: val, topic: '' }
+                    detail: { alias, value: val, topic }
                 }));
             });
         }
+
 
         // state with topic = ssb-box/(lamp|switch)/<alias>/state, payload = {"<alias>":[true]} **ตัวรับสถานะจริงจาก MQTT
         function applyTopicState(topic, payload) {
             const parts = String(topic || '').split('/');
             if (parts.length < 4 || parts[0] !== 'ssb-box') return false;
-            const kind = parts[1]; // 'lamp' | 'switch'
-            if (!['lamp', 'switch'].includes(kind) || parts[3] !== 'state') return false;
+            const kind = parts[1]; // 'lamp' | 'switch' | 'onoff'
+            if (!['lamp', 'switch', 'onoff'].includes(kind) || parts[3] !== 'state') return false;
 
             const alias = parts[2];
-            const p = parseMaybe(payload);
+
+            // parse payload ปลอดภัย
+            let p = payload;
+            if (typeof p === 'string') { try { p = JSON.parse(p); } catch { } }
 
             let raw;
             if (p && typeof p === 'object') {
@@ -2048,16 +2067,24 @@
                 raw = p;
             }
 
-            const val = toB(raw);
-            DEVICE_STATE[alias] = val;
+            const val = (raw === true || raw === 'true' || raw === 1 || raw === '1') ? true
+                : (raw === false || raw === 'false' || raw === 0 || raw === '0') ? false
+                    : !!raw;
 
-            // 🔧 รูป icon: อัปเดตเฉพาะเมื่อมาจาก lamp/*
-            if (kind === 'lamp') updateImagesByAlias(alias, val);
+            // เก็บ global state (แยกตามชนิดก็ได้ แต่ไว้ใช้เทียบเริ่มต้น)
+            window.DEVICE_STATE = window.DEVICE_STATE || Object.create(null);
+            if (kind === 'switch') DEVICE_STATE[alias] = val;
 
-            // broadcast state (พร้อม topic) — ใช้สำหรับจำค่า/ปลด pending ฯลฯ
+            // อัปเดตรูปเฉพาะ lamp/*
+            if (kind === 'lamp' && typeof window.updateImagesByAlias === 'function') {
+                updateImagesByAlias(alias, val);
+            }
+
+            // ส่งอีเวนต์พร้อม topic/kind
             document.dispatchEvent(new CustomEvent('ssbbox:state', {
-                detail: { alias, value: val, topic }
+                detail: { alias, value: val, topic, kind }
             }));
+
             return true;
         }
 
@@ -2067,43 +2094,60 @@
             return (p.length >= 4 && p[0] === 'ssb-box' && p[1] === 'mode' && p[3] === 'state') ? p[2] : null;
         }
 
-        function parseModePayload(alias, payload) {
-            let v = payload;
-            if (typeof v === 'string') { try { v = JSON.parse(v); } catch { } }
-            if (Array.isArray(v)) return v.length ? v[0] : null;
-            if (v && typeof v === 'object') {
-                if (alias in v) return Array.isArray(v[alias]) ? v[alias][0] : v[alias];
-                if ('selection' in v) return Array.isArray(v.selection) ? v.selection[0] : v.selection;
-                if ('value' in v) return Array.isArray(v.value) ? v.value[0] : v.value;
-                const ks = Object.keys(v);
-                if (ks.length === 1) { let t = v[ks[0]]; return Array.isArray(t) ? t[0] : t; }
-                return v;
-            }
-            if (typeof v === 'string') {
-                const s = v.trim().toLowerCase();
-                if (['true', 'on', '1'].includes(s)) return true;
-                if (['false', 'off', '0'].includes(s)) return false;
-                const n = Number(s); if (!Number.isNaN(n)) return n;
-            }
-            return v;
-        }
+        function parseModePayload(alias, payload) { //{"selection":[2]} Alias= "selection" ผลลัพธ์ที่ได้ 2
 
+
+            // รองรับ string หรือ object เท่านั้น
+            let obj = (typeof payload === 'string') ? JSON.parse(payload) : payload;
+            if (!obj || typeof obj !== 'object') return null;
+
+            // ✅ ใช้แค่รูปแบบ {"<alias>":[value]}
+            const arr = obj[alias];
+            if (!Array.isArray(arr) || !arr.length) return null;
+
+            return arr[0];
+        }
+        //🧩 parseModePayload = แปลงข้อมูล
+        //⚙️ applyModeState = ใช้ข้อมูลนั้นอัปเดตโหมดในระบบ
+        //parseModePayload() = ตัว แปล payload ให้เหลือค่าเดียว
+
+        //applyModeState() = ตัว เอาค่านั้นไปใช้งานจริงในระบบ
+        //(เช่นเก็บใน MODE_STATE, เรียก handleModeState(), และ broadcast event)
         function applyModeState(topic, payload) {
-            const alias = modeAliasFromTopic(topic);
+            const alias = modeAliasFromTopic(topic); // ssb-box/mode/<alias>/state
             if (!alias) return false;
 
-            const val = parseModePayload(alias, payload);
+            // รับได้ทั้ง string และ object แต่ต้องเป็น {"<alias>":[value]} เท่านั้น
+            let obj;
+            if (typeof payload === 'string') {
+                try { obj = JSON.parse(payload); } catch { return false; }
+            } else {
+                obj = payload;
+            }
+            if (!obj || typeof obj !== 'object') return false;
+
+            const arr = obj[alias];
+            if (!Array.isArray(arr) || arr.length === 0) return false;
+
+            const val = arr[0];
+
+            // เก็บค่าโหมด
+            (window.MODE_STATE ||= Object.create(null));
             MODE_STATE[alias] = val;
 
+            // ถ้าเป็น selection ให้เรียกด้วยสchemาเดียวกันเสมอ
             if (alias === 'selection') {
-                handleModeState(payload);
+                handleModeState({ selection: [val] });
             }
 
+            // broadcast ให้ส่วนอื่นรู้ว่าโหมดเปลี่ยน (ปัก source='mode')
             document.dispatchEvent(new CustomEvent('ssbbox:mode', {
-                detail: { alias, value: val, topic }
+                detail: { alias, value: val, topic, source: 'mode' }
             }));
+
             return true;
         }
+
 
         /* ---------------- connect ---------------- */
         function connect() {
@@ -2117,9 +2161,16 @@
                     "ssb-box/sensor",
                     "ssb-box/lamp/+/state",
                     "ssb-box/switch/+/state",
+                    "ssb-box/onoff/+/state",
                     "ssb-box/mode/+/state",
                     ...extra
                 ]);
+
+                // ✅ ขอ snapshot ที่นี่ (แหล่งเดียว)
+                try { ws.send(JSON.stringify({ action: "snapshot" })); } catch { }
+
+                // ✅ flush คิวคำสั่งที่กดค้างตอนยังไม่ต่อ
+                try { flushSendQueue(); } catch { }
                 console.log("✅ WS connected");
             };
 
@@ -2163,63 +2214,108 @@
         }
 
         /* --------- ค่าตั้งต้นก่อน realtime เข้ามา --------- */
-        setGauge(document.getElementById('gAir'), 30);
-        setGauge(document.getElementById('gRH'), 55);
-        setGauge(document.getElementById('gCO2'), 1200);
-        setGauge(document.getElementById('gLight'), 1);
+        function safeSetGauge(id, val, min = 0, max = 5000) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const v = Math.max(min, Math.min(max, Number(val)));
+            setGauge(el, v);
+        }
+        safeSetGauge('gAir', 30, 0, 100);
+        safeSetGauge('gRH', 55, 0, 100);
+        safeSetGauge('gCO2', 1200, 0, 5000);
+        safeSetGauge('gLight', 1, 0, 1);
 
+        /* --------- เปิด WebSocket --------- */
         connect();
 
-        /* ---------------- ส่งคำสั่ง (SEND) ----------------
-           topic: ssb-box/switch/<alias>/cmd
-           payload: "{\"ductfan\":[true]}"
-        --------------------------------------------------- */
-        function publishCmd(alias, desired) {
-            const topic = `ssb-box/switch/${alias}/cmd`;
-            const payloadStr = JSON.stringify({ [alias]: [desired] });
-            if (!window.ws || ws.readyState !== 1) { console.warn("[SEND] ws not ready"); return false; }
-            const frame = { topic, payload: payloadStr };
-            ws.send(JSON.stringify(frame));
-            return true;
+        /* --------- ส่งคำสั่ง (SEND) --------- */
+        window.__SEND_QUEUE__ = window.__SEND_QUEUE__ || [];
+
+        function flushSendQueue() {
+            const q = window.__SEND_QUEUE__;
+            while (ws && ws.readyState === 1 && q.length) {
+                ws.send(JSON.stringify(q.shift()));
+            }
         }
+
+        // 🔧 เพิ่มใน connect().onopen:
+        // ws.onopen = () => {
+        //   safeSubscribe([...]);
+        //   flushSendQueue();
+        // };
+
+        function publishCmd(alias, desired, type = 'switch') {  // 👈 เปลี่ยน default เป็น 'switch'
+            // ตัวส่งคำสั่งจากหน้าเว็บ → ไปยัง Node-RED / MQTT ผ่าน WebSocket
+            if (!alias) return false;
+
+            // ✅ ตรวจชนิด topic ให้ส่งได้ทั้ง switch และ onoff
+            if (!['onoff', 'switch'].includes(type)) {
+                console.warn(`[SEND] Unknown type: ${type}`);
+                return false;
+            }
+
+            const desiredBool =
+                desired === true || desired === 'true' || desired === 1 || desired === '1';
+            const topic = `ssb-box/${type}/${alias}/cmd`; // ✅ เปลี่ยน type ได้อัตโนมัติ
+            const payload = JSON.stringify({ [alias]: [desiredBool] });
+            const frame = { topic, payload };
+
+            if (!window.ws || ws.readyState !== 1) {
+                console.warn('[SEND] ws not ready → queued');
+                window.__SEND_QUEUE__ = window.__SEND_QUEUE__ || [];
+                window.__SEND_QUEUE__.push(frame);
+                return false;
+            }
+
+            try {
+                ws.send(JSON.stringify(frame));
+                return true;
+            } catch {
+                window.__SEND_QUEUE__ = window.__SEND_QUEUE__ || [];
+                window.__SEND_QUEUE__.push(frame);
+                return false;
+            }
+        }
+
+
+
     </script>
 
     <!-- 🔧 NEW: จำค่า lamp icon + hydrate ตอนเปิดหน้า -->
     <script>
-        // 1) บันทึกค่าเฉพาะ event ที่มาจาก topic lamp/*
+        // ✅ 1) จำค่าเฉพาะ TOPIC ของ LAMP → ssbbox:last:lamp:<alias>
         document.addEventListener('ssbbox:state', (e) => {
-            const { alias, value, topic } = e.detail || {};
-            if (!alias) return;
-            if (typeof topic === 'string' && topic.startsWith('ssb-box/lamp/')) {
-                try { localStorage.setItem(`ssbbox:last:${alias}`, JSON.stringify(!!value)); } catch { }
-            }
+            const { alias, topic, value } = e.detail || {};
+            if (!alias || typeof topic !== 'string') return;
+            if (!topic.startsWith('ssb-box/lamp/')) return;
+            try { localStorage.setItem(`ssbbox:last:lamp:${alias}`, JSON.stringify(!!value)); } catch { }
         });
 
-        // 2) โหลดค่าที่เคยจำไว้ขึ้นไอคอนทุกตัวทันทีตอนเปิดหน้า
-        (function hydrateIconsFromLocalStorage() {
+        // ✅ 2) Hydrate ไอคอน lamp จากคีย์ของ lamp เท่านั้น
+        (function hydrateLampIcons() {
             function run() {
                 document.querySelectorAll('img.state-img[data-state-alias]').forEach(img => {
                     const alias = img.dataset.stateAlias;
                     try {
-                        const raw = localStorage.getItem(`ssbbox:last:${alias}`);
+                        const raw = localStorage.getItem(`ssbbox:last:lamp:${alias}`);
                         if (raw !== null) {
-                            const val = JSON.parse(raw);
-                            window.DEVICE_STATE = window.DEVICE_STATE || Object.create(null);
-                            DEVICE_STATE[alias] = !!val;
-                            if (typeof window.updateImagesByAlias === 'function') {
-                                updateImagesByAlias(alias, !!val);
-                            }
+                            const val = !!JSON.parse(raw);
+                            if (typeof window.updateImagesByAlias === 'function') updateImagesByAlias(alias, val);
                         }
                     } catch { }
                 });
             }
-            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
-            else run();
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
         })();
     </script>
 
+
+
+
     <!-- ================= PILL (toggle จาก switch-state + จำค่า) ================= -->
+
     <script>
+        //ผูกปุ่ม
         (function () {
             if (window.__PILL_BINDER__) return; window.__PILL_BINDER__ = true;
             window.SSB_SWITCH_TOPICS = window.SSB_SWITCH_TOPICS || new Set();
@@ -2228,27 +2324,38 @@
 
             function mount(el) {
                 const label = el.querySelector('[data-label]') || el.querySelector('span');
-                const alias = el.dataset.alias.trim();                             // e.g. 'co2'
-                const switchKey = (el.dataset.switchKey || (alias + 'of')).trim(); // e.g. 'co2of'
+                const alias = el.dataset.alias.trim(); // เช่น 'ledrow2'
+
+                // ✅ ใช้ alias ตรง ๆ เท่านั้น
+                const switchKey = (el.dataset.switchKey || alias).trim();
+
+                // ✅ ใช้ topic ของระบบใหม่ทั้งหมด (onoff)
                 const cmdTopic = (el.dataset.cmdTopic || `ssb-box/switch/${switchKey}/cmd`).trim();
-                const modeTopic = (el.dataset.modeTopic || `ssb-box/mode/${alias}/state`).trim();
                 const swStateTopic = (el.dataset.switchStateTopic || `ssb-box/switch/${switchKey}/state`).trim();
 
-                // 🔔 subscribe ที่จำเป็น
-                try { window.SSB_SWITCH_TOPICS.add(modeTopic); window.SSB_SWITCH_TOPICS.add(swStateTopic); } catch { }
-                if (typeof safeSubscribe === 'function') { try { safeSubscribe([modeTopic, swStateTopic]); } catch { } }
+                const modeTopic = (el.dataset.modeTopic || `ssb-box/mode/${alias}/state`).trim();
 
-                // 🧠 keys สำหรับจำค่า
-                const LS_SW_KEY = `ssbbox:last:${switchKey}`; // จำสถานะสวิตช์จริง
-                const LS_MODE_KEY = `ssbbox:mode:last:${alias}`; // จำโหมดไว้แสดงผล
+                // 🔔 subscribe topics ที่จำเป็น
+                try {
+                    window.SSB_SWITCH_TOPICS = window.SSB_SWITCH_TOPICS || new Set();
+                    window.SSB_SWITCH_TOPICS.add(modeTopic);
+                    window.SSB_SWITCH_TOPICS.add(swStateTopic);
+                } catch { }
+                if (typeof safeSubscribe === 'function') {
+                    try { safeSubscribe([modeTopic, swStateTopic]); } catch { }
+                }
 
-                // 🔁 Hydrate สวิตช์จาก localStorage (ให้กดได้ถูกตั้งแต่เปิดหน้า)
+                // 🧠 key ใน localStorage สำหรับสถานะล่าสุด
+                const LS_SW_KEY = `ssbbox:last:switch:${switchKey}`;
+                const LS_MODE_KEY = `ssbbox:mode:last:${alias}`;
+
+                // 🔁 Hydrate สวิตช์จาก localStorage
                 try {
                     const raw = localStorage.getItem(LS_SW_KEY);
                     if (raw !== null) el.dataset._sw = JSON.parse(raw) ? 'true' : 'false';
                 } catch { }
 
-                // 🔁 Hydrate โหมดเพื่อแสดง label (ไม่ได้ใช้ตัดสินใจแล้ว)
+                // 🔁 Hydrate โหมดเพื่อแสดง label
                 try {
                     const s = localStorage.getItem(LS_MODE_KEY);
                     if (s !== null && s !== '') renderMode(el, label, Number(s));
@@ -2264,7 +2371,7 @@
                     el.classList.remove('is-pending');
                 });
 
-                // 🛰 ฟังโหมดจริง → แสดงผลบน pill (ไม่ใช้ตัดสินใจ)
+                // 🛰 ฟังโหมดจริง → แสดงผลบน pill
                 document.addEventListener('ssbbox:mode', (e) => {
                     const { alias: a, value } = e.detail || {};
                     if (a !== alias) return;
@@ -2275,7 +2382,7 @@
                     }
                 });
 
-                // 👆 คลิก = toggle จาก switch-state ล่าสุด (ไม่ดู data-off-code แล้ว)
+                // 👆 คลิก = toggle ตามสถานะล่าสุด แล้วส่งไป onoff/*
                 let pendingTimer = null;
                 el.style.cursor = 'pointer';
                 el.addEventListener('click', () => {
@@ -2294,6 +2401,7 @@
                     pendingTimer = setTimeout(() => el.classList.remove('is-pending'), 3000);
                 });
             }
+
 
             function renderMode(el, label, code) {
                 el.classList.remove('auto', 'manual', 'task', 'off', 'unknown');
@@ -2359,12 +2467,15 @@
         (function () { const snap = loadSnapshot(); if (snap) handleSensorPayload(snap); })();
     </script>
 
-    <!-- ================= Mode ================= -->
+    <!-- ================= Mode (strict schema) ================= -->
     <script>
+        // ป้ายชื่อโหมด
         const MODE_LABEL = { 0: 'MANUAL', 1: 'AUTO', 2: 'TASK' };
 
+        // pending state
         let MODE_PENDING = null, MODE_TOKEN = 0, MODE_TIMER = null;
         const MODE_PENDING_MS = 5000;
+        const LS_MODE_KEY = 'ssbbox:mode:last:selection';
 
         function setModePending(flag) {
             const btn = document.querySelector('#modeDropdown > button');
@@ -2380,50 +2491,58 @@
 
         function updateModeUI(sel) {
             const btn = document.querySelector('#modeDropdown > button');
-            const pill = document.getElementById('statusPill');
-            const pillLabel = document.getElementById('statusLabel');
+            if (!btn) return;
 
-            if (btn && sel !== undefined) {
-                btn.textContent = "MODE: " + ({ 0: 'MANUAL', 1: 'AUTO', 2: 'TASK' }[sel] ?? sel);
-                btn.classList.remove('mode-auto', 'mode-manual', 'mode-task', 'mode-off');
-                if (sel === 1) btn.classList.add('mode-auto');
-                else if (sel === 0) btn.classList.add('mode-manual');
-                else if (sel === 2) btn.classList.add('mode-task');
-                else btn.classList.add('mode-off');
-            }
+            const label = (sel in MODE_LABEL) ? MODE_LABEL[sel] : `UNKNOWN(${sel})`;
+            btn.textContent = `MODE: ${label}`;
+
+            btn.classList.remove('mode-auto', 'mode-manual', 'mode-task', 'mode-off');
+            if (sel === 1) btn.classList.add('mode-auto');
+            else if (sel === 0) btn.classList.add('mode-manual');
+            else if (sel === 2) btn.classList.add('mode-task');
+            else btn.classList.add('mode-off');
+
+            // แถบแสดงผลเสริม (ถ้ามี element)
+            const rawEl = document.getElementById('modeRaw');
+            const lblEl = document.getElementById('modeLabel');
+            if (rawEl) rawEl.replaceChildren(JSON.stringify({ selection: [sel] }));
+            if (lblEl) lblEl.replaceChildren(label);
         }
 
-        function handleModeState(payload) {
-            let rawMinified = payload;
-            let sel;
-            try {
-                const obj = (typeof payload === 'string') ? JSON.parse(payload) : payload;
-                sel = Array.isArray(obj?.selection) ? obj.selection[0] : undefined;
-                rawMinified = JSON.stringify({ selection: [sel] });
-            } catch {
-                const m = String(payload || '').match(/"selection"\s*:\s*\[\s*(\d+)\s*\]/);
-                if (m) {
-                    sel = parseInt(m[1], 10);
-                    rawMinified = `{"selection":[${sel}]}`;
-                }
+        // รับ state โหมด: ยอมรับเฉพาะ {"selection":[number]}
+        function handleModeState(msg) {
+            const obj = (typeof msg === 'string') ? (() => { try { return JSON.parse(msg); } catch { return null; } })() : msg;
+            if (!obj || typeof obj !== 'object' || !Array.isArray(obj.selection)) return;
+
+            const sel = Number(obj.selection[0]);
+            if (Number.isNaN(sel)) return;
+
+            // เก็บ global + UI
+            (window.MODE_STATE ||= Object.create(null));
+            MODE_STATE.selection = sel;
+            updateModeUI(sel);
+
+            // ปลด pending เมื่อยืนยันตรง
+            if (MODE_PENDING && sel === MODE_PENDING.val) {
+                setModePending(false);
+                MODE_PENDING = null;
+                if (MODE_TIMER) { clearTimeout(MODE_TIMER); MODE_TIMER = null; }
             }
 
-            document.getElementById('modeRaw')?.replaceChildren(rawMinified);
-            document.getElementById('modeLabel')?.replaceChildren(
-                (sel in MODE_LABEL) ? MODE_LABEL[sel] : (sel !== undefined ? `UNKNOWN(${sel})` : '-')
-            );
-
-            if (sel !== undefined) updateModeUI(sel);
-
-            if (MODE_PENDING && sel !== undefined) {
-                if (sel === MODE_PENDING.val) {
-                    setModePending(false);
-                    MODE_PENDING = null;
-                    if (MODE_TIMER) { clearTimeout(MODE_TIMER); MODE_TIMER = null; }
-                }
-            }
+            // จำค่าไว้สำหรับ hydrate ตอนเปิดหน้า
+            try { localStorage.setItem(LS_MODE_KEY, String(sel)); } catch { }
         }
 
+        // hydrate ปุ่มจากค่าเดิม (ถ้ามี)
+        (function hydrateModeButton() {
+            const v = localStorage.getItem(LS_MODE_KEY);
+            if (v !== null) {
+                const sel = Number(v);
+                if (!Number.isNaN(sel)) updateModeUI(sel);
+            }
+        })();
+
+        // ผูก dropdown และส่งคำสั่ง
         (function bindModeDropdown() {
             const root = document.getElementById('modeDropdown');
             if (!root) return;
@@ -2435,15 +2554,17 @@
             root.querySelectorAll('.dropdown-item').forEach(a => {
                 a.addEventListener('click', (e) => {
                     e.preventDefault();
-                    const val = parseInt(a.dataset.val, 10);
-                    const payload = `{"selection":[${val}]}`;
+                    const val = Number(a.dataset.val);
+                    if (Number.isNaN(val)) return;
 
+                    const payload = JSON.stringify({ selection: [val] });
                     const ok = (typeof safePublish === 'function')
-                        ? safePublish("ssb-box/mode/selection/cmd", payload)
+                        ? safePublish('ssb-box/mode/selection/cmd', payload)
                         : false;
 
-                    if (!ok) { console.warn("[MODE] ws not ready, cannot publish"); return; }
+                    if (!ok) { console.warn('[MODE] ws not ready, cannot publish'); return; }
 
+                    // ตั้ง pending และ timeout
                     MODE_TOKEN += 1;
                     MODE_PENDING = { val, token: MODE_TOKEN };
                     setModePending(true);
@@ -2460,41 +2581,25 @@
                 });
             });
         })();
-    </script>
 
-    <script>
-        // บันทึกเฉพาะ alias ที่มีสวิตช์อยู่ในหน้า (กันไปชนพวก lamp)
-        document.addEventListener('ssbbox:state', (e) => {
-            const { alias } = e.detail || {};
-            if (!alias) return;
-            // มีสวิตช์ตัวนี้อยู่จริงใน DOM ไหม?
-            const hasSwitch = !!document.querySelector(`.ssbbox-switch[data-alias="${alias}"]`);
-            if (!hasSwitch) return;
-            try { localStorage.setItem(`ssbbox:last:${alias}`, JSON.stringify(!!e.detail.value)); } catch { }
+        // ฟังอีเวนต์จาก controller รวม (ถ้ามี dispatch 'ssbbox:mode')
+        document.addEventListener('ssbbox:mode', (e) => {
+            const { alias, value } = e.detail || {};
+            if (alias !== 'selection') return;
+            const sel = Array.isArray(value) ? Number(value[0]) : Number(value);
+            if (!Number.isNaN(sel)) handleModeState({ selection: [sel] });
         });
     </script>
 
 
-    <script>
-        (function hydrateSwitchesFromLocalStorage() {
-            function run() {
-                window.DEVICE_STATE = window.DEVICE_STATE || Object.create(null);
-                document.querySelectorAll('.ssbbox-switch[data-alias]').forEach(el => {
-                    const a = el.dataset.alias;
-                    try {
-                        const raw = localStorage.getItem(`ssbbox:last:${a}`);
-                        if (raw !== null) {
-                            const v = !!JSON.parse(raw);
-                            DEVICE_STATE[a] = v;  // ให้ bindAllSwitches เห็นค่าเริ่มต้น
-                            el.checked = v;       // ให้ UI ตรงทันที
-                        }
-                    } catch { }
-                });
-            }
-            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
-            else run();
-        })();
-    </script>
+
+
+
+   
+
+
+
+
 
 
 
